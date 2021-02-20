@@ -1,0 +1,28 @@
+# Based on https://github.com/marketplace/actions/run-eslint
+#
+# currently this is using `npm`/`npx` we could switch to using `yarn`; I wasn't sure what is preferred
+#
+name: Javascript Lint and Prettier Check
+on: [push, pull_request]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@v2
+      with:
+        node-version: '14'
+    - name: Install Dependencies
+      run: |
+        cd frontend
+        npm install
+        # typescript needed for ESLint
+        npm install typescript
+    - name: ESLint and Prettier Check
+      run: | 
+        cd frontend
+        npx eslint . 
+    - name: Prettier Check
+      run: | 
+        cd frontend
+        npx prettier --check .

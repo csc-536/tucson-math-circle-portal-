@@ -1,19 +1,20 @@
-# Taken from https://github.com/actions/starter-workflows/blob/main/ci/python-app.yml
-# This may not work initially, I'm not exactly sure how `pipenv` will work with the workflow
+# Based on https://github.com/actions/starter-workflows/blob/main/ci/python-app.yml
 
 name: Python Lint and Test
 
-on:
-  push:
-    branches: [ $default-branch ]
-  pull_request:
-    branches: [ $default-branch ]
+# do it on every push and pull_request
+# we could make it run on only certain branches by uncommenting below
+on: [push, pull_request]
+
+# uncomment to restrict what branches this is run on
+  # push:
+  #   branches: [ $default-branch ]
+  # pull_request:
+  #   branches: [ $default-branch ]
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python 3.9
@@ -22,21 +23,24 @@ jobs:
         python-version: 3.9
     - name: Install Pipenv and dependencies
       run: |
-        # may need to modify this
         cd backend
         python -m pip install --upgrade pip
-        # pip install flake8 pytest
-        # if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-        # use pipenv instead
+        # use pipenv
         pip install pipenv
         pipenv install --dev
-        pipenv shell
     - name: Lint with flake8
       run: |
+        cd backend
+        # uncomment these if we want less restrictive linting
         # stop the build if there are Python syntax errors or undefined names
-        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+        # pipenv run flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+        # pipenv run flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+        
+        # we treat everything as an error
+        # if this is excessive, we can use and modify the above two lines
+        pipenv run flake8 . --count --max-complexity=10 --show-source --max-line-length=127 --statistics
     - name: Test with pytest
       run: |
-        pytest
+        cd backend
+        pipenv run pytest
