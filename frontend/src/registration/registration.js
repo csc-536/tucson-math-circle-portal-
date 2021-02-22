@@ -12,60 +12,69 @@ function Registration(props) {
 	return (
 		<form>
 			<h2>Account Registration Form</h2>
-			<label>
-			    Email (for account, recieve meeting information):
-			    <input type="text" name="email" />
-			</label>
-			<label>
-				Password
-				<input type="text" name="password" />
-			</label>
-			<label>
-				Enter Password Again
-				<input type="text" name="re-password" />
-			</label>
-			<label>
+			<div id="accountInfo">
+				<label>
+				    <p>Email (for account, recieve meeting information):</p>
+				    <input type="text" name="email" />
+				</label>
+				<label id="password" class="col1">
+					<p>Password:</p>
+					<input type="text" name="password" />
+				</label>
+				<label id="re-password" class="col2">
+					<p>Enter Password Again:</p>
+					<input type="text" name="re-password" />
+				</label>
+			</div>
+			<div id="checkbox">
 				<Checkbox 
               		icon={icon} 
              		checkedIcon={checkedIcon} 
               		style={{ marginRight: 8 }} 
             	/>
 				I understand that parents need to sign a consent form after registration
-			</label>
-			<h4>Student Information</h4>
-			<label>
-			    Name:
-			    <input type="text" name="sname" />
-			</label>
-			<label>
-				Age:
-				<input type="text" name="age" />
-			</label>
-			<label>
-				Grade
-				<input type="text" name="grade" />
-			</label>
-			<label>
-				<select>
-					<option value='juniorA'>Junior A</option>
-					<option value='juniorB'>Junior B</option>
-					<option value='senior'>Senior</option>
-				</select>
-			</label>
-			<h4>Parent Information</h4>
-			<label>
-			    Name:
-			    <input type="text" name="pname" />
-			</label>
-			<label>
-				Phone:
-				<input type="text" name="phone" />
-			</label>
-			<label>
-				Parent Email
-				<input type="text" name="pemail" />
-			</label>
-			<input type="submit" value="Submit" />
+			</div>
+			<hr />
+			<div id="studentInformation">
+				<h4>Student Information</h4>
+				<label class="col1">
+				    <p>Name:</p>
+				    <input type="text" name="sname" />
+				</label>
+				<label class="col2">
+					<p>Age:</p>
+					<input type="text" name="age" />
+				</label>
+				<label class="col1">
+					<p>Grade:</p>
+					<input type="text" name="grade" />
+				</label>
+				<label class="col2">
+					<p>Program Level:</p>
+					<select>
+						<option value='juniorA'>Junior A</option>
+						<option value='juniorB'>Junior B</option>
+						<option value='senior'>Senior</option>
+					</select>
+				</label>
+			</div>
+			<div id="parentInformation">
+			<hr />
+				<h4>Parent Information</h4>
+				<label class="col1">
+				    <p>Name:</p>
+				    <input type="text" name="pname" />
+				</label>
+				<label class="col2">
+					<p>Phone:</p>
+					<input type="text" name="phone" />
+				</label>
+				<label class="col1">
+					<p>Parent Email:</p>
+					<input type="text" name="pemail" />
+				</label>
+			</div>
+			<input id="reg" type="submit" value="Register" />
 		</form>
 	)
 }
