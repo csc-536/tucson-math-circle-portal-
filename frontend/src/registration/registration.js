@@ -6,13 +6,13 @@ import ParentInfo from "./parentInfo";
 
 function Registration(props) {
   return (
-    <form>
+    <form id="regForm">
       <h1>Account Registration Form</h1>
       <AccInfo />
       <CheckBox />
       <StudentInfo />
       <ParentInfo />
-      <input id="reg" type="submit" value="Register" />
+      <input id="regButton" type="submit" value="Register" />
     </form>
   );
 }

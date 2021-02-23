@@ -1,13 +1,15 @@
-form {
+#loginForm {
   margin: 0 auto;
-  max-width: 200px;
+  max-width: 185px;
 }
 label {
   font-weight: bold;
-  /*padding-top: 40px;*/
 }
 input {
   display: block;
+  padding-bottom: 5px;
+  padding-top: 5px;
+  padding-right: 10px;
   margin-bottom: 20px;
   margin-top: 10px;
 }
@@ -17,12 +19,13 @@ input {
   margin-bottom: 50px;
   color: white;
   background-color: #008ae6;
+  cursor: pointer;
 }
-.col1 {
+#fgtPasswrd {
   float: left;
-  margin-right: 10px;
+  cursor: pointer;
 }
-.col2 {
+#signUp {
   float: right;
-  margin-right: 10px;
+  cursor: pointer;
 }

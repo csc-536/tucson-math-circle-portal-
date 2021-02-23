@@ -1,7 +1,11 @@
+import React from "react";
+import ReactDOM from "react-dom";
 import "./login.css";
+import Registration from "../registration/registration.js";
+
 function Login(props) {
   return (
-    <form>
+    <form id="loginForm">
       <h1>Login</h1>
       <label>
         Email:
@@ -11,14 +15,23 @@ function Login(props) {
         Password:
         <input type="password" name="password" />
       </label>
-      <p className="col1" id="fgtPasswrd">
-        Forget password?
-      </p>
-      <p className="col2" id="signUp">
-        Signup
-      </p>
+      <div>
+        <p id="fgtPasswrd">Forget password?</p>
+        <p id="signUp" onClick={handleSignup}>
+          Signup
+        </p>
+      </div>
       <input id="login" type="submit" value="Login" />
     </form>
+  );
+}
+
+function handleSignup(e) {
+  ReactDOM.render(
+    <React.StrictMode>
+      <Registration />
+    </React.StrictMode>,
+    document.getElementById("root")
   );
 }
 

@@ -1,23 +1,11 @@
-form {
+#regForm {
   margin: 0 auto;
-  width: 600px;
+  max-width: 600px;
 }
-
-label {
-  font-weight: bold;
-}
-
-input {
-  display: block;
-  margin-bottom: 20px;
-  margin-top: 10px;
-}
-
 div {
   clear: both;
   padding-top: 10px;
 }
-
 .col1 {
   float: left;
   margin-right: 10px;
@@ -31,15 +19,16 @@ div {
   clear: both;
   font-weight: bold;
 }
-
-#reg {
+#regButton {
   clear: both;
   float: right;
   margin-bottom: 50px;
   color: white;
   background-color: #008ae6;
+  cursor: pointer;
 }
-
 select {
-  padding-right: 90px;
+  margin-top: 10px;
+  padding-right: 100px;
+  padding-bottom: 10px;
 }
