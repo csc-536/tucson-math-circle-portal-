@@ -1,11 +1,11 @@
 import logo from "./logo.svg";
 import "./App.css";
-import Registration from "./registration/registration.js"
+import Login from "./login/login";
+// import Registration from "./registration/registration";
 
 function App() {
-  return (
-    <Registration/>
-  );
+  return <Login />;
+  // return <Registration />;
 }
 
 export default App;

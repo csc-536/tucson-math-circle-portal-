@@ -1,0 +1,28 @@
+form {
+  margin: 0 auto;
+  max-width: 200px;
+}
+label {
+  font-weight: bold;
+  /*padding-top: 40px;*/
+}
+input {
+  display: block;
+  margin-bottom: 20px;
+  margin-top: 10px;
+}
+#login {
+  clear: both;
+  float: right;
+  margin-bottom: 50px;
+  color: white;
+  background-color: #008ae6;
+}
+.col1 {
+  float: left;
+  margin-right: 10px;
+}
+.col2 {
+  float: right;
+  margin-right: 10px;
+}
