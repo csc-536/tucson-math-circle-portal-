@@ -22,7 +22,7 @@ function Registration(props) {
         </button>
       </div>
     );
-    isUpdate = <consentUpload />;
+    isUpdate = <ConsentUpload />;
     buttonVal = "Update";
   }
   return (

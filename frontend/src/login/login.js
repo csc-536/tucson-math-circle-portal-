@@ -29,7 +29,7 @@ function Login(props) {
 function handleSignup(e) {
   ReactDOM.render(
     <React.StrictMode>
-      <Registration update={false} />
+      <Registration update={true} />
     </React.StrictMode>,
     document.getElementById("root")
   );

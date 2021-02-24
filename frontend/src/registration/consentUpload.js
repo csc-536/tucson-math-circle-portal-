@@ -13,10 +13,11 @@ function ConsentUpload(props) {
 
   return (
     <div>
+      Upload your consent form:
       <input type="file" name="file" onChange={changeHandler} />
-      <div>
-        <button onClick={handleSubmission}>Submit</button>
-      </div>
+      Consent form verifyuing progress: in progress/Complete
     </div>
   );
 }
+
+export default ConsentUpload;
