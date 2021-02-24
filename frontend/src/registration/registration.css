@@ -1,0 +1,43 @@
+#regForm {
+  margin: 0 auto;
+  max-width: 600px;
+}
+div {
+  clear: both;
+  padding-top: 10px;
+}
+.col1 {
+  float: left;
+  margin-right: 10px;
+}
+.col2 {
+  float: right;
+  margin-right: 150px;
+}
+#profileHeader {
+  float: left;
+}
+#checkbox {
+  clear: both;
+  font-weight: bold;
+}
+#regButton {
+  clear: both;
+  margin-bottom: 50px;
+}
+#allMeetings {
+  margin-top: 30px;
+}
+#regButton,
+#allMeetings {
+  float: right;
+  color: white;
+  background-color: #008ae6;
+  cursor: pointer;
+  padding: 10px;
+}
+select {
+  margin-top: 10px;
+  padding-right: 100px;
+  padding-bottom: 10px;
+}
