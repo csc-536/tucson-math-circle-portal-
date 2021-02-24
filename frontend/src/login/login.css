@@ -16,6 +16,7 @@ input {
 #login {
   clear: both;
   float: right;
+  padding: 10px;
   margin-bottom: 50px;
   color: white;
   background-color: #008ae6;

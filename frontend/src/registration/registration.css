@@ -14,18 +14,27 @@ div {
   float: right;
   margin-right: 150px;
 }
-
+#profileHeader {
+  float: left;
+}
 #checkbox {
   clear: both;
   font-weight: bold;
 }
 #regButton {
   clear: both;
-  float: right;
   margin-bottom: 50px;
+}
+#allMeetings {
+  margin-top: 30px;
+}
+#regButton,
+#allMeetings {
+  float: right;
   color: white;
   background-color: #008ae6;
   cursor: pointer;
+  padding: 10px;
 }
 select {
   margin-top: 10px;
