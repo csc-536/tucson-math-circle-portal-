@@ -6,15 +6,15 @@ import Meetings from "./Meetings";
 import Container from "@material-ui/core/Container";
 
 function App() {
-    return (
-        <Container fixed>
-            <Router>
-                <Route exact path="/" component={Login} />
-                <Route exact path="/meetings" component={Meetings} />
-            </Router>
-        </Container>
-    );
-    //return <Registration update={true}/>;
+  return (
+    <Container fixed>
+      <Router>
+        <Route exact path="/" component={Login} />
+        <Route exact path="/meetings" component={Meetings} />
+      </Router>
+    </Container>
+  );
+  //return <Registration update={true}/>;
 }
 
 export default App;
