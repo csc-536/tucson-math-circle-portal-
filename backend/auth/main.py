@@ -4,7 +4,7 @@ import toml
 from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 
-from app.dependencies import (
+from auth.dependencies import (
     Token,
     TokenData,
     create_access_token,
@@ -14,11 +14,12 @@ from app.dependencies import (
     create_user,
     ACCESS_TOKEN_EXPIRE_MIN,
 )
-from app.db.main import connect_to_db, add_user, get_user_by_id, get_user_by_email
-import app.db.main
-from app.db.models.users import User, UserInDB, UserCreate
+from auth.db.main import connect_to_db, add_user, get_user_by_id, get_user_by_email
+import auth.db.main
+from auth.db.models.users import User, UserInDB, UserCreate
 
-config = toml.load("app/db-config.toml")
+# this is assuming app is run from `backend` directory
+config = toml.load("auth/db-config.toml")
 
 username = config["atlas-username"]
 password = config["atlas-password"]

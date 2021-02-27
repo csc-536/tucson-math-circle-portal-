@@ -3,8 +3,7 @@ import toml
 from pydantic import UUID4, EmailStr
 
 
-from .models.users import User, UserInDB
-from .schemas.users import UserInDBDoc
+from auth.db.models.users import User, UserInDB
 
 client: motor.motor_asyncio.AsyncIOMotorClient
 database: motor.motor_asyncio.AsyncIOMotorDatabase

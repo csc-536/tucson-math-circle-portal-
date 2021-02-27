@@ -8,11 +8,12 @@ from jose import JWTError, jwt
 from passlib.context import CryptContext
 from pydantic import BaseModel, UUID4
 
-from app.db.models.users import UserInDB, UserCreate, User
+from auth.db.models.users import UserInDB, UserCreate, User
 
-from app.db.main import get_user_by_email, add_user
+from auth.db.main import get_user_by_email, add_user
 
-config = toml.load("app/db-config.toml")
+# this is assuming the app is run from `backend` directory
+config = toml.load("auth/db-config.toml")
 SECRET_KEY = config["secret"]
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MIN = 30
