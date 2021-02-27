@@ -16,7 +16,18 @@ You can follow this guide to prevent ever accidentally pushing onto the main rep
   - `git push origin new_branch_name`
 6. On Github, make a pull request from you repository to the csc-536 repository
 
-### Python setup
+### Frontend setup
+0. (Optional) install node manager like [fnm](https://github.com/Schniz/fnm) or [nvm](https://github.com/nvm-sh/nvm)
+1. Install `npm` version `14.15.5` 
+  - can do `fnm use` or `nvm use` in the frontend directory if you installed those
+2. Run `npm install` in frontend directory
+3. Before committing run `npm lint` in the frontend directory
+
+### Backend setup
 1. Run `pip install pipenv`
 2. In directory with `Pipfile` run `pipenv install --dev`
-3. Run `pipenv shell` to enter virtualenv
+3. Run `pipenv shell` to enter virtualenv 
+  - alternatively you can do `pipenv run $command` to run `$command$` in the virtualenv
+4. Before committing
+  - run `flake8 .` in backend directory and fix any thing it complains about
+  - run `black .` in backend directory for formatting
