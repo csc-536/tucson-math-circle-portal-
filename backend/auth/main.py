@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import timedelta
 
 import toml
 from fastapi import FastAPI, Depends, HTTPException, status
@@ -15,8 +15,7 @@ from auth.dependencies import (
     ACCESS_TOKEN_EXPIRE_MIN,
 )
 from auth.db.main import connect_to_db, add_user, get_user_by_id, get_user_by_email
-import auth.db.main
-from auth.db.models.users import User, UserInDB, UserCreate
+from auth.db.models.users import User, UserInDB
 
 # this is assuming app is run from `backend` directory
 config = toml.load("auth/db-config.toml")
