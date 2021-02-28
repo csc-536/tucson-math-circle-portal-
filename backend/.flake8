@@ -1,0 +1,3 @@
+[flake8]
+exclude = .git, auth/utils/make_config.py
+max_line_length = 88

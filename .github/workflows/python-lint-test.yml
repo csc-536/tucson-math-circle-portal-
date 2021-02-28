@@ -44,3 +44,7 @@ jobs:
       run: |
         cd backend
         pipenv run pytest
+    - name: Formatting with black
+      run: |
+        cd backend
+        pipenv run black -v --check .
