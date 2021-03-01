@@ -1,11 +1,20 @@
 import React from "react";
-import ReactDOM from "react-dom";
 import "./login.css";
-import Registration from "../registration/registration.js";
+import { useHistory } from "react-router";
 
 function Login(props) {
+  const history = useHistory();
+
+  function handleSignup(e) {
+    history.push("/signup");
+  }
+
+  function handleLogin(e) {
+    history.push("/meetings");
+  }
+
   return (
-    <form id="loginForm">
+    <form id="loginForm" onSubmit={handleLogin}>
       <h1>Login</h1>
       <label>
         Email:
@@ -23,15 +32,6 @@ function Login(props) {
       </div>
       <input id="login" type="submit" value="Login" />
     </form>
-  );
-}
-
-function handleSignup(e) {
-  ReactDOM.render(
-    <React.StrictMode>
-      <Registration update={true} />
-    </React.StrictMode>,
-    document.getElementById("root")
   );
 }
 
