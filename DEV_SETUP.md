@@ -24,12 +24,11 @@ You can follow this guide to prevent ever accidentally pushing onto the main rep
 3. Before committing run `npm lint` in the frontend directory
 
 ### Backend setup
-0. **Important** you need to use Python 3's version of pip for the following commands. 
-If `pip` defaults to the Python 2 version, make sure to use `pip3` as the command.
-You can check which version of Python `pip` is using by running `pip --version`.
-1. Run `pip install pipenv`. If you have permission errors instead do `pip install --user pipenv`.  **Replace `pip` with `pip3` if needed.**
+0. **Important** you need to use Python 3's version of pip for the following commands. To be safe, I have changed the commands to `pip3` instead of `pip`.  If you know `pip` is the Python 3 version, you can use `pip` instead of `pip3` and save one character!
+(If you are interested, you can check which version of Python `pip` is using by running `pip --version`.)
+1. Run `pip3 install pipenv`. If you have permission errors instead do `pip3 install --user pipenv`.
 2. In backend directory run `pipenv install --dev`
-3. Run `pipenv shell` to enter virtualenv 
+3. Run `pipenv shell` in backend directory to enter virtualenv 
   - alternatively you can do `pipenv run $command` to run `$command` in the virtualenv
 4. Before committing
   - In virtualenv, run `flake8 .` in backend directory and fix anything it complains about
