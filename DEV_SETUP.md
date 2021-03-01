@@ -31,3 +31,9 @@ You can follow this guide to prevent ever accidentally pushing onto the main rep
 4. Before committing
   - run `flake8 .` in backend directory and fix any thing it complains about
   - run `black .` in backend directory for formatting
+
+#### Running Auth server (possible updates in the future)
+1. Follow the above steps to install dependencies
+2. In backend directory run `uvicorn auth.main:app --reload`
+3. By default, server runs at `127.0.0.1:8000`
+4. To interact with a web interface (and see the routes etc) go to `127.0.0.1:8000/docs`
