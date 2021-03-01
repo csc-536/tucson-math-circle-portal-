@@ -30,10 +30,10 @@ You can check which version of Python `pip` is using by running `pip --version`.
 1. Run `pip install pipenv`. If you have permission errors instead do `pip install --user pipenv`.  **Replace `pip` with `pip3` if needed.**
 2. In backend directory run `pipenv install --dev`
 3. Run `pipenv shell` to enter virtualenv 
-  - alternatively you can do `pipenv run $command` to run `$command$` in the virtualenv
+  - alternatively you can do `pipenv run $command` to run `$command` in the virtualenv
 4. Before committing
-  - run `flake8 .` in backend directory and fix any thing it complains about
-  - run `black .` in backend directory for formatting
+  - In virtualenv, run `flake8 .` in backend directory and fix anything it complains about
+  - In virtualenv, run `black .` in backend directory for formatting
 
 #### Running Auth server (possible updates in the future)
 1. Follow the above steps to install dependencies and enter the virtualenv with `pipenv shell`.
