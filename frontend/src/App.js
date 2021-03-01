@@ -11,8 +11,16 @@ function App() {
     <Container fixed>
       <Router>
         <Route exact path="/" component={Login} />
-        <Route exact path="/signup" render={() => <Registration update={false} />} />
-        <Route exact path="/profile" render={() => <Registration update={true} />} />
+        <Route
+          exact
+          path="/signup"
+          render={() => <Registration update={false} />}
+        />
+        <Route
+          exact
+          path="/profile"
+          render={() => <Registration update={true} />}
+        />
         <Route exact path="/meetings" component={Meetings} />
       </Router>
     </Container>

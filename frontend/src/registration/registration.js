@@ -23,12 +23,12 @@ function Registration(props) {
       history.push("/");
     }
     // TODO: other stuff
-  }
+  };
 
   if (props.update) {
     const handleSeeAllMeetings = () => {
       history.push("/meetings");
-    }
+    };
     header = (
       <div>
         <h1 id="profileHeader">Profile</h1>

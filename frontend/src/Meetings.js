@@ -10,7 +10,7 @@ const Meetings = () => {
   function handleEditMyProfile(e) {
     history.push("/profile");
   }
-  
+
   function handleLogout(e) {
     history.push("/");
   }
@@ -32,7 +32,7 @@ const Meetings = () => {
         color="primary"
         disableElevation
         float="right"
-        style={{float: "right"}}
+        style={{ float: "right" }}
         onClick={handleLogout}
       >
         Logout
