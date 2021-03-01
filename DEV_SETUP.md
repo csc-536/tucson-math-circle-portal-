@@ -25,7 +25,7 @@ You can follow this guide to prevent ever accidentally pushing onto the main rep
 
 ### Backend setup
 0. **Important** you need to use Python 3's version of pip for the following commands. 
-If `pip` defaults to the Python2 version, make sure to use `pip3` as the command.
+If `pip` defaults to the Python 2 version, make sure to use `pip3` as the command.
 You can check which version of Python `pip` is using by running `pip --version`.
 1. Run `pip install pipenv`. If you have permission errors instead do `pip install --user pipenv`.  **Replace `pip` with `pip3` if needed.**
 2. In directory with `Pipfile` run `pipenv install --dev`
