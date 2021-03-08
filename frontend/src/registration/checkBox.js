@@ -15,7 +15,10 @@ function CheckBox(props) {
         checkedIcon={checkedIcon}
         style={{ marginRight: 8 }}
       />
-      I understand that parents need to sign a consent form after registration
+      <p>
+        I understand that guardians need to sign a consent form after
+        registration
+      </p>
     </div>
   );
 }

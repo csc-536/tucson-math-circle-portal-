@@ -74,18 +74,19 @@ function Registration(props) {
   return (
     <form id="regForm" onSubmit={handleFormSubmit}>
       {header}
+      <h3 className="formHeader">Account Information</h3>
       <AccInfo update={props.update} />
       {isUpdate}
       <hr />
-      <h3>Student Information</h3>
+      <h3 className="formHeader">Student Information</h3>
       <div id="sList">{studentList}</div>
       {addNewStudent}
       <hr />
-      <h3>Guardian Information</h3>
+      <h3 className="formHeader">Guardian Information</h3>
       <div id="gList">{guardianList}</div>
       {addNewGuardian}
       <hr />
-      <h3>Mailing List Opt In</h3>
+      <h3 className="formHeader">Mailing List Opt In</h3>
       <MainOptInOptions />
       <input id="regButton" type="submit" value={buttonVal} />
     </form>

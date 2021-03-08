@@ -20,6 +20,7 @@ div {
 #checkbox {
   clear: both;
   font-weight: bold;
+  display: flex;
 }
 #regButton {
   clear: both;
@@ -28,6 +29,10 @@ div {
 #allMeetings {
   margin-top: 30px;
 }
+.formHeader {
+  color: #154cc5;
+  clear: both;
+}
 #regButton,
 #allMeetings {
   float: right;
@@ -35,6 +40,15 @@ div {
   background-color: #008ae6;
   cursor: pointer;
   padding: 10px;
+}
+#mailOptDiv {
+  margin: 0 auto;
+  width: 400px;
+  display: flex;
+}
+.mailRadio {
+  margin: 20px;
+  display: flex;
 }
 #addStudent,
 #addGuardian {
