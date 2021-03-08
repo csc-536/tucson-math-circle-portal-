@@ -2,11 +2,15 @@ import "./registration.css";
 import AccInfo from "./accountInfo";
 import CheckBox from "./checkBox";
 import StudentInfo from "./studentInfo";
-import ParentInfo from "./parentInfo";
+import GuardianInfo from "./guardianInfo";
 import ConsentUpload from "./consentUpload";
+import MainOptInOptions from "./mailOptInOptions";
 import { useHistory } from "react-router";
+import React, { useState } from "react";
 
 function Registration(props) {
+  const [studentList, setStudentList] = useState([<StudentInfo key={0} />]);
+  const [guardianList, setGuardianList] = useState([<GuardianInfo key={0} />]);
   let header = (
     <div>
       <h1>Account Registration Form</h1>
@@ -16,7 +20,6 @@ function Registration(props) {
   let buttonVal = "Register";
 
   const history = useHistory();
-
   const handleFormSubmit = (e) => {
     e.preventDefault();
     if (!props.update) {
@@ -24,6 +27,34 @@ function Registration(props) {
     }
     // TODO: other stuff
   };
+
+  const handleAddStudent = (e) => {
+    setStudentList(
+      studentList.concat(<StudentInfo key={studentList.length} />)
+    );
+  };
+
+  const addNewStudent = (
+    <div id="addStudentDiv">
+      <button type="button" id="addStudent" onClick={handleAddStudent}>
+        + New Student
+      </button>
+    </div>
+  );
+
+  const handleAddGuardian = (e) => {
+    setGuardianList(
+      guardianList.concat(<GuardianInfo key={guardianList.length} />)
+    );
+  };
+
+  const addNewGuardian = (
+    <div id="addGuardianDiv">
+      <button type="button" id="addGuardian" onClick={handleAddGuardian}>
+        + New Guardian
+      </button>
+    </div>
+  );
 
   if (props.update) {
     const handleSeeAllMeetings = () => {
@@ -45,8 +76,17 @@ function Registration(props) {
       {header}
       <AccInfo update={props.update} />
       {isUpdate}
-      <StudentInfo />
-      <ParentInfo />
+      <hr />
+      <h3>Student Information</h3>
+      <div id="sList">{studentList}</div>
+      {addNewStudent}
+      <hr />
+      <h3>Guardian Information</h3>
+      <div id="gList">{guardianList}</div>
+      {addNewGuardian}
+      <hr />
+      <h3>Mailing List Opt In</h3>
+      <MainOptInOptions />
       <input id="regButton" type="submit" value={buttonVal} />
     </form>
   );

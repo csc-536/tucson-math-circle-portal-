@@ -1,6 +1,6 @@
 #regForm {
   margin: 0 auto;
-  max-width: 600px;
+  max-width: 400px;
 }
 div {
   clear: both;
@@ -12,7 +12,7 @@ div {
 }
 .col2 {
   float: right;
-  margin-right: 150px;
+  margin-right: 10px;
 }
 #profileHeader {
   float: left;
@@ -36,8 +36,25 @@ div {
   cursor: pointer;
   padding: 10px;
 }
+#addStudent,
+#addGuardian {
+  font-size: 20pt;
+  border-radius: 20px;
+  background-color: white;
+  width: 400px;
+  padding: 10px;
+  cursor: pointer;
+}
 select {
   margin-top: 10px;
   padding-right: 100px;
   padding-bottom: 10px;
+}
+#studentInformation,
+#GuardianInformation,
+#accountInfo {
+  border: 1px solid black;
+  display: inline-block;
+  padding: 10px;
+  border-radius: 20px;
 }

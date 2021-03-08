@@ -1,28 +1,21 @@
 function StudentInfo(props) {
   return (
     <div id="studentInformation">
-      <hr />
-      <h3>Student Information</h3>
       <label className="col1">
-        Name:
-        <input type="text" name="sname" />
+        Preffered First Name:
+        <input type="text" name="sFirstName" />
       </label>
       <label className="col2">
-        Age:
-        <input type="text" name="age" />
+        Last Name:
+        <input type="text" name="sLastName" />
       </label>
       <label className="col1">
         Grade:
         <input type="text" name="grade" />
       </label>
       <label className="col2">
-        Program Level:
-        <br />
-        <select>
-          <option value="juniorA">Junior A</option>
-          <option value="juniorB">Junior B</option>
-          <option value="senior">Senior</option>
-        </select>
+        Age:
+        <input type="text" name="age" />
       </label>
     </div>
   );

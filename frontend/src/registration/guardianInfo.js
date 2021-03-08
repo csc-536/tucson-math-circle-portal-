@@ -1,8 +1,6 @@
-function ParentInfo(props) {
+function GuardianInfo(props) {
   return (
-    <div id="parentInformation">
-      <hr />
-      <h3>Parent Information</h3>
+    <div id="GuardianInformation">
       <label className="col1">
         Name:
         <input type="text" name="pname" />
@@ -19,4 +17,4 @@ function ParentInfo(props) {
   );
 }
 
-export default ParentInfo;
+export default GuardianInfo;
