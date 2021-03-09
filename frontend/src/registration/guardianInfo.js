@@ -1,17 +1,29 @@
+/*
+ * File: guardianInfo.js
+ * Author: Athan Walker
+ * Purpose: Provide a div for inputting guardian information
+ */
 function GuardianInfo(props) {
+  /*
+   * Return a div for inputting first and last name, email and phone number.
+   */
   return (
     <div id="GuardianInformation">
       <label className="col1">
-        Name:
+        First Name:
         <input type="text" name="pname" />
       </label>
       <label className="col2">
-        Phone:
-        <input type="text" name="phone" />
+        Last Name:
+        <input type="text" name="pname" />
       </label>
       <label className="col1">
-        Parent Email:
-        <input type="text" name="pemail" />
+        Guardian Email:
+        <input type="email" name="pemail" />
+      </label>
+      <label className="col2">
+        Phone:
+        <input type="number" name="phone" />
       </label>
     </div>
   );

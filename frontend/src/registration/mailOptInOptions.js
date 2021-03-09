@@ -1,11 +1,29 @@
+/*
+ * File: mailOptInOptions.js
+ * Author: Athan Walker
+ * Purpose: Provide selection of mail in options
+ */
 import React, { useState } from "react";
 
 function MailOptInOptions(props) {
+  /*
+   * 'juniorARadio' is a boolean indicating if Junior A is selected.
+   * 'juniorBRadio' is a boolean indicating if Junior B is selected.
+   * 'seniorRadio' is a boolean indicating if Senior is selected.
+   * 'optOutRadio' is a boolean indicating if Opt Out is selected.
+   */
   const [juniorARadio, setJuniorARadio] = useState(true);
   const [juniorBRadio, setJuniorBRadio] = useState(true);
   const [seniorRadio, setSeniorRadio] = useState(true);
   const [optOutRadio, setOptOutRadio] = useState(false);
 
+  /*
+   * 'handleClick' handles the event of a mail in option being clicked.
+   * If Junior A, B, or Senior is clicked, alternate its selected boolean and
+   * unselect 'Opt Out'.
+   * If 'Opt Out' is clicked and is selected, unselect all other options.
+   * If the clicked radio button is the only currently selected, do nothing.
+   */
   const handleClick = (e) => {
     if (e.target.value.localeCompare("juniorA") == 0) {
       if (
@@ -44,6 +62,9 @@ function MailOptInOptions(props) {
     }
   };
 
+  /*
+   * Return a div providing main in options via radio buttons.
+   */
   return (
     <div id="mailOptDiv">
       <label className="mailRadio">

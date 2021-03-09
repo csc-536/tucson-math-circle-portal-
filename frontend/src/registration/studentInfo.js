@@ -1,11 +1,12 @@
+/*
+ * File: studentInfo.js
+ * Author: Athan Walker
+ * Purpose: Provide a div for inputting student information.
+ */
 function StudentInfo(props) {
-  const removeButton = (e) => {
-    <div id="remStudentDiv">
-      <button type="button" id="remStudent" onClick={props.handleRemStudent}>
-        - Student
-      </button>
-    </div>;
-  };
+  /*
+   * Return a div for inputting first and last name, grade and age.
+   */
   return (
     <div id="studentInformation">
       <label className="col1">

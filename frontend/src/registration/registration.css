@@ -1,3 +1,9 @@
+/*
+ * File: registration.css
+ * Author: Athan Walker
+ * Purpose: Provide CSS styling for components and elements affiliated with
+ *          the registration and profile pages.
+ */
 #regForm {
   margin: 0 auto;
   max-width: 400px;
