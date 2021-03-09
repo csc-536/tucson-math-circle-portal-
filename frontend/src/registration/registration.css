@@ -51,13 +51,20 @@ div {
   display: flex;
 }
 #addStudent,
-#addGuardian {
+#addGuardian,
+#remStudent,
+#remGuardian {
   font-size: 20pt;
   border-radius: 20px;
   background-color: white;
   width: 400px;
   padding: 10px;
   cursor: pointer;
+}
+#remStudent,
+#remGuardian {
+  background-color: #990000;
+  color: white;
 }
 select {
   margin-top: 10px;

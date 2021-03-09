@@ -1,4 +1,11 @@
 function StudentInfo(props) {
+  const removeButton = (e) => {
+    <div id="remStudentDiv">
+      <button type="button" id="remStudent" onClick={props.handleRemStudent}>
+        - Student
+      </button>
+    </div>;
+  };
   return (
     <div id="studentInformation">
       <label className="col1">

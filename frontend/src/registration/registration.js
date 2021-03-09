@@ -1,5 +1,7 @@
 import "./registration.css";
 import AccInfo from "./accountInfo";
+import AddNewGuardian from "./addNewGuardian";
+import AddNewStudent from "./addNewStudent";
 import CheckBox from "./checkBox";
 import StudentInfo from "./studentInfo";
 import GuardianInfo from "./guardianInfo";
@@ -7,6 +9,8 @@ import ConsentUpload from "./consentUpload";
 import MainOptInOptions from "./mailOptInOptions";
 import { useHistory } from "react-router";
 import React, { useState } from "react";
+import RemGuardian from "./remGuardian";
+import RemStudent from "./remStudent";
 
 function Registration(props) {
   const [studentList, setStudentList] = useState([<StudentInfo key={0} />]);
@@ -34,13 +38,9 @@ function Registration(props) {
     );
   };
 
-  const addNewStudent = (
-    <div id="addStudentDiv">
-      <button type="button" id="addStudent" onClick={handleAddStudent}>
-        + New Student
-      </button>
-    </div>
-  );
+  const handleRemStudent = (e) => {
+    setStudentList(studentList.slice(0, studentList.length - 1));
+  };
 
   const handleAddGuardian = (e) => {
     setGuardianList(
@@ -48,10 +48,14 @@ function Registration(props) {
     );
   };
 
-  const addNewGuardian = (
-    <div id="addGuardianDiv">
-      <button type="button" id="addGuardian" onClick={handleAddGuardian}>
-        + New Guardian
+  const handleRemGuardian = (e) => {
+    setGuardianList(guardianList.slice(0, guardianList.length - 1));
+  };
+
+  const remGuardian = (
+    <div id="remgGuardianDiv">
+      <button type="button" id="remGuardian" onClick={handleRemGuardian}>
+        - Guardian
       </button>
     </div>
   );
@@ -80,11 +84,13 @@ function Registration(props) {
       <hr />
       <h3 className="formHeader">Student Information</h3>
       <div id="sList">{studentList}</div>
-      {addNewStudent}
+      <RemStudent handleRemStudent={handleRemStudent} />
+      <AddNewStudent handleAddStudent={handleAddStudent} />
       <hr />
       <h3 className="formHeader">Guardian Information</h3>
       <div id="gList">{guardianList}</div>
-      {addNewGuardian}
+      <RemGuardian handleRemGuardian={handleRemGuardian} />
+      <AddNewGuardian handleAddGuardian={handleAddGuardian} />
       <hr />
       <h3 className="formHeader">Mailing List Opt In</h3>
       <MainOptInOptions />
