@@ -25,7 +25,7 @@ function MailOptInOptions(props) {
    * If the clicked radio button is the only currently selected, do nothing.
    */
   const handleClick = (e) => {
-    if (e.target.value.localeCompare("juniorA") == 0) {
+    if (e.target.value.localeCompare("juniorA") === 0) {
       if (
         (!juniorARadio || juniorBRadio || seniorRadio || optOutRadio) == false
       ) {
