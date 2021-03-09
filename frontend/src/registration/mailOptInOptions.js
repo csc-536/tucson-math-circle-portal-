@@ -5,27 +5,42 @@ function MailOptInOptions(props) {
   const [juniorBRadio, setJuniorBRadio] = useState(true);
   const [seniorRadio, setSeniorRadio] = useState(true);
   const [optOutRadio, setOptOutRadio] = useState(false);
-  const [selected, setSelected] = useState(true);
-
-  const handleSelected = (e) => {
-    setSelected(juniorARadio || juniorBRadio || seniorRadio || optOutRadio);
-  };
 
   const handleClick = (e) => {
     if (e.target.value.localeCompare("juniorA") == 0) {
+      if (
+        (!juniorARadio || juniorBRadio || seniorRadio || optOutRadio) == false
+      ) {
+        return;
+      }
       setJuniorARadio(!juniorARadio);
       setOptOutRadio(false);
     } else if (e.target.value.localeCompare("juniorB") == 0) {
+      if (
+        (juniorARadio || !juniorBRadio || seniorRadio || optOutRadio) == false
+      ) {
+        return;
+      }
       setJuniorBRadio(!juniorBRadio);
       setOptOutRadio(false);
     } else if (e.target.value.localeCompare("senior") == 0) {
+      if (
+        (juniorARadio || juniorBRadio || !seniorRadio || optOutRadio) == false
+      ) {
+        return;
+      }
       setSeniorRadio(!seniorRadio);
       setOptOutRadio(false);
     } else if (e.target.value.localeCompare("optOut") == 0) {
+      if (
+        (juniorARadio || juniorBRadio || seniorRadio || !optOutRadio) == false
+      ) {
+        return;
+      }
+      setOptOutRadio(!optOutRadio);
       setJuniorARadio(false);
       setJuniorBRadio(false);
       setSeniorRadio(false);
-      setOptOutRadio(!optOutRadio);
     }
   };
 
