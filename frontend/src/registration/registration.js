@@ -8,18 +8,16 @@ import GuardianInfo from "./guardianInfo";
 import ConsentUpload from "./consentUpload";
 import MainOptInOptions from "./mailOptInOptions";
 import { useHistory } from "react-router";
+import ProfHeader from "./profileHeader";
 import React, { useState } from "react";
+import RegHeader from "./registrationHeader";
 import RemGuardian from "./remGuardian";
 import RemStudent from "./remStudent";
 
 function Registration(props) {
   const [studentList, setStudentList] = useState([<StudentInfo key={0} />]);
   const [guardianList, setGuardianList] = useState([<GuardianInfo key={0} />]);
-  let header = (
-    <div>
-      <h1>Account Registration Form</h1>
-    </div>
-  );
+  let header = <RegHeader />;
   let isUpdate = <CheckBox />;
   let buttonVal = "Register";
 
@@ -52,29 +50,15 @@ function Registration(props) {
     setGuardianList(guardianList.slice(0, guardianList.length - 1));
   };
 
-  const remGuardian = (
-    <div id="remgGuardianDiv">
-      <button type="button" id="remGuardian" onClick={handleRemGuardian}>
-        - Guardian
-      </button>
-    </div>
-  );
-
   if (props.update) {
     const handleSeeAllMeetings = () => {
       history.push("/meetings");
     };
-    header = (
-      <div>
-        <h1 id="profileHeader">Profile</h1>
-        <button type="button" id="allMeetings" onClick={handleSeeAllMeetings}>
-          See All Meetings
-        </button>
-      </div>
-    );
+    header = <ProfHeader handleSeeAllMeetings={handleSeeAllMeetings} />;
     isUpdate = <ConsentUpload />;
     buttonVal = "Update";
   }
+
   return (
     <form id="regForm" onSubmit={handleFormSubmit}>
       {header}
