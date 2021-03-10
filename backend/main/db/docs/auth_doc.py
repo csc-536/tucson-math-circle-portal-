@@ -1,6 +1,12 @@
 from backend.auth.db.models.users import User
-from mongoengine import Document, ListField, EmailField, QuerySet, UUIDField, StringField, BooleanField
-from backend.main.db.models.student_profile_model import SecurityContact, Student
+from mongoengine import (
+    Document,
+    EmailField,
+    QuerySet,
+    UUIDField,
+    StringField,
+    BooleanField,
+)
 
 
 class AuthQuerySet(QuerySet):
@@ -30,5 +36,5 @@ class AuthDocument(Document):
             "first_name": self.first_name,
             "last_name": self.last_name,
             "hashed_password": self.hashed_password,
-            "disabled": self.disabled
+            "disabled": self.disabled,
         }

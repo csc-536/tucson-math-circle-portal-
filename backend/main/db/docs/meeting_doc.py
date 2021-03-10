@@ -1,5 +1,12 @@
 from backend.main.db.models.meeting_model import MeetingModel
-from mongoengine import Document, StringField, ListField, DateField, DateTimeField, QuerySet
+from mongoengine import (
+    Document,
+    StringField,
+    ListField,
+    DateField,
+    DateTimeField,
+    QuerySet,
+)
 
 
 class MeetingQuerySet(QuerySet):
@@ -23,9 +30,11 @@ class MeetingDocument(Document):
     meeting_password = StringField(required=True)
     students = ListField(required=False)
 
-    meta = {"query_class": MeetingQuerySet,
-            "db_alias": "meeting-db",
-            "indexes": ["topic"]}
+    meta = {
+        "query_class": MeetingQuerySet,
+        "db_alias": "meeting-db",
+        "indexes": ["topic"],
+    }
 
     def dict(self):
         return {

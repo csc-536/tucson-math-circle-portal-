@@ -21,5 +21,5 @@ class Student(BaseModel):
 
 
 class StudentProfileModel(IdMixin):
-    id: UUID4 = Field()
+    uuid: UUID4 = Field()
     email: EmailStr = Field()

@@ -21,11 +21,14 @@ async def add_meeting(meeting: MeetingModel):
 
 
 @router.post("/add_student")
-async def add_student(meeting_id: str, student_name: str,
-                      current_user: StudentProfileDocument = Depends(get_current_user_profile)):
+async def add_student(
+    meeting_id: str,
+    student_name: str,
+    current_user: StudentProfileDocument = Depends(get_current_user_profile),
+):
     try:
         meeting = MeetingDocument.objects(id=meeting_id)[0]
-    except:
+    except Exception:
         return {"details": "could not find meeting form id"}
 
     add_student = None
@@ -36,10 +39,12 @@ async def add_student(meeting_id: str, student_name: str,
     if add_student is None:
         return {"details": "The student could not be found"}
 
-    student = StudentMeetingInfo(first_name=add_student.first_name,
-                                 last_name=add_student.last_name,
-                                 email=current_user.email,
-                                 guardians=current_user.guardian_contact_list)
+    student = StudentMeetingInfo(
+        first_name=add_student.first_name,
+        last_name=add_student.last_name,
+        email=current_user.email,
+        guardians=current_user.guardian_contact_list,
+    )
     meeting.students.append(student)
     meeting.save()
     return {"details": "Student added to meeting list"}

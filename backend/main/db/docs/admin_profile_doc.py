@@ -1,5 +1,5 @@
-from backend.db.models.admin_profile_model import AdminProfileModel
-from mongoengine import Document, StringField, ListField, EmailField, BooleanField
+from backend.main.db.models.admin_profile_model import AdminProfileModel
+from mongoengine import Document, StringField, ListField, EmailField
 
 
 def document(model: AdminProfileModel):
@@ -15,7 +15,7 @@ class AdminProfileDocument(Document):
     username = StringField(required=True)
     phone_number = StringField(required=False)
     section_access = ListField(required=True)
-    # email = EmailField(required=True)
+    email = EmailField(required=True)
 
     meta = {"db_alias": "admin-db"}
 
