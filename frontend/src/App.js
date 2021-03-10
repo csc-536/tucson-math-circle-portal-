@@ -5,6 +5,7 @@ import Meetings from "./Meetings";
 //import Registration from "./registration/registration";
 import Container from "@material-ui/core/Container";
 import Registration from "./registration/registration";
+import AllStudents from "./allStudentsPage/allStudents";
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
           render={() => <Registration update={true} />}
         />
         <Route exact path="/meetings" component={Meetings} />
+        <Route exact path="/allStudents" component={AllStudents} />
       </Router>
     </Container>
   );

@@ -24,6 +24,8 @@ function Login(props) {
    * Modify the page path to the meetings page.
    */
   function handleLogin(e) {
+    //history.push("/allStudents");
+
     history.push("/meetings");
   }
 
