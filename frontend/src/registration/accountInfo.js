@@ -1,4 +1,15 @@
+/*
+ * Author: Athan Walker
+ * File: accountInfo.js
+ * Purpose: Provide the first section of the registration and profile pages.
+ *          This section captures the account Email, Password and uploaded
+ *          consent form.
+ */
 function AccInfo(props) {
+  /*
+   * Assigns 'passwords' to a div containing a new password and conformation
+   * of password input fields.
+   */
   let passwords = (
     <div>
       <label id="password" className="col1">
@@ -11,6 +22,11 @@ function AccInfo(props) {
       </label>
     </div>
   );
+
+  /*
+   * If the property 'update' is 'true' then assign 'passwords' to a div
+   * containing a new password input field.
+   */
   if (props.update) {
     passwords = (
       <div>
@@ -21,6 +37,10 @@ function AccInfo(props) {
       </div>
     );
   }
+
+  /*
+   * Returns a div containing an email input field and the JSX 'passwords'
+   */
   return (
     <div id="accountInfo">
       <label>

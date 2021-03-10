@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "80103264d22d8f721906dc6d0e5f82bce23a1f875da56e98c478b81550257bfd"
+            "sha256": "ead127cf3582015e040c01b3257284d2d3c48bcfd108a42a9670474a687dc730"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -116,7 +116,6 @@
                 "sha256:094b1d1c60d790649989d38d34f69e1ef07792366277a2cf88684d03495d018f",
                 "sha256:1a13bd6050d1db4475f13e444e169b6fe872434922d38968c67cea9568cce2f0"
             ],
-            "index": "pypi",
             "version": "==1.1.2"
         },
         "fastapi": {
@@ -159,6 +158,14 @@
             "index": "pypi",
             "version": "==2.3.1"
         },
+        "multipart": {
+            "hashes": [
+                "sha256:06ba205360bc7096fefe618e4f1e9b2cdb890b4f2157053a81f386912a2522cb",
+                "sha256:5aec990820b8a9e94f9c164fbeb58cf118cfbde2854865b67a9a730edd1fb9d1"
+            ],
+            "index": "pypi",
+            "version": "==0.2.4"
+        },
         "passlib": {
             "extras": [
                 "bcrypt"
@@ -197,6 +204,9 @@
             "version": "==2.20"
         },
         "pydantic": {
+            "extras": [
+                "email"
+            ],
             "hashes": [
                 "sha256:0c40162796fc8d0aa744875b60e4dc36834db9f2a25dbf9ba9664b1915a23850",
                 "sha256:20d42f1be7c7acc352b3d09b0cf505a9fab9deb93125061b376fbe1f06a5459f",
@@ -221,7 +231,7 @@
                 "sha256:fbfb608febde1afd4743c6822c19060a8dbdd3eb30f98e36061ba4973308059e",
                 "sha256:fff29fe54ec419338c522b908154a2efabeee4f483e48990f87e189661f31ce3"
             ],
-            "markers": "python_full_version >= '3.6.1'",
+            "index": "pypi",
             "version": "==1.8.1"
         },
         "pymongo": {

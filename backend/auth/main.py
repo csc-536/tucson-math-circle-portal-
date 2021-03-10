@@ -4,6 +4,7 @@ import toml
 import os
 from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
+from fastapi.middleware.cors import CORSMiddleware
 
 from backend.auth.dependencies import (
     Token,
@@ -27,6 +28,22 @@ uri = "mongodb+srv://{username}:{password}@cluster0.wjvcq.mongodb.net/{default_d
 default_database = "auth_db"
 
 app = FastAPI()
+
+# TODO: make a list of origins, for now the server allows requests from everywhere
+# possible a origin_regex could be used instead which matches anything that starts with
+# localhost
+# origin_regex = "https?://localhost
+origins = [
+    "*",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 async def create_dummy_users():
