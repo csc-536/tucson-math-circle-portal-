@@ -1,3 +1,9 @@
+/*
+ * File: login.css
+ * Author: Athan Walker
+ * Purpose: Provide CSS styling for components and elements affiliated with
+ *          the login page.
+ */
 #loginForm {
   margin: 0 auto;
   max-width: 185px;
