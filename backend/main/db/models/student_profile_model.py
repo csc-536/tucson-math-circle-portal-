@@ -1,19 +1,25 @@
-from typing import Optional
 from pydantic import BaseModel
 
-from pydantic import Field, EmailStr
+from pydantic import Field, EmailStr, UUID4
 
 from backend.main.db.mixins import IdMixin
 
 
 class SecurityContact(BaseModel):
-    security_contact_name: str = Field()
-    security_contact_number: str = Field()
-    security_contact_email: EmailStr = Field()
+    guardian_first_name: str = Field()
+    guardian_last_name: str = Field()
+    guardian_phone_number: str = Field()
+    guardian_email: EmailStr = Field()
+
+
+class Student(BaseModel):
+    first_name: str = Field()
+    last_name: str = Field()
+    grade: int = Field()
+    age: str = Field()
+    section: list = Field()
 
 
 class StudentProfileModel(IdMixin):
+    id: UUID4 = Field()
     email: EmailStr = Field()
-    phone_number: Optional[str] = Field()
-    first_name: str = Field()
-    last_name: str = Field()

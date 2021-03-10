@@ -1,10 +1,11 @@
 from datetime import timedelta
 
 import toml
+import os
 from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 
-from auth.dependencies import (
+from backend.auth.dependencies import (
     Token,
     TokenData,
     create_access_token,
@@ -14,16 +15,16 @@ from auth.dependencies import (
     create_user,
     ACCESS_TOKEN_EXPIRE_MIN,
 )
-from auth.db.main import connect_to_db, add_user, get_user_by_id, get_user_by_email
-from auth.db.models.users import User, UserInDB
+from backend.auth.db.main import connect_to_db, add_user, get_user_by_id, get_user_by_email
+from backend.auth.db.models.users import User, UserInDB
 
 # this is assuming app is run from `backend` directory
-config = toml.load("auth/db-config.toml")
+# config = toml.load(os.fspath("backend/auth/db-config.toml"))
 
-username = config["atlas-username"]
-password = config["atlas-password"]
-uri = config["connection-uri"]
-default_database = config["default-database"]
+username = "dbtesting"
+password = "9bsvzutjWZfjgaxE"
+uri = "mongodb+srv://{username}:{password}@cluster0.wjvcq.mongodb.net/{default_database}?retryWrites=true&w=majority"
+default_database = "auth_db"
 
 app = FastAPI()
 

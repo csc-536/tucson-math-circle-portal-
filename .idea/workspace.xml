@@ -2,7 +2,21 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="f4ab30cb-d4dd-400c-bf4e-464c6bdbe3d6" name="Default Changelist" comment="Added an example of a mongo db with fastapi app">
-      <change afterPath="$PROJECT_DIR$/backend/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/connect_to_mongodb.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/main/db/docs/auth_doc.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/Pipfile" beforeDir="false" afterPath="$PROJECT_DIR$/backend/Pipfile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/Pipfile.lock" beforeDir="false" afterPath="$PROJECT_DIR$/backend/Pipfile.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/auth/db/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/auth/db/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/auth/dependencies.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/auth/dependencies.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/auth/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/auth/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/main/db/docs/meeting_doc.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/main/db/docs/meeting_doc.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/main/db/docs/student_profile_doc.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/main/db/docs/student_profile_doc.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/main/db/models/meeting_model.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/main/db/models/meeting_model.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/main/db/models/student_profile_model.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/main/db/models/student_profile_model.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/main/src/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/main/src/app.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/main/src/routers/meeting_router.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/main/src/routers/meeting_router.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/main/src/routers/user_router.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/main/src/routers/user_router.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -63,7 +77,29 @@
       <recent name="$PROJECT_DIR$/backend/db/docs" />
     </key>
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="Python.app (1)">
+    <configuration name="app (1)" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="tucson-math-circle-portal" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/backend/main/src" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/backend/main/src/app.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="app" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="tucson-math-circle-portal" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -88,6 +124,7 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.app (1)" />
         <item itemvalue="Python.app" />
       </list>
     </recent_temporary>
@@ -105,7 +142,7 @@
       <workItem from="1613926660357" duration="14565000" />
       <workItem from="1614445402609" duration="9600000" />
       <workItem from="1614476559149" duration="110000" />
-      <workItem from="1614476672207" duration="12510000" />
+      <workItem from="1614476672207" duration="32524000" />
     </task>
     <task id="LOCAL-00001" summary="Added an example of a mongo db with fastapi app">
       <created>1613762572486</created>
@@ -114,7 +151,21 @@
       <option name="project" value="LOCAL" />
       <updated>1613762572486</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="Added an example of a mongo db with fastapi app">
+      <created>1614966186745</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1614966186745</updated>
+    </task>
+    <task id="LOCAL-00003" summary="Added an example of a mongo db with fastapi app">
+      <created>1614966206489</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1614966206489</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -138,6 +189,7 @@
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/tucson_math_circle_portal$app.coverage" NAME="app Coverage Results" MODIFIED="1614532911281" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/backend/src" />
+    <SUITE FILE_PATH="coverage/tucson_math_circle_portal$app__1_.coverage" NAME="app (1) Coverage Results" MODIFIED="1615400607196" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/backend/main/src" />
     <SUITE FILE_PATH="coverage/tucson_math_circle_portal$user_api_app.coverage" NAME="app Coverage Results" MODIFIED="1613941487807" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/backend/src" />
   </component>
 </project>
