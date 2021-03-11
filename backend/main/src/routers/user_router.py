@@ -80,7 +80,10 @@ async def update_student_guardian(
     updated_contact = None
     i = 0
     for contact in current_user.guardians:
-        if contact["first_name"] == guardian.first_name and contact["last_name"] == guardian.last_name:
+        if (
+            contact["first_name"] == guardian.first_name
+            and contact["last_name"] == guardian.last_name
+        ):
             updated_contact = contact
             break
         i += 1
@@ -102,7 +105,10 @@ async def add_student_guardian(
     current_user = get_current_user_doc(token_data)
     updated_contact = None
     for contact in current_user.guardians:
-        if contact["first_name"] == guardian.first_name and contact["last_name"] == guardian.last_name:
+        if (
+            contact["first_name"] == guardian.first_name
+            and contact["last_name"] == guardian.last_name
+        ):
             updated_contact = contact
 
     if updated_contact is not None:
@@ -121,7 +127,10 @@ async def add_student(
     current_user = get_current_user_doc(token_data)
     add_student = None
     for add in current_user.students:
-        if add["first_name"] == student.first_name and add["last_name"] == student.last_name:
+        if (
+            add["first_name"] == student.first_name
+            and add["last_name"] == student.last_name
+        ):
             add_student = add
 
     if add_student is not None:
@@ -141,7 +150,10 @@ async def update_student(
     add_student = None
     i = 0
     for add in current_user.students:
-        if add["first_name"] == student.first_name and add["last_name"] == student.last_name:
+        if (
+            add["first_name"] == student.first_name
+            and add["last_name"] == student.last_name
+        ):
             add_student = add
             break
         i += 1

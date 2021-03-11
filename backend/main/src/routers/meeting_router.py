@@ -26,8 +26,7 @@ async def add_meeting(meeting: MeetingModel):
 
 @router.get("get_meeting_by_id")
 async def get_meeting_by_id(
-    meeting_id: str,
-    token_data: TokenData = Depends(get_current_token_data)
+    meeting_id: str, token_data: TokenData = Depends(get_current_token_data)
 ):
     try:
         meeting = MeetingDocument.objects(id=meeting_id)[0]
@@ -40,8 +39,7 @@ async def get_meeting_by_id(
 
 @router.post("/get_meetings_by_filter")
 async def get_meetings_by_filter(
-    filters: list,
-    token_data: TokenData = Depends(get_current_token_data)
+    filters: list, token_data: TokenData = Depends(get_current_token_data)
 ):
     meeting_list = []
     try:
@@ -55,9 +53,7 @@ async def get_meetings_by_filter(
 
 
 @router.post("/get_all_meetings")
-async def get_all_meetings(
-    token_data: TokenData = Depends(get_current_token_data)
-):
+async def get_all_meetings(token_data: TokenData = Depends(get_current_token_data)):
     try:
         meetings = MeetingDocument.objects()
     except Exception:
