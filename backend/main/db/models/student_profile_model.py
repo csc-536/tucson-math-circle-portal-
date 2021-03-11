@@ -5,11 +5,11 @@ from pydantic import Field, EmailStr, UUID4
 from backend.main.db.mixins import IdMixin
 
 
-class SecurityContact(BaseModel):
-    guardian_first_name: str = Field()
-    guardian_last_name: str = Field()
-    guardian_phone_number: str = Field()
-    guardian_email: EmailStr = Field()
+class Guardian(BaseModel):
+    first_name: str = Field()
+    last_name: str = Field()
+    phone_number: str = Field()
+    email: EmailStr = Field()
 
 
 class Student(BaseModel):
