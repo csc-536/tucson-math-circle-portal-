@@ -1,19 +1,20 @@
-from typing import Optional
+from typing import Optional, List
 from datetime import datetime, date
+
 from pydantic import Field, BaseModel, EmailStr
+
 from backend.main.db.mixins import IdMixin
-from backend.main.db.models.student_profile_model import SecurityContact
+from backend.main.db.models.student_profile_model import Guardian
 
 
 class StudentMeetingInfo(BaseModel):
     first_name: str = Field()
     last_name: str = Field()
     email: EmailStr = Field()
-    guardian: list[SecurityContact] = Field()
+    guardians: List[Guardian] = Field()
 
 
 class MeetingModel(IdMixin):
-
     meeting_date: date = Field()
     meeting_time: datetime = Field()
     zoom_link: str = Field()

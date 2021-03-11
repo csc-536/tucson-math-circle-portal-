@@ -1,11 +1,20 @@
+# hack to add project directory to path and make modules work nicely
+import sys
+from pathlib import Path
+
+PROJECTS_DIR = Path(__file__).resolve().parents[2]
+print("Appending PROJECTS_DIR to PATH:", PROJECTS_DIR)
+sys.path.append(str(PROJECTS_DIR))
+
 from datetime import timedelta
 
 import toml
 from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.middleware.cors import CORSMiddleware
+import uvicorn
 
-from auth.dependencies import (
+from backend.auth.dependencies import (
     Token,
     TokenData,
     create_access_token,
@@ -15,16 +24,22 @@ from auth.dependencies import (
     create_user,
     ACCESS_TOKEN_EXPIRE_MIN,
 )
-from auth.db.main import connect_to_db, add_user, get_user_by_id, get_user_by_email
-from auth.db.models.users import User, UserInDB
+from backend.auth.db.main import (
+    connect_to_db,
+    add_user,
+    get_user_by_id,
+    get_user_by_email,
+)
+from backend.auth.db.models.users import User, UserInDB
 
+# TODO: get project directory
 # this is assuming app is run from `backend` directory
 config = toml.load("auth/db-config.toml")
 
 username = config["atlas-username"]
 password = config["atlas-password"]
 uri = config["connection-uri"]
-default_database = config["default-database"]
+auth_db = config["auth-db"]
 
 app = FastAPI()
 
@@ -64,23 +79,18 @@ async def get_current_user(token_data: TokenData = Depends(get_current_token_dat
 
 @app.on_event("startup")
 async def startup():
-    connect_to_db(
-        uri.format(
-            username=username, password=password, default_database=default_database
-        )
-    )
+    connect_to_db(uri.format(username=username, password=password, database=auth_db))
     # await create_dummy_users()
 
 
 @app.post("/token", response_model=Token)
 async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
     # OAuth2PasswordRequestForm does not have an email field, only username
-    # TODO: this flow of execution could be cleaned up
     user = await get_user_by_email(form_data.username)
     if user:
         user = authenticate_user(user, form_data.password)
 
-    if not user:
+    else:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect email or password",
@@ -106,3 +116,7 @@ async def read_own_items(current_user: User = Depends(get_current_user)):
 @app.post("/register")
 async def register(user: User = Depends(create_user)):
     return user
+
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="127.0.0.1", port=8000)

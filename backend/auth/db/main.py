@@ -2,7 +2,7 @@ import motor.motor_asyncio
 from pydantic import UUID4, EmailStr
 
 
-from auth.db.models.users import UserInDB
+from backend.auth.db.models.users import UserInDB
 
 client: motor.motor_asyncio.AsyncIOMotorClient
 database: motor.motor_asyncio.AsyncIOMotorDatabase

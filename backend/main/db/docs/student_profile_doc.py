@@ -1,6 +1,12 @@
-from backend.main.db.models.student_profile_model import StudentProfileModel
+from typing import List
+
 from mongoengine import Document, ListField, EmailField, QuerySet, UUIDField
-from backend.main.db.models.student_profile_model import SecurityContact, Student
+
+from backend.main.db.models.student_profile_model import (
+    Guardian,
+    Student,
+    StudentProfileModel,
+)
 
 
 class StudentProfileQuerySet(QuerySet):
@@ -9,9 +15,10 @@ class StudentProfileQuerySet(QuerySet):
 
 def document(
     model: StudentProfileModel,
-    security_contacts: list[SecurityContact],
-    students: list[Student],
+    guardians: List[Guardian],
+    students: List[Student],
 ):
+    # REMARK: it seems like creating the list manually isnt needed
     # security_contact_list = []
     # for contact in security_contacts:
     #     security_contact_list.append(contact.dict())
@@ -19,19 +26,21 @@ def document(
     # for student in students:
     #     student_list.append(student.dict())
     doc = StudentProfileDocument(
-        **model.dict(), guardian_contact_list=None, student_list=None
+        **model.dict(), guardians=guardians, student_list=students
     )
     return doc
 
 
+# SUGGESTION: change student_list to students?
 class StudentProfileDocument(Document):
     _model = StudentProfileModel
 
     uuid = UUIDField(required=True)
     email = EmailField(required=True)
-    student_list = ListField(required=False)
-    guardian_contact_list = ListField(required=False)
+    student_list = ListField(required=True)
+    guardians = ListField(required=True)
 
+    # QUESTION: should we add uuid to indexes?
     meta = {
         "query_class": StudentProfileQuerySet,
         "db_alias": "student-db",
@@ -43,5 +52,5 @@ class StudentProfileDocument(Document):
             "uuid": self.uuid,
             "email": self.email,
             "student_list": self.student_list,
-            "guardians": self.guardian_contact_list,
+            "guardians": self.guardians,
         }
