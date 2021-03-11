@@ -18,15 +18,14 @@ def document(
     guardians: List[Guardian],
     students: List[Student],
 ):
-    # REMARK: it seems like creating the list manually isnt needed
-    # security_contact_list = []
-    # for contact in security_contacts:
-    #     security_contact_list.append(contact.dict())
-    # student_list = []
-    # for student in students:
-    #     student_list.append(student.dict())
+    guardian_list = []
+    for guardian in guardians:
+        guardian_list.append(guardian.dict())
+    student_list = []
+    for student in students:
+        student_list.append(student.dict())
     doc = StudentProfileDocument(
-        **model.dict(), guardians=guardians, student_list=students
+        **model.dict(), guardians=guardian_list, students=student_list
     )
     return doc
 
@@ -37,7 +36,7 @@ class StudentProfileDocument(Document):
 
     uuid = UUIDField(required=True)
     email = EmailField(required=True)
-    student_list = ListField(required=True)
+    students = ListField(required=True)
     guardians = ListField(required=True)
 
     # QUESTION: should we add uuid to indexes?
@@ -51,6 +50,6 @@ class StudentProfileDocument(Document):
         return {
             "uuid": self.uuid,
             "email": self.email,
-            "student_list": self.student_list,
+            "student_list": self.students,
             "guardians": self.guardians,
         }
