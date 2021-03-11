@@ -19,6 +19,10 @@ async def add_meeting(meeting: MeetingModel):
     doc.save()
     return doc.dict()
 
+# get meeting by id
+# get meeting by filters
+# get all meetings
+
 
 @router.post("/add_student")
 async def add_student(
