@@ -1,43 +1,87 @@
+/*
+ * File: registration.css
+ * Author: Athan Walker
+ * Purpose: Provide CSS styling for components and elements affiliated with
+ *          the registration and profile pages.
+ */
 #regForm {
-    margin: 0 auto;
-    max-width: 600px;
+  margin: 0 auto;
+  max-width: 400px;
 }
-div {
+/* div {
     clear: both;
     padding-top: 10px;
-}
+} */
 .col1 {
-    float: left;
-    margin-right: 10px;
+  float: left;
+  margin-right: 10px;
 }
 .col2 {
-    float: right;
-    margin-right: 150px;
+  float: right;
+  margin-right: 10px;
 }
 #profileHeader {
-    float: left;
+  float: left;
 }
 #checkbox {
-    clear: both;
-    font-weight: bold;
+  clear: both;
+  font-weight: bold;
+  display: flex;
 }
 #regButton {
-    clear: both;
-    margin-bottom: 50px;
+  clear: both;
+  margin-bottom: 50px;
 }
 #allMeetings {
-    margin-top: 30px;
+  margin-top: 30px;
+}
+.formHeader {
+  color: #154cc5;
+  clear: both;
 }
 #regButton,
 #allMeetings {
-    float: right;
-    color: white;
-    background-color: #008ae6;
-    cursor: pointer;
-    padding: 10px;
+  float: right;
+  color: white;
+  background-color: #008ae6;
+  cursor: pointer;
+  padding: 10px;
+}
+#mailOptDiv {
+  margin: 0 auto;
+  width: 400px;
+  display: flex;
+}
+.mailRadio {
+  margin: 20px;
+  display: flex;
+}
+#addStudent,
+#addGuardian,
+#remStudent,
+#remGuardian {
+  font-size: 20pt;
+  border-radius: 20px;
+  background-color: white;
+  width: 400px;
+  padding: 10px;
+  cursor: pointer;
+}
+#remStudent,
+#remGuardian {
+  background-color: #990000;
+  color: white;
 }
 select {
-    margin-top: 10px;
-    padding-right: 100px;
-    padding-bottom: 10px;
+  margin-top: 10px;
+  padding-right: 100px;
+  padding-bottom: 10px;
+}
+#studentInformation,
+#GuardianInformation,
+#accountInfo {
+  border: 1px solid black;
+  display: inline-block;
+  padding: 10px;
+  border-radius: 20px;
 }
