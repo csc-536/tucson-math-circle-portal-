@@ -52,6 +52,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 # These two functions are here to make the Authorize button work on FastAPI docs
 @app.on_event("startup")
 async def startup():
