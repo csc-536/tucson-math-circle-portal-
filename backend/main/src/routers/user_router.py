@@ -1,19 +1,21 @@
+from typing import List
+
 from pydantic import BaseModel, EmailStr, Field
+from fastapi import Depends, APIRouter
+
+# main db imports
 from backend.main.db.models.student_profile_model import StudentProfileModel
 from backend.main.db.docs.student_profile_doc import (
     document as StudentDoc,
     StudentProfileDocument,
 )
-from backend.main.db.models.student_profile_model import SecurityContact, Student
-from backend.auth.db.models.users import UserCreate
-from backend.main.db.docs.auth_doc import AuthDocument
-from fastapi import Depends, APIRouter
+from backend.main.db.models.student_profile_model import Guardian, Student
+
+# auth db imports
 from backend.auth.dependencies import (
     TokenData,
     get_current_token_data,
-    get_password_hash,
 )
-from backend.auth.db.models.users import User, UserInDB
 
 router = APIRouter()
 
@@ -22,42 +24,27 @@ class Email(BaseModel):
     new_email: EmailStr = Field()
 
 
-def get_current_user(token_data: TokenData = Depends(get_current_token_data)):
-    user_doc = AuthDocument.objects(id=token_data.id)[0]
-    return user_doc
-
-
-@router.post("/create_user")
-async def create_user(user: UserCreate) -> User:
-
-    hashed_password = get_password_hash(user.password)
-    db_user = UserInDB(**user.dict(), hashed_password=hashed_password)
-
-    print(db_user.dict())
-    doc = AuthDocument(**db_user.dict())
-    doc.save()
-    return doc.dict()
-
-
 @router.get("/get_my_profile")
 def get_current_user_profile(token_data: TokenData = Depends(get_current_token_data)):
     user_doc = None
     try:
         user_doc = StudentProfileDocument.objects(uuid=token_data.id)[0]
-    except Exception:
+    except Exception as e:
+        print("Exception type:", type(e))
         print("Could not find the user profile.")
     return user_doc.dict()
 
 
+# SUGGESTION: change student_list to students?
 @router.post("/add_student_profile")
 async def add_student_profile(
-    email: EmailStr = None,
-    security_contacts: list[SecurityContact] = None,
-    student_list: list[Student] = None,
+    email: EmailStr,
+    guardians: List[Guardian],
+    student_list: List[Student],
     token_data: TokenData = Depends(get_current_token_data),
 ):
-    model = StudentProfileModel(uuid=token_data.id, email="jake@email.com")
-    doc = StudentDoc(model, security_contacts, student_list)
+    model = StudentProfileModel(uuid=token_data.id, email=email)
+    doc = StudentDoc(model, guardians, student_list)
     doc.save()
     return doc.dict()
 
@@ -75,19 +62,19 @@ async def update_main_email(
 
 @router.put("/update_student_guardian")
 async def update_student_guardian(
-    security_contact: SecurityContact,
+    guardian: Guardian,
     current_user: StudentProfileDocument = Depends(get_current_user_profile),
 ):
     updated_contact = None
-    for contact in current_user.guardian_contact_list:
-        if contact.guardian_first_name == security_contact.guardian_first_name:
+    for contact in current_user.guardians:
+        if contact.first_name == guardian.first_name:
             updated_contact = contact
 
     if updated_contact is None:
         return {"details": "The contact could not be found."}
 
-    updated_contact.guardian_email = security_contact.guardian_email
-    updated_contact.guardian_phone_number = security_contact.guardian_phone_number
+    updated_contact.email = guardian.email
+    updated_contact.phone_number = guardian.phone_number
 
     current_user.save()
     return current_user.dict()
@@ -95,18 +82,18 @@ async def update_student_guardian(
 
 @router.put("/add_student_guardian")
 async def add_student_guardian(
-    security_contact: SecurityContact,
+    guardian: Guardian,
     current_user: StudentProfileDocument = Depends(get_current_user_profile),
 ):
     updated_contact = None
-    for contact in current_user.guardian_contact_list:
-        if contact.guardian_first_name == security_contact.guardian_first_name:
+    for contact in current_user.guardians:
+        if contact.first_name == guardian.first_name:
             updated_contact = contact
 
     if updated_contact is None:
         return {"details": "The contact is already in the list"}
 
-    current_user.guardian_contact_list.append(security_contact.dict())
+    current_user.guardians.append(guardian.dict())
     current_user.save()
     return current_user.dict()
 
