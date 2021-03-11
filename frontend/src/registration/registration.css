@@ -8,10 +8,10 @@
   margin: 0 auto;
   max-width: 400px;
 }
-div {
-  clear: both;
-  padding-top: 10px;
-}
+/* div {
+    clear: both;
+    padding-top: 10px;
+} */
 .col1 {
   float: left;
   margin-right: 10px;

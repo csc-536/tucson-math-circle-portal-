@@ -14,12 +14,29 @@ import ConsentUpload from "./consentUpload";
 import MainOptInOptions from "./mailOptInOptions";
 import { useHistory } from "react-router";
 import ProfHeader from "./profileHeader";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import RegHeader from "./registrationHeader";
 import RemGuardian from "./remGuardian";
 import RemStudent from "./remStudent";
+import { register } from "../http";
+// import { newStudentContext } from "../contexts/newStudentContext";
 
 function Registration(props) {
+  // const newStudent = useContext(newStudentContext);
+
+  const [form, setForm] = useState({
+    email: "",
+    password: "",
+    repassword: "",
+  });
+
+  const handleOnChange = (e) => {
+    const { name, value } = e.target;
+    const input = {};
+    input[name] = value;
+    setForm({ ...form, ...input });
+  };
+
   /*
    * 'studentList' is a list of all the students affiliated with the account.
    * 'guardianList' is a list of all the guardians affiliated with the account.
@@ -46,12 +63,26 @@ function Registration(props) {
    * Handles the event of the form submission. Prevents the page from refreshing.
    * If property 'update' is true, return to the login page.
    */
-  const handleFormSubmit = (e) => {
+  const handleFormSubmit = async (e) => {
     e.preventDefault();
-    if (!props.update) {
-      history.push("/");
+    const { email, password, repassword } = form;
+    if (password !== repassword) {
+      return console.log("Two passwords don't match");
     }
-    // TODO: other stuff
+
+    if (password.length < 6) {
+      return console.log("Password should be at least 6 characters");
+    }
+
+    try {
+      await register({ email, password });
+      if (!props.update) {
+        history.push("/");
+      }
+    } catch (error) {
+      const { data } = error.response;
+      console.log(data.detail);
+    }
   };
 
   /*
@@ -114,10 +145,15 @@ function Registration(props) {
    * property.
    */
   return (
+    // <newStudentContext.Consumer>
     <form id="regForm" onSubmit={handleFormSubmit}>
       {header}
       <h3 className="formHeader">Account Information</h3>
-      <AccInfo update={props.update} />
+      <AccInfo
+        update={props.update}
+        handleOnChange={handleOnChange}
+        form={form}
+      />
       {isUpdate}
       <hr />
       <h3 className="formHeader">Student Information</h3>
@@ -136,6 +172,8 @@ function Registration(props) {
       <MainOptInOptions />
       <input id="regButton" type="submit" value={buttonVal} />
     </form>
+    // </newStudentContext.Consumer>
+    // </newStudentContext.Provider>
   );
 }
 

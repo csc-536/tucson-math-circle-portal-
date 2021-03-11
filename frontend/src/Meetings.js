@@ -1,32 +1,26 @@
 import { Box, Typography } from "@material-ui/core";
-import React from "react";
+import React, { useContext } from "react";
 import Button from "@material-ui/core/Button";
 import MeetingCards from "./components/MeetingCards";
 import { useHistory } from "react-router";
+import { AuthContext } from "./contexts/AuthContext";
 
 const Meetings = () => {
   const history = useHistory();
+  const { setAuth } = useContext(AuthContext);
 
-  function handleEditMyProfile(e) {
-    history.push("/profile");
+  if (sessionStorage.getItem("accessToken") === null) {
+    history.push("/");
   }
 
   function handleLogout(e) {
+    sessionStorage.removeItem("accessToken");
+    setAuth({ userLoggedIn: false, role: "" });
     history.push("/");
   }
 
   return (
     <div>
-      <Button
-        variant="contained"
-        color="primary"
-        disableElevation
-        float="right"
-        onClick={handleEditMyProfile}
-      >
-        Edit My Profile
-      </Button>
-
       <Button
         variant="contained"
         color="primary"
