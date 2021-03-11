@@ -10,7 +10,7 @@ from jose import JWTError, jwt
 from passlib.context import CryptContext
 from pydantic import BaseModel, UUID4
 
-from backend.auth.db.models.users import UserInDB, UserCreate, User
+from backend.auth.db.models.users import UserInDB, UserCreate, User, UserRole
 
 from backend.auth.db.main import get_user_by_email, add_user
 
@@ -31,6 +31,7 @@ class Token(BaseModel):
 
 class TokenData(BaseModel):
     id: Optional[UUID4]
+    role: UserRole 
 
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -89,7 +90,8 @@ async def get_current_token_data(token: str = Depends(oauth2_scheme)):
         uuid = payload.get("sub")
         if uuid is None:
             raise credentials_exception
-        token_data = TokenData(id=UUID4(uuid))
+        role = payload.get("role")
+        token_data = TokenData(id=UUID4(uuid), role=role)
     except JWTError:
         raise credentials_exception
 

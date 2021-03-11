@@ -36,3 +36,6 @@ async def get_user_by_email(email: EmailStr):
     if user:
         return UserInDB(**user)
     return False
+
+# async def update_user(id: UUID4, updates: UserUpdate):
+    

@@ -30,7 +30,7 @@ from backend.auth.db.main import (
     get_user_by_id,
     get_user_by_email,
 )
-from backend.auth.db.models.users import User, UserInDB
+from backend.auth.db.models.users import User, UserInDB, UserUpdate
 
 # TODO: get project directory
 # this is assuming app is run from `backend` directory
@@ -72,6 +72,7 @@ async def create_dummy_users():
 
 async def get_current_user(token_data: TokenData = Depends(get_current_token_data)):
     user = await get_user_by_id(id=token_data.id)
+    print('Role: ', token_data.role)
     if user.disabled:
         raise HTTPException(status_code=400, detail="Inactive user")
     return user
@@ -98,7 +99,7 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
         )
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MIN)
     access_token = create_access_token(
-        data={"sub": str(user.id)}, expires_delta=access_token_expires
+            data={"sub": str(user.id), "role": user.role}, expires_delta=access_token_expires
     )
     return {"access_token": access_token, "token_type": "bearer"}
 
@@ -117,6 +118,11 @@ async def read_own_items(current_user: User = Depends(get_current_user)):
 async def register(user: User = Depends(create_user)):
     return user
 
+# @app.put("/update")
+# async def update_email_or_pass(current_user: User = Depends(get_current_user), 
+#         updates: UserUpdate = Body(...)):
+    
 
 if __name__ == "__main__":
     uvicorn.run(app, host="127.0.0.1", port=8000)
+
