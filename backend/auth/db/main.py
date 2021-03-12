@@ -36,3 +36,23 @@ async def get_user_by_email(email: EmailStr):
     if user:
         return UserInDB(**user)
     return False
+
+
+async def update_email_by_id(id: UUID4, new_email: EmailStr):
+    await users_collection.update_one({"id": id}, {"$set": {"email": new_email}})
+    updated_user = await get_user_by_id(id)
+    return updated_user
+
+
+async def update_password_by_id(id: UUID4, new_hashed_pass: str):
+    await users_collection.update_one(
+        {"id": id}, {"$set": {"hashed_password": new_hashed_pass}}
+    )
+    updated_user = await get_user_by_id(id)
+    return updated_user
+
+
+async def update_disabled_by_id(id: UUID4, new_disabled: bool):
+    await users_collection.update_one({"id": id}, {"$set": {"disabled": new_disabled}})
+    updated_user = await get_user_by_id(id)
+    return updated_user

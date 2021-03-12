@@ -10,9 +10,9 @@ from jose import JWTError, jwt
 from passlib.context import CryptContext
 from pydantic import BaseModel, UUID4
 
-from backend.auth.db.models.users import UserInDB, UserCreate, User
+from backend.auth.db.models.users import UserInDB, UserCreate, User, UserRole
 
-from backend.auth.db.main import get_user_by_email, add_user
+from backend.auth.db.main import get_user_by_email, add_user, get_user_by_id
 
 # get the config file path
 CONFIG_PATH = Path(__file__).resolve().parent.joinpath("db-config.toml")
@@ -21,7 +21,7 @@ print("Using CONFIG_PATH:", CONFIG_PATH)
 config = toml.load(str(CONFIG_PATH))
 SECRET_KEY = config["secret"]
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MIN = 30
+ACCESS_TOKEN_EXPIRE_MIN = 180
 
 
 class Token(BaseModel):
@@ -30,7 +30,8 @@ class Token(BaseModel):
 
 
 class TokenData(BaseModel):
-    id: Optional[UUID4]
+    id: UUID4
+    role: UserRole
 
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -52,12 +53,70 @@ def authenticate_user(user: UserInDB, password: str):
 
 
 async def create_user(user: UserCreate) -> User:
+    """
+    Accepts a UserCreate model and returns a User
+    This is endpoint allows both users of any role to be created.
+    It should only be used for testing
+    """
+
     existing_user = await get_user_by_email(user.email)
 
     if existing_user:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="User already exists",
+        )
+
+    hashed_password = get_password_hash(user.password)
+    db_user = UserInDB(**user.dict(), hashed_password=hashed_password)
+
+    await add_user(db_user)
+    return User(**user.dict())
+
+
+async def create_student(user: UserCreate) -> User:
+    """
+    Accepts a UserCreate model which has role set as student and returns a User
+    """
+
+    existing_user = await get_user_by_email(user.email)
+
+    if existing_user:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="User already exists",
+        )
+
+    if user.role != UserRole.student:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Incorrect role, expected student",
+        )
+
+    hashed_password = get_password_hash(user.password)
+    db_user = UserInDB(**user.dict(), hashed_password=hashed_password)
+
+    await add_user(db_user)
+    return User(**user.dict())
+
+
+async def create_admin(user: UserCreate) -> User:
+    """
+    Accepts a UserCreate model which has role set as admin and returns a User
+    """
+
+    existing_user = await get_user_by_email(user.email)
+
+    if existing_user:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="User already exists",
+        )
+
+    if user.role != UserRole.admin:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Incorrect role, expected student",
         )
 
     hashed_password = get_password_hash(user.password)
@@ -89,8 +148,82 @@ async def get_current_token_data(token: str = Depends(oauth2_scheme)):
         uuid = payload.get("sub")
         if uuid is None:
             raise credentials_exception
-        token_data = TokenData(id=UUID4(uuid))
+        role = payload.get("role")
+        token_data = TokenData(id=UUID4(uuid), role=role)
     except JWTError:
         raise credentials_exception
 
     return token_data
+
+
+async def get_student_token_data(
+    token_data: TokenData = Depends(get_current_token_data),
+):
+    role_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate role",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    if token_data.role != UserRole.student:
+        raise role_exception
+
+    return token_data
+
+
+async def get_admin_token_data(token_data: TokenData = Depends(get_current_token_data)):
+    role_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate role",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    if token_data.role != UserRole.admin:
+        raise role_exception
+
+    return token_data
+
+
+async def get_current_user(token_data: TokenData = Depends(get_current_token_data)):
+    """
+    Uses dependency injection to authenticate `token_data`, and returns a User
+    """
+
+    user = await get_user_by_id(id=token_data.id)
+    # I don't think this should ever happen
+    if not user:
+        print("BIG PROBLEM, USER NOT FOUND BUT TOKEN AUTHENTICATED")
+        assert 1 == 0
+    if user.disabled:
+        raise HTTPException(status_code=400, detail="Inactive user")
+    return user
+
+
+async def get_current_student(token_data: TokenData = Depends(get_student_token_data)):
+    """
+    Uses dependency injection to authenticate `token_data` and ensure `role` is set to
+    student.
+    Then, returns a User
+    """
+    user = await get_user_by_id(id=token_data.id)
+    # I don't think this should ever happen
+    if not user:
+        print("BIG PROBLEM, USER NOT FOUND BUT TOKEN AUTHENTICATED")
+        assert 1 == 0
+    if user.disabled:
+        raise HTTPException(status_code=400, detail="Inactive user")
+    return user
+
+
+async def get_current_admin(token_data: TokenData = Depends(get_admin_token_data)):
+    """
+    Uses dependency injection to authenticate `token_data` and ensure `role` is set to
+    admin.
+    Then, returns a User
+    """
+    user = await get_user_by_id(id=token_data.id)
+    # I don't think this should ever happen
+    if not user:
+        print("BIG PROBLEM, USER NOT FOUND BUT TOKEN AUTHENTICATED")
+        assert 1 == 0
+    if user.disabled:
+        raise HTTPException(status_code=400, detail="Inactive user")
+    return user

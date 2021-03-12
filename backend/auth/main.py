@@ -9,37 +9,38 @@ sys.path.append(str(PROJECTS_DIR))
 from datetime import timedelta
 
 import toml
-from fastapi import FastAPI, Depends, HTTPException, status
+from fastapi import FastAPI, Depends, HTTPException, status, Body
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 
 from backend.auth.dependencies import (
     Token,
-    TokenData,
     create_access_token,
-    get_current_token_data,
     get_password_hash,
     authenticate_user,
-    create_user,
+    create_student,
+    # create_admin,
+    get_current_student,
+    get_current_admin,
     ACCESS_TOKEN_EXPIRE_MIN,
 )
 from backend.auth.db.main import (
     connect_to_db,
     add_user,
-    get_user_by_id,
     get_user_by_email,
+    update_email_by_id,
+    update_password_by_id,
+    # update_disabled_by_id,
 )
-from backend.auth.db.models.users import User, UserInDB
+from backend.auth.db.models.users import User, UserInDB, UserUpdate
 
-# TODO: get project directory
-# this is assuming app is run from `backend` directory
-config = toml.load("auth/db-config.toml")
+# get the config file path
+CONFIG_PATH = Path(__file__).resolve().parent.joinpath("db-config.toml")
+print("Using CONFIG_PATH:", CONFIG_PATH)
 
-username = config["atlas-username"]
-password = config["atlas-password"]
-uri = config["connection-uri"]
-auth_db = config["auth-db"]
+config = toml.load(str(CONFIG_PATH))
+
 
 app = FastAPI()
 
@@ -70,17 +71,18 @@ async def create_dummy_users():
         await add_user(UserInDB(**user))
 
 
-async def get_current_user(token_data: TokenData = Depends(get_current_token_data)):
-    user = await get_user_by_id(id=token_data.id)
-    if user.disabled:
-        raise HTTPException(status_code=400, detail="Inactive user")
-    return user
-
-
 @app.on_event("startup")
 async def startup():
-    connect_to_db(uri.format(username=username, password=password, database=auth_db))
-    # await create_dummy_users()
+    """
+    Connects to the Auth DB using Motor
+    """
+    db_username = config["atlas-username"]
+    db_password = config["atlas-password"]
+    db_uri = config["connection-uri"]
+    auth_db = config["auth-db"]
+    connect_to_db(
+        db_uri.format(username=db_username, password=db_password, database=auth_db)
+    )
 
 
 @app.post("/token", response_model=Token)
@@ -98,25 +100,101 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
         )
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MIN)
     access_token = create_access_token(
-        data={"sub": str(user.id)}, expires_delta=access_token_expires
+        data={"sub": str(user.id), "role": user.role},
+        expires_delta=access_token_expires,
     )
     return {"access_token": access_token, "token_type": "bearer"}
 
 
-@app.get("/users/me", response_model=User)
-async def read_users_me(current_user: User = Depends(get_current_user)):
+# Student GET endpoints
+@app.get("/students/me", response_model=User)
+async def student_me(current_user: User = Depends(get_current_student)):
     return current_user
 
 
-@app.get("/users/me/item/")
-async def read_own_items(current_user: User = Depends(get_current_user)):
+@app.get("/student/me/item/")
+async def read_own_items(current_user: User = Depends(get_current_student)):
     return [{"data": "junk", "owner": current_user.email}]
 
 
-@app.post("/register")
-async def register(user: User = Depends(create_user)):
+# Student POST endpoints
+@app.post("/student/register")
+async def register(user: User = Depends(create_student)):
     return user
 
+
+# Student PUT endpoints
+@app.put("/student/update_email", response_model=User)
+async def update_email(
+    current_user: User = Depends(get_current_student), updates: UserUpdate = Body(...)
+):
+
+    if not updates.email:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Email is required",
+        )
+
+    existing_user = await get_user_by_email(updates.email)
+
+    if existing_user:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="That email is already taken",
+        )
+
+    return await update_email_by_id(current_user.id, updates.email)
+
+
+@app.put("/student/update_password", response_model=User)
+async def update_password(
+    current_user: User = Depends(get_current_student), updates: UserUpdate = Body(...)
+):
+    if not updates.password:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Password is required",
+        )
+    if not len(updates.password) >= 6:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Password must have six characters",
+        )
+
+    hashed_password = get_password_hash(updates.password)
+
+    return await update_password_by_id(current_user.id, hashed_password)
+
+
+# This is commented out so that student cannot accidentally be disabled
+# @app.put("/student/update_disabled", response_model=User)
+# """
+# Disables a student account, this cannot be undone by the student.
+# """
+# async def update_disabled(
+#     current_user: User = Depends(get_current_student), updates: UserUpdate = Body(...)
+# ):
+#     if not updates.disabled:
+#         raise HTTPException(
+#             status_code=status.HTTP_400_BAD_REQUEST,
+#             detail="Disabled is required",
+#         )
+
+#     return await update_disabled_by_id(current_user.id, updates.disabled)
+
+# Admin GET endpoints
+@app.get("/admin/me", response_model=User)
+async def admin_me(current_user: User = Depends(get_current_admin)):
+    return current_user
+
+
+# Admin POST endpoints
+# This is commented out so that new admins cannot easily be created
+# @app.post("/admin/register")
+# async def register(user: User = Depends(create_admin)):
+#     return user
+
+# TODO: Add Admin PUT endpoints that allow modifying student accounts
 
 if __name__ == "__main__":
     uvicorn.run(app, host="127.0.0.1", port=8000)
