@@ -34,11 +34,11 @@ const Meetings = () => {
 
             <Box mb={3}>
                 <Typography variant="h4">Upcoming Meetings</Typography>
-                <MeetingCards />
+                <MeetingCards past={false} />
             </Box>
             <Box mb={3}>
                 <Typography variant="h4">Past Meetings</Typography>
-                <MeetingCards />
+                <MeetingCards past={true} />
             </Box>
         </div>
     );

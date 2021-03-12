@@ -9,8 +9,17 @@ import NewMeeting from "../pages/NewMeeting";
 import { useMemo, useState } from "react";
 import { AuthContext } from "../contexts/AuthContext";
 import { isLoggedIn, loggedInRole } from "../utils";
+import MeetingInfo from "../pages/MeetingInfo";
+import { makeStyles } from "@material-ui/core";
+
+const useStyles = makeStyles((theme) => ({
+    container: {
+        marginBottom: theme.spacing(3),
+    },
+}));
 
 function App() {
+    const classes = useStyles();
     const [auth, setAuth] = useState({
         userLoggedIn: isLoggedIn(),
         role: loggedInRole(),
@@ -24,7 +33,7 @@ function App() {
                 <br />
                 <br />
                 <br />
-                <Container fixed>
+                <Container fixed className={classes.container}>
                     <Route exact path="/" component={Login} />
                     <Route
                         exact
@@ -38,8 +47,13 @@ function App() {
                     />
                     <Route exact path="/new-meeting" component={NewMeeting} />
                     <Route exact path="/meetings" component={Meetings} />
+                    <Route exact path="/meeting" component={MeetingInfo} />
                     <Route exact path="/allStudents" component={AllStudents} />
                 </Container>
+                <br />
+                <br />
+                <br />
+                <br />
             </Router>
         </AuthContext.Provider>
     );
