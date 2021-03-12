@@ -11,6 +11,7 @@ import { AuthContext } from "../contexts/AuthContext";
 import { isLoggedIn, loggedInRole } from "../utils";
 import MeetingInfo from "../pages/MeetingInfo";
 import { makeStyles } from "@material-ui/core";
+import Logout from "../pages/Logout";
 
 const useStyles = makeStyles((theme) => ({
     container: {
@@ -45,6 +46,7 @@ function App() {
                         path="/profile"
                         render={() => <Registration update={true} />}
                     />
+                    <Route exact path="/logout" component={Logout} />
                     <Route exact path="/new-meeting" component={NewMeeting} />
                     <Route exact path="/meetings" component={Meetings} />
                     <Route exact path="/meeting" component={MeetingInfo} />
