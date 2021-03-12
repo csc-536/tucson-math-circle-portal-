@@ -40,20 +40,31 @@ def get_current_user_profile(token_data: TokenData = Depends(get_current_token_d
 async def add_student_profile(
     email: EmailStr,
     guardians: List[Guardian],
-    student_list: List[Student],
+    students: List[Student],
     token_data: TokenData = Depends(get_current_token_data),
 ):
     model = StudentProfileModel(uuid=token_data.id, email=email)
-    doc = StudentDoc(model, guardians, student_list)
+    doc = StudentDoc(model, guardians, students)
     doc.save()
     return doc.dict()
+
+
+def get_current_user_doc(token_data: TokenData):
+    current_user = None
+    try:
+        current_user = StudentProfileDocument.objects(uuid=token_data.id)[0]
+    except Exception as e:
+        print("Exception type:", type(e))
+        print("Could not find the user profile.")
+    return current_user
 
 
 @router.put("/update_student_profile")
 async def update_main_email(
     email: Email,
-    current_user: StudentProfileDocument = Depends(get_current_user_profile),
+    token_data: TokenData = Depends(get_current_token_data),
 ):
+    current_user = get_current_user_doc(token_data)
     if current_user.email != email.new_email:
         current_user.email = email.new_email
     current_user.save()
@@ -63,18 +74,24 @@ async def update_main_email(
 @router.put("/update_student_guardian")
 async def update_student_guardian(
     guardian: Guardian,
-    current_user: StudentProfileDocument = Depends(get_current_user_profile),
+    token_data: TokenData = Depends(get_current_token_data),
 ):
+    current_user = get_current_user_doc(token_data)
     updated_contact = None
+    i = 0
     for contact in current_user.guardians:
-        if contact.first_name == guardian.first_name:
+        if (
+            contact["first_name"] == guardian.first_name
+            and contact["last_name"] == guardian.last_name
+        ):
             updated_contact = contact
+            break
+        i += 1
 
     if updated_contact is None:
         return {"details": "The contact could not be found."}
 
-    updated_contact.email = guardian.email
-    updated_contact.phone_number = guardian.phone_number
+    current_user.guardians[i] = guardian.dict()
 
     current_user.save()
     return current_user.dict()
@@ -83,14 +100,18 @@ async def update_student_guardian(
 @router.put("/add_student_guardian")
 async def add_student_guardian(
     guardian: Guardian,
-    current_user: StudentProfileDocument = Depends(get_current_user_profile),
+    token_data: TokenData = Depends(get_current_token_data),
 ):
+    current_user = get_current_user_doc(token_data)
     updated_contact = None
     for contact in current_user.guardians:
-        if contact.first_name == guardian.first_name:
+        if (
+            contact["first_name"] == guardian.first_name
+            and contact["last_name"] == guardian.last_name
+        ):
             updated_contact = contact
 
-    if updated_contact is None:
+    if updated_contact is not None:
         return {"details": "The contact is already in the list"}
 
     current_user.guardians.append(guardian.dict())
@@ -101,17 +122,21 @@ async def add_student_guardian(
 @router.put("/add_student")
 async def add_student(
     student: Student,
-    current_user: StudentProfileDocument = Depends(get_current_user_profile),
+    token_data: TokenData = Depends(get_current_token_data),
 ):
+    current_user = get_current_user_doc(token_data)
     add_student = None
-    for add in current_user.student_list:
-        if add.first_name == student.first_name:
+    for add in current_user.students:
+        if (
+            add["first_name"] == student.first_name
+            and add["last_name"] == student.last_name
+        ):
             add_student = add
 
-    if add_student is None:
+    if add_student is not None:
         return {"details": "The student is already in the list"}
 
-    current_user.student_list.append(student.dict())
+    current_user.students.append(student.dict())
     current_user.save()
     return current_user.dict()
 
@@ -119,18 +144,24 @@ async def add_student(
 @router.put("/update_student")
 async def update_student(
     student: Student,
-    current_user: StudentProfileDocument = Depends(get_current_user_profile),
+    token_data: TokenData = Depends(get_current_token_data),
 ):
+    current_user = get_current_user_doc(token_data)
     add_student = None
-    for add in current_user.student_list:
-        if add.first_name == student.first_name:
+    i = 0
+    for add in current_user.students:
+        if (
+            add["first_name"] == student.first_name
+            and add["last_name"] == student.last_name
+        ):
             add_student = add
+            break
+        i += 1
 
     if add_student is None:
         return {"details": "The student could not be found"}
 
-    add_student.grade = student.grade
-    add_student.age = student.age
-    add_student.section = student.section
+    current_user.students[i] = student.dict()
+
     current_user.save()
     return current_user.dict()

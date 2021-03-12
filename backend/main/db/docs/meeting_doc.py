@@ -33,7 +33,7 @@ class MeetingDocument(Document):
     meta = {
         "query_class": MeetingQuerySet,
         "db_alias": "meeting-db",
-        "indexes": ["topic"],
+        "indexes": ["session_level"],
     }
 
     def dict(self):

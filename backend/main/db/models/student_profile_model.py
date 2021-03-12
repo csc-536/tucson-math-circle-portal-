@@ -16,7 +16,7 @@ class Student(BaseModel):
     first_name: str = Field()
     last_name: str = Field()
     grade: int = Field()
-    age: str = Field()
+    age: int = Field()
     section: list = Field()
 
 
