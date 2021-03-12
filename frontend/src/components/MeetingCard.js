@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Card from "@material-ui/core/Card";
 import CardActions from "@material-ui/core/CardActions";
@@ -8,6 +8,8 @@ import Typography from "@material-ui/core/Typography";
 import Modal from "@material-ui/core/Modal";
 import Backdrop from "@material-ui/core/Backdrop";
 import Meeting from "./Meeting";
+import { AuthContext } from "../contexts/AuthContext";
+import { useHistory } from "react-router";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -29,10 +31,13 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const MeetingCard = () => {
+const MeetingCard = ({ meeting, past }) => {
   const classes = useStyles();
   const [open, setOpen] = useState(false);
-  const [meeting, setMeeting] = useState({});
+
+  const {
+    auth: { userLoggedIn, role },
+  } = useContext(AuthContext);
 
   const handleOpen = () => {
     setOpen(true);
@@ -41,6 +46,15 @@ const MeetingCard = () => {
   const handleClose = () => {
     setOpen(false);
   };
+
+  const history = useHistory();
+  const handleEdit = () => {
+    history.push({
+      pathname: "/meeting",
+      state: { meeting, past },
+    });
+  };
+
   const rootRef = React.useRef(null);
   return (
     <Card className={classes.root} variant="outlined">
@@ -72,9 +86,15 @@ const MeetingCard = () => {
         </Typography>
       </CardContent>
       <CardActions className={classes.cardActions}>
-        <Button size="small" color="primary" onClick={handleOpen}>
-          Learn More
-        </Button>
+        {role === "coordinator" ? (
+          <Button size="small" color="primary" onClick={handleEdit}>
+            Edit
+          </Button>
+        ) : (
+          <Button size="small" color="primary" onClick={handleOpen}>
+            Learn More
+          </Button>
+        )}
       </CardActions>
     </Card>
   );
