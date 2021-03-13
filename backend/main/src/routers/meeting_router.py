@@ -1,3 +1,5 @@
+from pydantic import UUID4
+
 from backend.main.db.models.meeting_model import MeetingModel
 from backend.main.db.docs.meeting_doc import MeetingDocument, document
 from backend.main.db.password_generator import generate_random_password
@@ -14,10 +16,14 @@ from backend.auth.dependencies import (
 router = APIRouter()
 
 
+# Some of these are probably broken now.
+# Sorry, I will try and fix them if you think we should still use them
+
+
 @router.post("/add_meeting")
 async def add_meeting(meeting: MeetingModel):
     password = generate_random_password()
-    meeting.meeting_password = password
+    meeting.password = password
     meeting.students = []
     doc = document(meeting)
     doc.save()
@@ -26,10 +32,10 @@ async def add_meeting(meeting: MeetingModel):
 
 @router.get("get_meeting_by_id")
 async def get_meeting_by_id(
-    meeting_id: str, token_data: TokenData = Depends(get_current_token_data)
+    meeting_id: UUID4, token_data: TokenData = Depends(get_current_token_data)
 ):
     try:
-        meeting = MeetingDocument.objects(id=meeting_id)[0]
+        meeting = MeetingDocument.objects(uuid=meeting_id)[0]
     except Exception:
         return {"details": "Error getting meeting"}
     if meeting is None:
@@ -66,12 +72,12 @@ async def get_all_meetings(token_data: TokenData = Depends(get_current_token_dat
 
 @router.post("/add_student")
 async def add_student(
-    meeting_id: str,
+    meeting_id: UUID4,
     token_data: TokenData = Depends(get_current_token_data),
 ):
     current_user = get_current_user_doc(token_data)
     try:
-        meeting = MeetingDocument.objects(id=meeting_id)[0]
+        meeting = MeetingDocument.objects(uuid=meeting_id)[0]
     except Exception:
         return {"details": "could not find meeting form id"}
 

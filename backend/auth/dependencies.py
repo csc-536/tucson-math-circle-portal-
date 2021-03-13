@@ -21,7 +21,7 @@ print("Using CONFIG_PATH:", CONFIG_PATH)
 config = toml.load(str(CONFIG_PATH))
 SECRET_KEY = config["secret"]
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MIN = 180
+ACCESS_TOKEN_EXPIRE_MIN = 240
 
 
 class Token(BaseModel):

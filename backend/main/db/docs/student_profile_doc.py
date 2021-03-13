@@ -1,10 +1,6 @@
-from typing import List
-
 from mongoengine import Document, ListField, EmailField, QuerySet, UUIDField
 
 from backend.main.db.models.student_profile_model import (
-    Guardian,
-    Student,
     StudentProfileModel,
 )
 
@@ -13,24 +9,11 @@ class StudentProfileQuerySet(QuerySet):
     pass
 
 
-def document(
-    model: StudentProfileModel,
-    guardians: List[Guardian],
-    students: List[Student],
-):
-    guardian_list = []
-    for guardian in guardians:
-        guardian_list.append(guardian.dict())
-    student_list = []
-    for student in students:
-        student_list.append(student.dict())
-    doc = StudentProfileDocument(
-        **model.dict(), guardians=guardian_list, students=student_list
-    )
+def document(model: StudentProfileModel):
+    doc = StudentProfileDocument(**model.dict())
     return doc
 
 
-# SUGGESTION: change student_list to students?
 class StudentProfileDocument(Document):
     _model = StudentProfileModel
 

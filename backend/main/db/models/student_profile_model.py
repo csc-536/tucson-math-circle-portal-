@@ -1,8 +1,8 @@
-from pydantic import BaseModel
+from typing import List
 
-from pydantic import Field, EmailStr, UUID4
+from pydantic import BaseModel, Field, EmailStr, UUID4
 
-from backend.main.db.mixins import IdMixin
+from backend.main.db.mixins import SessionLevel
 
 
 class Guardian(BaseModel):
@@ -17,9 +17,17 @@ class Student(BaseModel):
     last_name: str = Field()
     grade: int = Field()
     age: int = Field()
-    section: list = Field()
+    section: List[SessionLevel] = Field()
 
 
-class StudentProfileModel(IdMixin):
-    uuid: UUID4 = Field()
+# this is the model for the API since
+# we will use the uuid from the token
+# for the StudentProfileModel
+class StudentProfileCreateModel(BaseModel):
     email: EmailStr = Field()
+    students: List[Student]
+    guardians: List[Guardian]
+
+
+class StudentProfileModel(StudentProfileCreateModel):
+    uuid: UUID4 = Field()
