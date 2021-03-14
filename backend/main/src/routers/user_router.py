@@ -1,10 +1,11 @@
-from typing import List
-
 from pydantic import BaseModel, EmailStr, Field
 from fastapi import Depends, APIRouter
 
 # main db imports
-from backend.main.db.models.student_profile_model import StudentProfileModel
+from backend.main.db.models.student_profile_model import (
+    StudentProfileModel,
+    StudentProfileCreateModel,
+)
 from backend.main.db.docs.student_profile_doc import (
     document as StudentDoc,
     StudentProfileDocument,
@@ -14,7 +15,7 @@ from backend.main.db.models.student_profile_model import Guardian, Student
 # auth db imports
 from backend.auth.dependencies import (
     TokenData,
-    get_current_token_data,
+    get_student_token_data,
 )
 
 router = APIRouter()
@@ -22,31 +23,6 @@ router = APIRouter()
 
 class Email(BaseModel):
     new_email: EmailStr = Field()
-
-
-@router.get("/get_my_profile")
-def get_current_user_profile(token_data: TokenData = Depends(get_current_token_data)):
-    user_doc = None
-    try:
-        user_doc = StudentProfileDocument.objects(uuid=token_data.id)[0]
-    except Exception as e:
-        print("Exception type:", type(e))
-        print("Could not find the user profile.")
-    return user_doc.dict()
-
-
-# SUGGESTION: change student_list to students?
-@router.post("/add_student_profile")
-async def add_student_profile(
-    email: EmailStr,
-    guardians: List[Guardian],
-    students: List[Student],
-    token_data: TokenData = Depends(get_current_token_data),
-):
-    model = StudentProfileModel(uuid=token_data.id, email=email)
-    doc = StudentDoc(model, guardians, students)
-    doc.save()
-    return doc.dict()
 
 
 def get_current_user_doc(token_data: TokenData):
@@ -59,10 +35,35 @@ def get_current_user_doc(token_data: TokenData):
     return current_user
 
 
+# GET routes
+@router.get("/get_my_profile")
+def get_current_user_profile(token_data: TokenData = Depends(get_student_token_data)):
+    user_doc = None
+    try:
+        user_doc = StudentProfileDocument.objects(uuid=token_data.id)[0]
+    except Exception as e:
+        print("Exception type:", type(e))
+        print("Could not find the user profile.")
+    return user_doc.dict()
+
+
+# POST routes
+@router.post("/add_student_profile")
+async def add_student_profile(
+    profile: StudentProfileCreateModel,
+    token_data: TokenData = Depends(get_student_token_data),
+):
+    model = StudentProfileModel(**profile.dict(), uuid=token_data.id)
+    doc = StudentDoc(model)
+    doc.save()
+    return doc.dict()
+
+
+# PUT routes
 @router.put("/update_student_profile")
 async def update_main_email(
     email: Email,
-    token_data: TokenData = Depends(get_current_token_data),
+    token_data: TokenData = Depends(get_student_token_data),
 ):
     current_user = get_current_user_doc(token_data)
     if current_user.email != email.new_email:
@@ -74,7 +75,7 @@ async def update_main_email(
 @router.put("/update_student_guardian")
 async def update_student_guardian(
     guardian: Guardian,
-    token_data: TokenData = Depends(get_current_token_data),
+    token_data: TokenData = Depends(get_student_token_data),
 ):
     current_user = get_current_user_doc(token_data)
     updated_contact = None
@@ -100,7 +101,7 @@ async def update_student_guardian(
 @router.put("/add_student_guardian")
 async def add_student_guardian(
     guardian: Guardian,
-    token_data: TokenData = Depends(get_current_token_data),
+    token_data: TokenData = Depends(get_student_token_data),
 ):
     current_user = get_current_user_doc(token_data)
     updated_contact = None
@@ -122,7 +123,7 @@ async def add_student_guardian(
 @router.put("/add_student")
 async def add_student(
     student: Student,
-    token_data: TokenData = Depends(get_current_token_data),
+    token_data: TokenData = Depends(get_student_token_data),
 ):
     current_user = get_current_user_doc(token_data)
     add_student = None
@@ -144,7 +145,7 @@ async def add_student(
 @router.put("/update_student")
 async def update_student(
     student: Student,
-    token_data: TokenData = Depends(get_current_token_data),
+    token_data: TokenData = Depends(get_student_token_data),
 ):
     current_user = get_current_user_doc(token_data)
     add_student = None

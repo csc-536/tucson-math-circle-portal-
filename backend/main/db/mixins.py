@@ -1,6 +1,13 @@
+from enum import Enum
 from typing import Any, Optional
 
 from pydantic import BaseModel, Field, validator
+
+
+class SessionLevel(str, Enum):
+    junior_a = "junior_a"
+    junior_b = "junior_b"
+    senior = "senior"
 
 
 class IdMixin(BaseModel):

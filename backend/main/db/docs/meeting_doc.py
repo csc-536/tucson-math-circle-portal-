@@ -3,9 +3,9 @@ from mongoengine import (
     Document,
     StringField,
     ListField,
-    DateField,
     DateTimeField,
     QuerySet,
+    UUIDField,
 )
 
 
@@ -21,13 +21,14 @@ def document(model: MeetingModel):
 class MeetingDocument(Document):
     _model = MeetingModel
 
-    meeting_date = DateField(required=True)
-    meeting_time = DateTimeField(required=True)
+    uuid = UUIDField(required=True)
+    date_and_time = DateTimeField(required=True)
+    duration = DateTimeField(required=True)
     zoom_link = StringField(required=True)
     topic = StringField(required=True)
     session_level = StringField(required=True)
     miro_link = StringField(required=True)
-    meeting_password = StringField(required=True)
+    password = StringField(required=True)
     students = ListField(required=False)
 
     meta = {
@@ -36,13 +37,36 @@ class MeetingDocument(Document):
         "indexes": ["session_level"],
     }
 
-    def dict(self):
+    def student_dict(self):
         return {
-            "meeting_date": self.meeting_date,
-            "meeting_time": self.meeting_time,
+            "uuid": self.uuid,
+            "date_and_time": self.date_and_time,
+            "duration": self.duration,
             "zoom_link": self.zoom_link,
             "topic": self.topic,
             "session_level": self.session_level,
-            "meeting_password": self.meeting_password,
+        }
+
+    def admin_dict(self):
+        return {
+            "uuid": self.uuid,
+            "date_and_time": self.date_and_time,
+            "duration": self.duration,
+            "zoom_link": self.zoom_link,
+            "topic": self.topic,
+            "session_level": self.session_level,
+            "password": self.password,
+            "students": self.students,
+        }
+
+    def dict(self):
+        return {
+            "uuid": self.uuid,
+            "date_and_time": self.date_and_time,
+            "duration": self.duration,
+            "zoom_link": self.zoom_link,
+            "topic": self.topic,
+            "session_level": self.session_level,
+            "password": self.password,
             "students": self.students,
         }
