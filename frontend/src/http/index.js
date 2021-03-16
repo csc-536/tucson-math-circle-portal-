@@ -71,35 +71,28 @@ export async function profile() {
 }
 
 // TODO: change request format
-export async function addProfile({ email, ...data }) {
+export async function addProfile(data) {
     const accessToken = sessionStorage.getItem("accessToken");
     console.log(accessToken);
 
-    const res = await main.post("/user_router/add_student_profile", data, {
+    const res = await main.post("/student/add_profile", data, {
         headers: {
             Authorization: `Bearer ${accessToken}`,
-        },
-        params: {
-            email,
         },
     });
     console.log(res);
     return res;
 }
 
-export async function allMeetings() {
+export async function allMeetings({ role, body }) {
     const accessToken = sessionStorage.getItem("accessToken");
     console.log(accessToken);
 
-    const res = await main.post(
-        "/meetings_router/get_all_meetings",
-        {},
-        {
-            headers: {
-                Authorization: `Bearer ${accessToken}`,
-            },
-        }
-    );
+    const res = await main.post(`/${role}/get_meetings`, body, {
+        headers: {
+            Authorization: `Bearer ${accessToken}`,
+        },
+    });
     console.log(res);
     return res;
 }

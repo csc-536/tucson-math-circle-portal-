@@ -26,13 +26,11 @@ const MeetingFields = ({ form, setForm, disabled }) => {
     const classes = useStyles();
 
     const handleDateChange = (e) => {
-        console.log(new Date(e));
         setForm({ ...form, ...{ date: new Date(e) } });
     };
 
     const handleOnChange = (e) => {
         const { name, value } = e.target;
-
         let v = value;
 
         switch (name) {
@@ -68,7 +66,8 @@ const MeetingFields = ({ form, setForm, disabled }) => {
                     disabled={disabled}
                     required
                     id="time"
-                    label="Choose a Time"
+                    label="Choose a Time (Local Time)"
+                    value={form["time"]}
                     type="time"
                     onChange={handleOnChange}
                     name="time"
@@ -125,13 +124,13 @@ const MeetingFields = ({ form, setForm, disabled }) => {
                         id="new-meeting-level-select"
                         value={form["sessionLevel"]}
                         onChange={handleOnChange}
-                        name="select"
+                        name="sessionLevel"
                         displayEmpty
                         className={classes.selectEmpty}
                     >
-                        <MenuItem value={"ja"}>Junior (A)</MenuItem>
-                        <MenuItem value={"jb"}>Junior (B)</MenuItem>
-                        <MenuItem value={"s"}>Senior</MenuItem>
+                        <MenuItem value={"junior_a"}>Junior (A)</MenuItem>
+                        <MenuItem value={"junior_b"}>Junior (B)</MenuItem>
+                        <MenuItem value={"senior"}>Senior</MenuItem>
                     </Select>
                 </FormControl>
             </div>
@@ -160,6 +159,19 @@ const MeetingFields = ({ form, setForm, disabled }) => {
                     label="Zoom Link"
                     name="zoomLink"
                     value={form["zoomLink"]}
+                    required
+                    onChange={handleOnChange}
+                    InputLabelProps={{
+                        shrink: true,
+                    }}
+                    className={classes.textField}
+                />
+                <TextField
+                    disabled={disabled}
+                    id="new-meeting-zoom-link"
+                    label="Zoom Password"
+                    name="zoomPassword"
+                    value={form["zoomPassword"]}
                     required
                     onChange={handleOnChange}
                     InputLabelProps={{

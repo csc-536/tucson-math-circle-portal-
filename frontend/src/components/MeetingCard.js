@@ -12,92 +12,136 @@ import { AuthContext } from "../contexts/AuthContext";
 import { useHistory } from "react-router";
 
 const useStyles = makeStyles((theme) => ({
-  root: {
-    width: "100%",
-  },
-  cardActions: {
-    float: "right",
-  },
-  modal: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  paper: {
-    backgroundColor: theme.palette.background.paper,
-    boxShadow: theme.shadows[2],
-    borderRadius: 5,
-    padding: theme.spacing(2, 4, 3),
-  },
+    root: {
+        width: "100%",
+    },
+    cardActions: {
+        float: "right",
+    },
+    modal: {
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+    },
+    paper: {
+        backgroundColor: theme.palette.background.paper,
+        boxShadow: theme.shadows[2],
+        borderRadius: 5,
+        padding: theme.spacing(2, 4, 3),
+    },
 }));
 
 const MeetingCard = ({ meeting, past }) => {
-  const classes = useStyles();
-  const [open, setOpen] = useState(false);
+    const classes = useStyles();
+    const [open, setOpen] = useState(false);
+    console.log(meeting);
 
-  const {
-    auth: { userLoggedIn, role },
-  } = useContext(AuthContext);
+    const {
+        topic,
+        date_and_time,
+        duration,
+        session_level,
+        zoom_link,
+        password,
+        students,
+    } = meeting;
 
-  const handleOpen = () => {
-    setOpen(true);
-  };
+    const {
+        auth: { userLoggedIn, role },
+    } = useContext(AuthContext);
 
-  const handleClose = () => {
-    setOpen(false);
-  };
+    const handleOpen = () => {
+        setOpen(true);
+    };
 
-  const history = useHistory();
-  const handleEdit = () => {
-    history.push({
-      pathname: "/meeting",
-      state: { meeting, past },
-    });
-  };
+    const handleClose = () => {
+        setOpen(false);
+    };
 
-  const rootRef = React.useRef(null);
-  return (
-    <Card className={classes.root} variant="outlined">
-      <Modal
-        aria-labelledby="transition-modal-title"
-        aria-describedby="transition-modal-description"
-        className={classes.modal}
-        open={open}
-        onClose={handleClose}
-        BackdropComponent={Backdrop}
-        disableEnforceFocus
-        disableAutoFocus
-        container={() => rootRef.current}
-      >
-        <div className={classes.paper}>
-          <Meeting meeting={meeting} />
-        </div>
-      </Modal>
-      <CardContent>
-        <Typography gutterBottom variant="h4" component="h3">
-          Meeting
-        </Typography>
-        <Typography variant="h6" component="h6" color="textSecondary">
-          July 20, 2014
-        </Typography>
-        <Typography variant="body1" component="p">
-          Lizards are a widespread group of squamate reptiles, with over 6,000
-          species, ranging across all continents except Antarctica
-        </Typography>
-      </CardContent>
-      <CardActions className={classes.cardActions}>
-        {role === "coordinator" ? (
-          <Button size="small" color="primary" onClick={handleEdit}>
-            Edit
-          </Button>
-        ) : (
-          <Button size="small" color="primary" onClick={handleOpen}>
-            Learn More
-          </Button>
-        )}
-      </CardActions>
-    </Card>
-  );
+    const date = getDate(date_and_time);
+    const sessionLevel = getSessionLevel(session_level);
+
+    const history = useHistory();
+    const handleEdit = () => {
+        history.push({
+            pathname: "/meeting",
+            state: {
+                meeting: {
+                    date: date_and_time,
+                    sessionLevel: session_level,
+                    zoom_link,
+                    zoomPassword: password,
+                    topic,
+                    duration,
+                    students,
+                },
+                past,
+            },
+        });
+    };
+
+    const rootRef = React.useRef(null);
+    return (
+        <Card className={classes.root} variant="outlined">
+            <Modal
+                aria-labelledby="transition-modal-title"
+                aria-describedby="transition-modal-description"
+                className={classes.modal}
+                open={open}
+                onClose={handleClose}
+                BackdropComponent={Backdrop}
+                disableEnforceFocus
+                disableAutoFocus
+                container={() => rootRef.current}
+            >
+                <div className={classes.paper}>
+                    <Meeting
+                        meeting={{ date, sessionLevel, topic, zoom_link }}
+                    />
+                </div>
+            </Modal>
+            <CardContent>
+                <Typography gutterBottom variant="h5" component="h3">
+                    {sessionLevel} <br /> {topic}
+                </Typography>
+                <Typography variant="h6" component="h6" color="textSecondary">
+                    {date}
+                </Typography>
+                <Typography variant="body1" component="p">
+                    Join us to study {topic}, and you won't regret it!!
+                </Typography>
+            </CardContent>
+            <CardActions className={classes.cardActions}>
+                {role === "admin" ? (
+                    <Button size="small" color="primary" onClick={handleEdit}>
+                        Edit
+                    </Button>
+                ) : (
+                    <Button size="small" color="primary" onClick={handleOpen}>
+                        Learn More
+                    </Button>
+                )}
+            </CardActions>
+        </Card>
+    );
 };
+
+function getSessionLevel(str) {
+    switch (str) {
+        case "junior_a":
+            return "Junior A";
+        case "junior_b":
+            return "Junior B";
+        case "senior":
+            return "Senior";
+        default:
+            return "";
+    }
+}
+
+function getDate(date) {
+    const d = new Date(date).toLocaleString();
+    return d;
+}
 
 export default MeetingCard;

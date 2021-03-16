@@ -21,15 +21,13 @@ import RemStudent from "./remStudent";
 import { addProfile, profile, register } from "../http";
 import { clone, uniqueId } from "lodash";
 
-function Registration(props) {
-    // const newStudent = useContext(newStudentContext);
-
+function Registration({ update }) {
     const initialStudent = {
         first_name: "",
         last_name: "",
         grade: "",
         age: "",
-        section: [null],
+        section: ["junior_a", "junior_b", "senior"],
     };
 
     const initialGuardian = {
@@ -50,38 +48,32 @@ function Registration(props) {
 
     const handleOnChange = (e, i, type) => {
         const { name, value } = e.target;
-        const input = {};
-        input[name] = value;
 
-        // console.log(name);
         if (type === "students") {
             const students = clone(form.students);
             students[i][name] = value;
-
             setForm({ ...form, students });
+            return;
         }
         if (type === "guardians") {
             const guardians = clone(form.guardians);
             guardians[i][name] = value;
-
             setForm({ ...form, guardians });
+            return;
         }
 
+        const input = {};
+        input[name] = value;
+
         setForm({ ...form, ...input });
-        console.log(form);
+        // console.log(form);
     };
 
     /*
      * 'studentList' is a list of all the students affiliated with the account.
      * 'guardianList' is a list of all the guardians affiliated with the account.
      */
-    // const [studentList, setStudentList] = useState([<StudentInfo key={0} />]);
-    // const [guardianList, setGuardianList] = useState([
-    //     <GuardianInfo key={0} />,
-    // ]);
-
     const studentList = form.students.map((student, i) => {
-        console.log(student);
         return (
             <StudentInfo
                 key={i}
@@ -91,12 +83,7 @@ function Registration(props) {
         );
     });
 
-    // const studentList = (
-
-    // );
-
     const guardianList = form.guardians.map((guardian, i) => {
-        console.log(guardian);
         return (
             <GuardianInfo
                 key={i}
@@ -128,7 +115,7 @@ function Registration(props) {
                 const {
                     data: { student_list: students, ...rest },
                 } = res;
-                students["section"] = [null];
+                students["section"] = ["junior_a"];
                 setForm({ students, ...rest });
 
                 // console.log(form);
@@ -136,7 +123,9 @@ function Registration(props) {
                 console.log(error.response);
             }
         };
-        pro();
+        if (update) {
+            pro();
+        }
     }, []);
 
     /*
@@ -148,7 +137,7 @@ function Registration(props) {
 
         const { email, password, repassword, students, guardians } = form;
 
-        if (props.update) {
+        if (update) {
             try {
                 console.log(form);
             } catch (error) {}
@@ -161,6 +150,7 @@ function Registration(props) {
                 return console.log("Password should be at least 6 characters");
             }
 
+            console.log(form);
             try {
                 await register({ email, password, role: "student" });
                 await addProfile({
@@ -179,9 +169,6 @@ function Registration(props) {
      * Adds a student to the list of students 'studentList'.
      */
     const handleAddStudent = (e) => {
-        // setStudentList(
-        //     studentList.concat(<StudentInfo key={studentList.length} />)
-        // );
         const newStudent = initialStudent;
         const students = [...form.students, newStudent];
         setForm({ ...form, students });
@@ -192,10 +179,6 @@ function Registration(props) {
      * Removes the newest student from the list of students 'studentList'.
      */
     const handleRemStudent = (e) => {
-        // if (studentList.length == 1) {
-        //     return;
-        // }
-        // setStudentList(studentList.slice(0, studentList.length - 1));
         if (form.students.length > 1) {
             const students = clone(form.students);
             students.pop();
@@ -207,9 +190,6 @@ function Registration(props) {
      * Adds a guardian to the list of guardians 'guardianList'.
      */
     const handleAddGuardian = (e) => {
-        // setGuardianList(
-        //     guardianList.concat(<GuardianInfo key={guardianList.length} />)
-        // );
         const newGuardian = initialGuardian;
         const guardians = [...form.guardians, newGuardian];
         setForm({ ...form, guardians });
@@ -220,10 +200,6 @@ function Registration(props) {
      * Removes the newest guardian from the list of guardians 'guardianList'.
      */
     const handleRemGuardian = (e) => {
-        // if (guardianList.length == 1) {
-        //     return;
-        // }
-        // setGuardianList(guardianList.slice(0, guardianList.length - 1));
         if (form.guardians.length > 1) {
             const guardians = clone(form.guardians);
             guardians.pop();
@@ -242,7 +218,7 @@ function Registration(props) {
      * If the property 'update' is true, set up 'header', 'isUpdate' and
      * 'buttonVal' to their profile page counterparts.
      */
-    if (props.update) {
+    if (update) {
         header = <ProfHeader handleSeeAllMeetings={handleSeeAllMeetings} />;
         isUpdate = <ConsentUpload />;
         buttonVal = "Update";
@@ -253,12 +229,11 @@ function Registration(props) {
      * property.
      */
     return (
-        // <newStudentContext.Consumer>
         <form id="regForm" onSubmit={handleFormSubmit}>
             {header}
             <h3 className="formHeader">Account Information</h3>
             <AccInfo
-                update={props.update}
+                update={update}
                 handleOnChange={handleOnChange}
                 form={form}
             />
@@ -280,8 +255,6 @@ function Registration(props) {
             <MainOptInOptions />
             <input id="regButton" type="submit" value={buttonVal} />
         </form>
-        // </newStudentContext.Consumer>
-        // </newStudentContext.Provider>
     );
 }
 

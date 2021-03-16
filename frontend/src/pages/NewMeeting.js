@@ -22,7 +22,7 @@ const NewMeeting = () => {
         time: "",
         duration: "",
         topic: "",
-        sessionLevel: "ja",
+        sessionLevel: "",
         material: "",
         zoomLink: "",
         miroLink: "",

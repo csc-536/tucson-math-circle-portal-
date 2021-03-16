@@ -16,6 +16,7 @@ import uvicorn
 
 # main db imports
 from backend.main.src.routers import user_router, meeting_router
+from backend.main.src.routers import student, admin
 from backend.connect_to_mongodb import connect_to_mongodb, connect_to_auth_db
 
 # auth db imports
@@ -35,6 +36,9 @@ app = FastAPI()
 
 app.include_router(user_router.router, prefix="/user_router", tags=["Users"])
 app.include_router(meeting_router.router, prefix="/meetings_router", tags=["Meetings"])
+
+app.include_router(student.router, prefix="/student", tags=["Students"])
+app.include_router(admin.router, prefix="/admin", tags=["Admin"])
 
 # TODO: make a list of origins, for now the server allows requests from everywhere
 # possible a origin_regex could be used instead which matches anything that starts with
@@ -75,7 +79,8 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
         )
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MIN)
     access_token = create_access_token(
-        data={"sub": str(user.id),  "role": user.role}, expires_delta=access_token_expires
+        data={"sub": str(user.id), "role": user.role},
+        expires_delta=access_token_expires,
     )
     return {"access_token": access_token, "token_type": "bearer"}
 
