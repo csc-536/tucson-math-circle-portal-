@@ -22,240 +22,236 @@ import { addProfile, profile, register } from "../http";
 import { clone, uniqueId } from "lodash";
 
 function Registration({ update }) {
-    const initialStudent = {
-        first_name: "",
-        last_name: "",
-        grade: "",
-        age: "",
-        section: ["junior_a", "junior_b", "senior"],
-    };
+  const initialStudent = {
+    first_name: "",
+    last_name: "",
+    grade: "",
+    age: "",
+    section: ["junior_a", "junior_b", "senior"],
+  };
 
-    const initialGuardian = {
-        first_name: "",
-        last_name: "",
-        email: "",
-        phone_number: "",
-    };
+  const initialGuardian = {
+    first_name: "",
+    last_name: "",
+    email: "",
+    phone_number: "",
+  };
 
-    const [form, setForm] = useState({
-        email: "",
-        password: "",
-        repassword: "",
-        newpassword: "",
-        students: [initialStudent],
-        guardians: [initialGuardian],
-    });
+  const [form, setForm] = useState({
+    email: "",
+    password: "",
+    repassword: "",
+    newpassword: "",
+    students: [initialStudent],
+    guardians: [initialGuardian],
+  });
 
-    const handleOnChange = (e, i, type) => {
-        const { name, value } = e.target;
+  const handleOnChange = (e, i, type) => {
+    const { name, value } = e.target;
 
-        if (type === "students") {
-            const students = clone(form.students);
-            students[i][name] = value;
-            setForm({ ...form, students });
-            return;
-        }
-        if (type === "guardians") {
-            const guardians = clone(form.guardians);
-            guardians[i][name] = value;
-            setForm({ ...form, guardians });
-            return;
-        }
-
-        const input = {};
-        input[name] = value;
-
-        setForm({ ...form, ...input });
-        // console.log(form);
-    };
-
-    /*
-     * 'studentList' is a list of all the students affiliated with the account.
-     * 'guardianList' is a list of all the guardians affiliated with the account.
-     */
-    const studentList = form.students.map((student, i) => {
-        return (
-            <StudentInfo
-                key={i}
-                student={student}
-                handleOnChange={(e) => handleOnChange(e, i, "students")}
-            />
-        );
-    });
-
-    const guardianList = form.guardians.map((guardian, i) => {
-        return (
-            <GuardianInfo
-                key={i}
-                guardian={guardian}
-                handleOnChange={(e) => handleOnChange(e, i, "guardians")}
-            />
-        );
-    });
-
-    /*
-     * 'header' is the header of the page for either registration or profile page.
-     * 'isUpdate' is affiliated with the consent form. Either is a checkbox or a
-     * file upload.
-     * 'buttonVal' is the text on the button for form submission.
-     */
-    let header = <RegHeader />;
-    let isUpdate = <CheckBox />;
-    let buttonVal = "Register";
-
-    /*
-     * 'history' used to render specified pages.
-     */
-    const history = useHistory();
-
-    useEffect(() => {
-        const pro = async () => {
-            try {
-                const res = await profile();
-                const {
-                    data: { student_list: students, ...rest },
-                } = res;
-                students["section"] = ["junior_a"];
-                setForm({ students, ...rest });
-
-                // console.log(form);
-            } catch (error) {
-                console.log(error.response);
-            }
-        };
-        if (update) {
-            pro();
-        }
-    }, []);
-
-    /*
-     * Handles the event of the form submission. Prevents the page from refreshing.
-     * If property 'update' is true, return to the login page.
-     */
-    const handleFormSubmit = async (e) => {
-        e.preventDefault();
-
-        const { email, password, repassword, students, guardians } = form;
-
-        if (update) {
-            try {
-                console.log(form);
-            } catch (error) {}
-        } else {
-            if (password !== repassword) {
-                return console.log("Two passwords don't match");
-            }
-
-            if (password.length < 6) {
-                return console.log("Password should be at least 6 characters");
-            }
-
-            console.log(form);
-            try {
-                await register({ email, password, role: "student" });
-                await addProfile({
-                    email,
-                    guardians,
-                    students,
-                });
-                history.push("/");
-            } catch (error) {
-                console.log(error.response);
-            }
-        }
-    };
-
-    /*
-     * Adds a student to the list of students 'studentList'.
-     */
-    const handleAddStudent = (e) => {
-        const newStudent = initialStudent;
-        const students = [...form.students, newStudent];
-        setForm({ ...form, students });
-        console.log(form);
-    };
-
-    /*
-     * Removes the newest student from the list of students 'studentList'.
-     */
-    const handleRemStudent = (e) => {
-        if (form.students.length > 1) {
-            const students = clone(form.students);
-            students.pop();
-            setForm({ ...form, students });
-        }
-    };
-
-    /*
-     * Adds a guardian to the list of guardians 'guardianList'.
-     */
-    const handleAddGuardian = (e) => {
-        const newGuardian = initialGuardian;
-        const guardians = [...form.guardians, newGuardian];
-        setForm({ ...form, guardians });
-        console.log(form);
-    };
-
-    /*
-     * Removes the newest guardian from the list of guardians 'guardianList'.
-     */
-    const handleRemGuardian = (e) => {
-        if (form.guardians.length > 1) {
-            const guardians = clone(form.guardians);
-            guardians.pop();
-            setForm({ ...form, guardians });
-        }
-    };
-
-    /*
-     * Pushes page path to the meetings page.
-     */
-    const handleSeeAllMeetings = () => {
-        history.push("/meetings");
-    };
-
-    /*
-     * If the property 'update' is true, set up 'header', 'isUpdate' and
-     * 'buttonVal' to their profile page counterparts.
-     */
-    if (update) {
-        header = <ProfHeader handleSeeAllMeetings={handleSeeAllMeetings} />;
-        isUpdate = <ConsentUpload />;
-        buttonVal = "Update";
+    if (type === "students") {
+      const students = clone(form.students);
+      students[i][name] = value;
+      setForm({ ...form, students });
+      return;
+    }
+    if (type === "guardians") {
+      const guardians = clone(form.guardians);
+      guardians[i][name] = value;
+      setForm({ ...form, guardians });
+      return;
     }
 
-    /*
-     * Returns a form for a profile or registration page depending on the 'update'
-     * property.
-     */
+    const input = {};
+    input[name] = value;
+
+    setForm({ ...form, ...input });
+    // console.log(form);
+  };
+
+  /*
+   * 'studentList' is a list of all the students affiliated with the account.
+   * 'guardianList' is a list of all the guardians affiliated with the account.
+   */
+  const studentList = form.students.map((student, i) => {
     return (
-        <form id="regForm" onSubmit={handleFormSubmit}>
-            {header}
-            <h3 className="formHeader">Account Information</h3>
-            <AccInfo
-                update={update}
-                handleOnChange={handleOnChange}
-                form={form}
-            />
-            {isUpdate}
-            <hr />
-            <h3 className="formHeader">Student Information</h3>
-            <div id="sList">{studentList}</div>
-            <AddNewStudent handleAddStudent={handleAddStudent} />
-            <RemStudent handleRemStudent={handleRemStudent} />
-            <hr />
-            <h3 className="formHeader">
-                Guardian Information | <em>Emergency contact</em>
-            </h3>
-            <div id="gList">{guardianList}</div>
-            <AddNewGuardian handleAddGuardian={handleAddGuardian} />
-            <RemGuardian handleRemGuardian={handleRemGuardian} />
-            <hr />
-            <h3 className="formHeader">Mailing List Opt In</h3>
-            <MainOptInOptions />
-            <input id="regButton" type="submit" value={buttonVal} />
-        </form>
+      <StudentInfo
+        key={i}
+        student={student}
+        handleOnChange={(e) => handleOnChange(e, i, "students")}
+      />
     );
+  });
+
+  const guardianList = form.guardians.map((guardian, i) => {
+    return (
+      <GuardianInfo
+        key={i}
+        guardian={guardian}
+        handleOnChange={(e) => handleOnChange(e, i, "guardians")}
+      />
+    );
+  });
+
+  /*
+   * 'header' is the header of the page for either registration or profile page.
+   * 'isUpdate' is affiliated with the consent form. Either is a checkbox or a
+   * file upload.
+   * 'buttonVal' is the text on the button for form submission.
+   */
+  let header = <RegHeader />;
+  let isUpdate = <CheckBox />;
+  let buttonVal = "Register";
+
+  /*
+   * 'history' used to render specified pages.
+   */
+  const history = useHistory();
+
+  useEffect(() => {
+    const pro = async () => {
+      try {
+        const res = await profile();
+        const {
+          data: { student_list: students, ...rest },
+        } = res;
+        students["section"] = ["junior_a"];
+        setForm({ students, ...rest });
+
+        // console.log(form);
+      } catch (error) {
+        console.log(error.response);
+      }
+    };
+    if (update) {
+      pro();
+    }
+  }, []);
+
+  /*
+   * Handles the event of the form submission. Prevents the page from refreshing.
+   * If property 'update' is true, return to the login page.
+   */
+  const handleFormSubmit = async (e) => {
+    e.preventDefault();
+
+    const { email, password, repassword, students, guardians } = form;
+
+    if (update) {
+      try {
+        console.log(form);
+      } catch (error) {}
+    } else {
+      if (password !== repassword) {
+        return console.log("Two passwords don't match");
+      }
+
+      if (password.length < 6) {
+        return console.log("Password should be at least 6 characters");
+      }
+
+      console.log(form);
+      try {
+        await register({ email, password, role: "student" });
+        await addProfile({
+          email,
+          guardians,
+          students,
+        });
+        history.push("/");
+      } catch (error) {
+        console.log(error.response);
+      }
+    }
+  };
+
+  /*
+   * Adds a student to the list of students 'studentList'.
+   */
+  const handleAddStudent = (e) => {
+    const newStudent = initialStudent;
+    const students = [...form.students, newStudent];
+    setForm({ ...form, students });
+    console.log(form);
+  };
+
+  /*
+   * Removes the newest student from the list of students 'studentList'.
+   */
+  const handleRemStudent = (e) => {
+    if (form.students.length > 1) {
+      const students = clone(form.students);
+      students.pop();
+      setForm({ ...form, students });
+    }
+  };
+
+  /*
+   * Adds a guardian to the list of guardians 'guardianList'.
+   */
+  const handleAddGuardian = (e) => {
+    const newGuardian = initialGuardian;
+    const guardians = [...form.guardians, newGuardian];
+    setForm({ ...form, guardians });
+    console.log(form);
+  };
+
+  /*
+   * Removes the newest guardian from the list of guardians 'guardianList'.
+   */
+  const handleRemGuardian = (e) => {
+    if (form.guardians.length > 1) {
+      const guardians = clone(form.guardians);
+      guardians.pop();
+      setForm({ ...form, guardians });
+    }
+  };
+
+  /*
+   * Pushes page path to the meetings page.
+   */
+  const handleSeeAllMeetings = () => {
+    history.push("/meetings");
+  };
+
+  /*
+   * If the property 'update' is true, set up 'header', 'isUpdate' and
+   * 'buttonVal' to their profile page counterparts.
+   */
+  if (update) {
+    header = <ProfHeader handleSeeAllMeetings={handleSeeAllMeetings} />;
+    isUpdate = <ConsentUpload />;
+    buttonVal = "Update";
+  }
+
+  /*
+   * Returns a form for a profile or registration page depending on the 'update'
+   * property.
+   */
+  return (
+    <form id="regForm" onSubmit={handleFormSubmit}>
+      {header}
+      <h3 className="formHeader">Account Information</h3>
+      <AccInfo update={update} handleOnChange={handleOnChange} form={form} />
+      {isUpdate}
+      <hr />
+      <h3 className="formHeader">Student Information</h3>
+      <div id="sList">{studentList}</div>
+      <AddNewStudent handleAddStudent={handleAddStudent} />
+      <RemStudent handleRemStudent={handleRemStudent} />
+      <hr />
+      <h3 className="formHeader">
+        Guardian Information | <em>Emergency contact</em>
+      </h3>
+      <div id="gList">{guardianList}</div>
+      <AddNewGuardian handleAddGuardian={handleAddGuardian} />
+      <RemGuardian handleRemGuardian={handleRemGuardian} />
+      <hr />
+      <h3 className="formHeader">Mailing List Opt In</h3>
+      <MainOptInOptions />
+      <input id="regButton" type="submit" value={buttonVal} />
+    </form>
+  );
 }
 
 export default Registration;
