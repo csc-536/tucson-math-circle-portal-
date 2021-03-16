@@ -25,7 +25,6 @@ const NavBar = () => {
 
   const {
     auth: { userLoggedIn, role },
-    setAuth,
   } = useContext(AuthContext);
 
   const links = [];
@@ -33,6 +32,11 @@ const NavBar = () => {
   if (userLoggedIn) {
     switch (role) {
       case "student":
+        links.push({
+          title: "Account",
+          item: <AccountCircle />,
+          path: "/profile",
+        });
         break;
       case "admin":
         links.push({
@@ -49,11 +53,6 @@ const NavBar = () => {
       default:
         break;
     }
-    links.push({
-      title: "Account",
-      item: <AccountCircle />,
-      path: "/profile",
-    });
   }
 
   return (

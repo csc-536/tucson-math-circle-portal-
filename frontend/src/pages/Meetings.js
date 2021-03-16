@@ -28,13 +28,10 @@ const Meetings = () => {
       } catch (error) {
         console.log(error.response);
       }
-      console.log("dfadafs");
     };
 
     meetings();
   }, []);
-
-  console.log(meetings);
 
   return (
     <div>
