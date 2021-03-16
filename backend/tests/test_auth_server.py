@@ -102,6 +102,7 @@ def test_student_update_password():
     )
     assert response.status_code == 200
 
+
 def test_admin_me():
     response = client.post(
         "/token", data={"username": "admin@email.com", "password": "password"}
@@ -134,4 +135,3 @@ def test_student_me():
     assert response.status_code == 200
     assert json["email"] == "student2@email.com"
     assert json["role"] == "student"
-

@@ -34,13 +34,18 @@ You can follow this guide to prevent ever accidentally pushing onto the main rep
   - In virtualenv, run `flake8 .` in backend directory and fix anything it complains about
   - In virtualenv, run `black .` in backend directory for formatting
 
-#### Running Auth server (It is now much simpler!)
+### Backend running tests with code coverage
+1. In virtualenv and in backend directory run `pytest --cov=dir tests/` where `dir` is either `auth`, `main` or `.`.  The `dir` controls what files are tracked for code coverage.
+
+#### Running Auth server
+- **New alternative method:** from `frontend` directory run `npm run auth`
 1. Follow the above steps to install dependencies and enter the virtualenv with `pipenv shell`.
 2. Run `python auth/main.py`
 3. By default, server runs at `127.0.0.1:8000`
 4. To interact with a web interface (and see the routes etc) go to `127.0.0.1:8000/docs`
 
 #### Running Main server
+- **New alternative method:** from `frontend` directory run `npm run main`
 1. Follow the above steps to install dependencies and enter the virtualenv with `pipenv shell`.
 2. Run `python main/src/app.py`
 3. By default, server runs at `127.0.0.1:9000` 
