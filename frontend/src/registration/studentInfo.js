@@ -8,7 +8,6 @@ function StudentInfo({
   student: { first_name, last_name, grade, age },
   handleOnChange,
 }) {
-
   /*
    * Return a div for inputting first and last name, grade and age.
    */

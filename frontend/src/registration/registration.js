@@ -135,7 +135,7 @@ function Registration({ update }) {
   const checkFeilds = (email, password, repassword, students, guardians) => {
     errStr = "";
     var mailformat = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
-    if(!email.match(mailformat)) {
+    if (!email.match(mailformat)) {
       errStr += "Account email required\n";
     }
     if (!update && password.length < 6) {
@@ -174,7 +174,7 @@ function Registration({ update }) {
     });
 
     return errStr;
-  }
+  };
 
   /*
    * Handles the event of the form submission. Prevents the page from refreshing.
@@ -184,8 +184,8 @@ function Registration({ update }) {
     e.preventDefault();
 
     const { email, password, repassword, students, guardians } = form;
-    const str = checkFeilds(email, password, repassword, students, guardians)
-    if(str !== ""){ 
+    const str = checkFeilds(email, password, repassword, students, guardians);
+    if (str !== "") {
       alert(str);
       return;
     }
