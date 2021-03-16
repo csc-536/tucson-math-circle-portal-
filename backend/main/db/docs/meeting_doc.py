@@ -43,6 +43,7 @@ class MeetingDocument(Document):
             "date_and_time": self.date_and_time,
             "duration": self.duration,
             "zoom_link": self.zoom_link,
+            "miro_link": self.miro_link,
             "topic": self.topic,
             "session_level": self.session_level,
         }
@@ -53,6 +54,7 @@ class MeetingDocument(Document):
             "date_and_time": self.date_and_time,
             "duration": self.duration,
             "zoom_link": self.zoom_link,
+            "miro_link": self.miro_link,
             "topic": self.topic,
             "session_level": self.session_level,
             "password": self.password,
@@ -65,6 +67,7 @@ class MeetingDocument(Document):
             "date_and_time": self.date_and_time,
             "duration": self.duration,
             "zoom_link": self.zoom_link,
+            "miro_link": self.miro_link,
             "topic": self.topic,
             "session_level": self.session_level,
             "password": self.password,
