@@ -34,6 +34,17 @@ const useStyles = makeStyles((theme) => ({
 const MeetingCard = ({ meeting, past }) => {
   const classes = useStyles();
   const [open, setOpen] = useState(false);
+  console.log(meeting);
+
+  const {
+    topic,
+    date_and_time,
+    duration,
+    session_level,
+    zoom_link,
+    password,
+    students,
+  } = meeting;
 
   const {
     auth: { userLoggedIn, role },
@@ -47,11 +58,25 @@ const MeetingCard = ({ meeting, past }) => {
     setOpen(false);
   };
 
+  const date = getDate(date_and_time);
+  const sessionLevel = getSessionLevel(session_level);
+
   const history = useHistory();
   const handleEdit = () => {
     history.push({
       pathname: "/meeting",
-      state: { meeting, past },
+      state: {
+        meeting: {
+          date: date_and_time,
+          sessionLevel: session_level,
+          zoom_link,
+          zoomPassword: password,
+          topic,
+          duration,
+          students,
+        },
+        past,
+      },
     });
   };
 
@@ -70,23 +95,22 @@ const MeetingCard = ({ meeting, past }) => {
         container={() => rootRef.current}
       >
         <div className={classes.paper}>
-          <Meeting meeting={meeting} />
+          <Meeting meeting={{ date, sessionLevel, topic, zoom_link }} />
         </div>
       </Modal>
       <CardContent>
-        <Typography gutterBottom variant="h4" component="h3">
-          Meeting
+        <Typography gutterBottom variant="h5" component="h3">
+          {sessionLevel} <br /> {topic}
         </Typography>
         <Typography variant="h6" component="h6" color="textSecondary">
-          July 20, 2014
+          {date}
         </Typography>
         <Typography variant="body1" component="p">
-          Lizards are a widespread group of squamate reptiles, with over 6,000
-          species, ranging across all continents except Antarctica
+          Join us to study {topic}, and you won't regret it!!
         </Typography>
       </CardContent>
       <CardActions className={classes.cardActions}>
-        {role === "coordinator" ? (
+        {role === "admin" ? (
           <Button size="small" color="primary" onClick={handleEdit}>
             Edit
           </Button>
@@ -99,5 +123,23 @@ const MeetingCard = ({ meeting, past }) => {
     </Card>
   );
 };
+
+function getSessionLevel(str) {
+  switch (str) {
+    case "junior_a":
+      return "Junior A";
+    case "junior_b":
+      return "Junior B";
+    case "senior":
+      return "Senior";
+    default:
+      return "";
+  }
+}
+
+function getDate(date) {
+  const d = new Date(date).toLocaleString();
+  return d;
+}
 
 export default MeetingCard;

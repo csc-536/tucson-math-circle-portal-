@@ -10,14 +10,12 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const MeetingCards = ({ past }) => {
+const MeetingCards = ({ past, meetings }) => {
   const classes = useStyles();
   const numItemPerRow = 4;
 
-  const meetings = [1, 2, 3, 4, 6, 7];
-
   const chunks = chunk(meetings, numItemPerRow);
-
+  console.log(chunks);
   const grid = chunks.map((c) => (
     <Grid container item md={12} spacing={3} key={uniqueId()}>
       {c.map((cc) => (

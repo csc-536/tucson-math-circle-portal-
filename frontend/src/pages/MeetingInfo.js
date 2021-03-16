@@ -25,24 +25,50 @@ const MeetingInfo = () => {
 
   const [disabled, setDisabled] = useState(false);
 
-  useEffect(() => {
-    const {
-      state: { meeting, past }, // form's default value
-    } = location;
-    setDisabled(past);
-  }, [location]);
-
   const [form, setForm] = useState({
     date: new Date(),
     time: "",
     duration: "",
     topic: "",
-    sessionLevel: "ja",
+    sessionLevel: "",
     material: "",
     zoomLink: "",
+    zoomPassword: "",
     miroLink: "",
     notes: "",
   });
+
+  useEffect(() => {
+    const {
+      state: {
+        meeting: {
+          date,
+          sessionLevel,
+          zoom_link,
+          zoomPassword,
+          topic,
+          duration,
+          students,
+        },
+        past,
+      },
+    } = location;
+    setForm({
+      ...form,
+      ...{
+        date,
+        time: getTime(date),
+        topic,
+        sessionLevel,
+        zoomLink: zoom_link,
+        zoomPassword,
+        duration: getTimeDifferences(duration, date),
+      },
+    });
+    console.log(topic);
+    // setRegisteredStudents(students);
+    setDisabled(past);
+  }, [location]);
 
   const [registeredStudents, setRegisteredStudents] = useState([
     {
@@ -123,5 +149,21 @@ const MeetingInfo = () => {
     </div>
   );
 };
+
+function getTimeDifferences(d1, d2) {
+  const diff = new Date(d1).getTime() - new Date(d2).getTime();
+  return diff / 1000 / 60;
+}
+
+function getTime(d) {
+  const date = new Date(d);
+  const h = toTwoDigits(date.getHours());
+  const m = toTwoDigits(date.getMinutes());
+  return `${h}:${m}`;
+}
+
+function toTwoDigits(s) {
+  return s < 10 ? `0${s}` : `${s}`;
+}
 
 export default MeetingInfo;

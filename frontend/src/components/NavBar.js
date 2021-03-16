@@ -34,7 +34,7 @@ const NavBar = () => {
     switch (role) {
       case "student":
         break;
-      case "coordinator":
+      case "admin":
         links.push({
           title: "Create a New Meeting",
           item: <AddBox />,
@@ -45,15 +45,15 @@ const NavBar = () => {
           item: <People />,
           path: "#",
         });
-        links.push({
-          title: "Account",
-          item: <AccountCircle />,
-          path: "/profile",
-        });
         break;
       default:
         break;
     }
+    links.push({
+      title: "Account",
+      item: <AccountCircle />,
+      path: "/profile",
+    });
   }
 
   return (
