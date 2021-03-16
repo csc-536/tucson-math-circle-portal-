@@ -84,6 +84,20 @@ export async function addProfile(data) {
   return res;
 }
 
+// TODO: change request format
+export async function updateProfile(data) {
+  const accessToken = sessionStorage.getItem("accessToken");
+  console.log(accessToken);
+
+  const res = await main.put("/student/update_profile", data, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+  console.log(res);
+  return res;
+}
+
 export async function allMeetings({ role, body }) {
   const accessToken = sessionStorage.getItem("accessToken");
   console.log(accessToken);

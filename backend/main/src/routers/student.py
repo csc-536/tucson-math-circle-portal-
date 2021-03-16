@@ -115,7 +115,7 @@ async def update_profile(
 ):
     current_user = get_current_user_doc(token_data)
     current_user["email"] = new_profile.email
-    current_user["guardians"] = new_profile.guardians
-    current_user["students"] = new_profile.students
+    current_user["guardians"] = [g.dict() for g in new_profile.guardians]
+    current_user["students"] = [s.dict() for s in new_profile.students]
     current_user.save()
     return current_user.dict()

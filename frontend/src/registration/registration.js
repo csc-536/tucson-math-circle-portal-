@@ -18,7 +18,7 @@ import React, { useContext, useEffect, useState } from "react";
 import RegHeader from "./registrationHeader";
 import RemGuardian from "./remGuardian";
 import RemStudent from "./remStudent";
-import { addProfile, profile, register } from "../http";
+import { addProfile, updateProfile, profile, register } from "../http";
 import { clone, uniqueId } from "lodash";
 
 function Registration({ update }) {
@@ -48,10 +48,11 @@ function Registration({ update }) {
 
   const handleOnChange = (e, i, type) => {
     const { name, value } = e.target;
-
     if (type === "students") {
+      console.log(form.students);
       const students = clone(form.students);
       students[i][name] = value;
+      // console.log(form.students);
       setForm({ ...form, students });
       return;
     }
@@ -116,6 +117,7 @@ function Registration({ update }) {
           data: { student_list: students, ...rest },
         } = res;
         students["section"] = ["junior_a"];
+        console.log(students);
         setForm({ students, ...rest });
 
         // console.log(form);
@@ -128,6 +130,52 @@ function Registration({ update }) {
     }
   }, []);
 
+  let errStr = "";
+
+  const checkFeilds = (email, password, repassword, students, guardians) => {
+    errStr = "";
+    var mailformat = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+    if(!email.match(mailformat)) {
+      errStr += "Account email required\n";
+    }
+    if (!update && password.length < 6) {
+      errStr += "Password needs to be at least 6 characters long\n";
+    }
+    if (!update && repassword !== password) {
+      errStr += "Passwords do not match\n";
+    }
+    students.map((student, i) => {
+      if (student.first_name === "") {
+        errStr += "Student " + (i + 1) + ": First name required\n";
+      }
+      if (student.last_name === "") {
+        errStr += "Student " + (i + 1) + ": Last name required\n";
+      }
+      if (student.grade === "") {
+        errStr += "Student " + (i + 1) + ": Grade required\n";
+      }
+      if (student.age === "") {
+        errStr += "Student " + (i + 1) + ": Age required\n";
+      }
+    });
+    guardians.map((guardian, i) => {
+      if (guardian.first_name === "") {
+        errStr += "Guardian " + (i + 1) + ": first name required\n";
+      }
+      if (guardian.last_name === "") {
+        errStr += "Guardian " + (i + 1) + ": last name required\n";
+      }
+      if (!guardian.email.match(mailformat)) {
+        errStr += "Guardian " + (i + 1) + ": email required\n";
+      }
+      if (guardian.phone_number === null || guardian.phone_number === "") {
+        errStr += "Guardian " + (i + 1) + ": age required\n";
+      }
+    });
+
+    return errStr;
+  }
+
   /*
    * Handles the event of the form submission. Prevents the page from refreshing.
    * If property 'update' is true, return to the login page.
@@ -136,11 +184,24 @@ function Registration({ update }) {
     e.preventDefault();
 
     const { email, password, repassword, students, guardians } = form;
+    const str = checkFeilds(email, password, repassword, students, guardians)
+    if(str !== ""){ 
+      alert(str);
+      return;
+    }
 
     if (update) {
       try {
+        console.log("FORM: ");
         console.log(form);
-      } catch (error) {}
+        await updateProfile({
+          email,
+          guardians,
+          students,
+        });
+      } catch (error) {
+        console.log(error.response);
+      }
     } else {
       if (password !== repassword) {
         return console.log("Two passwords don't match");
@@ -249,6 +310,7 @@ function Registration({ update }) {
       <hr />
       <h3 className="formHeader">Mailing List Opt In</h3>
       <MainOptInOptions />
+      <p>{errStr}</p>
       <input id="regButton" type="submit" value={buttonVal} />
     </form>
   );
