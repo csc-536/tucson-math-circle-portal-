@@ -65,7 +65,7 @@ const MeetingInfo = () => {
         duration: getTimeDifferences(duration, date),
       },
     });
-    console.log(topic);
+    // console.log(topic);
     // setRegisteredStudents(students);
     setDisabled(past);
   }, [location]);

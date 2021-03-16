@@ -5,7 +5,6 @@ export function isLoggedIn() {
 }
 
 export function loggedInRole() {
-  // return "admin";
   if (!isLoggedIn()) {
     return "";
   }

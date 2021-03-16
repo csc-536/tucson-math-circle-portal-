@@ -15,7 +15,7 @@ const MeetingCards = ({ past, meetings }) => {
   const numItemPerRow = 4;
 
   const chunks = chunk(meetings, numItemPerRow);
-  console.log(chunks);
+
   const grid = chunks.map((c) => (
     <Grid container item md={12} spacing={3} key={uniqueId()}>
       {c.map((cc) => (

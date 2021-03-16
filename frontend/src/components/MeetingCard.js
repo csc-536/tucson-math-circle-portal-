@@ -47,7 +47,7 @@ const MeetingCard = ({ meeting, past }) => {
   } = meeting;
 
   const {
-    auth: { userLoggedIn, role },
+    auth: { role },
   } = useContext(AuthContext);
 
   const handleOpen = () => {
