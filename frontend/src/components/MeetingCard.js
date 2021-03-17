@@ -42,6 +42,7 @@ const MeetingCard = ({ meeting, past }) => {
     duration,
     session_level,
     zoom_link,
+    miro_link,
     password,
     students,
   } = meeting;
@@ -70,6 +71,7 @@ const MeetingCard = ({ meeting, past }) => {
           date: date_and_time,
           sessionLevel: session_level,
           zoom_link,
+          miro_link,
           zoomPassword: password,
           topic,
           duration,

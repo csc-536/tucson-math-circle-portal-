@@ -45,6 +45,7 @@ const MeetingInfo = () => {
           date,
           sessionLevel,
           zoom_link,
+          miro_link,
           zoomPassword,
           topic,
           duration,
@@ -61,6 +62,7 @@ const MeetingInfo = () => {
         topic,
         sessionLevel,
         zoomLink: zoom_link,
+        miroLink: miro_link,
         zoomPassword,
         duration: getTimeDifferences(duration, date),
       },
@@ -69,6 +71,8 @@ const MeetingInfo = () => {
     // setRegisteredStudents(students);
     setDisabled(past);
   }, [location]);
+
+  console.log(form);
 
   const [registeredStudents, setRegisteredStudents] = useState([
     {
