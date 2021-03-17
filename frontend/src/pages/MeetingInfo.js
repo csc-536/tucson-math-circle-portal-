@@ -72,8 +72,6 @@ const MeetingInfo = () => {
     setDisabled(past);
   }, [location]);
 
-  console.log(form);
-
   const [registeredStudents, setRegisteredStudents] = useState([
     {
       studentName: "Joe Doe1",
