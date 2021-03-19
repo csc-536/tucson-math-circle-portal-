@@ -44,10 +44,6 @@ function Registration({ update }) {
     students: [initialStudent],
     guardians: [initialGuardian],
     section: ["junior_a", "junior_b", "senior"],
-    junior_a: true,
-    junior_b: true,
-    senior: true,
-    opt_out: false,
   });
 
   const handleOnChange = (e, i, type) => {
@@ -80,56 +76,63 @@ function Registration({ update }) {
    */
   const handleMailChange = (e) => {
     const { value } = e.target;
-    console.log(form.senior);
-    if (value.localeCompare("junior_a") === 0) {
-      if (
-        (!form.junior_a || form.junior_b || form.senior || form.opt_out) ==
-        false
-      ) {
-        return;
-      }
-      let junior_a = clone(form.junior_a);
-      let opt_out = clone(form.opt_out);
-      junior_a = !junior_a;
-      opt_out = false;
-      setForm({ ...form, junior_a, opt_out });
-    } else if (value.localeCompare("junior_b") == 0) {
-      if (
-        (form.junior_a || !form.junior_b || form.senior || form.opt_out) ==
-        false
-      ) {
-        return;
-      }
-      let junior_b = clone(form.junior_b);
-      let opt_out = clone(form.opt_out);
-      junior_b = !junior_b;
-      opt_out = false;
-      setForm({ ...form, junior_b, opt_out });
-    } else if (value.localeCompare("senior") == 0) {
-      if (
-        (form.junior_a || form.junior_b || !form.senior || form.opt_out) ==
-        false
-      ) {
-        return;
-      }
-      let senior = clone(form.senior);
-      let opt_out = clone(form.opt_out);
-      senior = !senior;
-      opt_out = false;
-      setForm({ ...form, senior, opt_out });
-    } else if (value.localeCompare("opt_out") == 0) {
-      if (
-        (form.junior_a || form.junior_b || form.senior || !form.opt_out) ==
-        false
-      ) {
-        return;
-      }
-      let junior_a = false;
-      let junior_b = false;
-      let senior = false;
-      let opt_out = true;
-      setForm({ ...form, junior_a, junior_b, senior, opt_out });
+    let section = form.section;
+    if (section.includes(value)) {
+      let i = section.indexOf(value);
+      section.splice(i, 1);
+    } else {
+      section.push(value);
     }
+    setForm({ ...form, section });
+
+    // if (value.localeCompare("junior_a") === 0) {
+    //   if (
+    //     (!form.boolSections["junior_a"] || form.boolSections["junior_b"] || form.boolSections["senior"] || form.boolSections["opt_out"]) ==
+    //     false
+    //   ) {
+    //     return;
+    //   }
+    //   let boolSections = clone(form.boolSections);
+    //   boolSections["junior_a"] = !boolSections["junior_a"];
+    //   boolSections["opt_out"] = false;
+    //   setForm({ ...form, boolSections });
+    // } else if (value.localeCompare("junior_b") == 0) {
+    //   if (
+    //     (form.junior_a || !form.junior_b || form.senior || form.opt_out) ==
+    //     false
+    //   ) {
+    //     return;
+    //   }
+    //   let junior_b = clone(form.junior_b);
+    //   let opt_out = clone(form.opt_out);
+    //   junior_b = !junior_b;
+    //   opt_out = false;
+    //   setForm({ ...form, junior_b, opt_out });
+    // } else if (value.localeCompare("senior") == 0) {
+    //   if (
+    //     (form.junior_a || form.junior_b || !form.senior || form.opt_out) ==
+    //     false
+    //   ) {
+    //     return;
+    //   }
+    //   let senior = clone(form.senior);
+    //   let opt_out = clone(form.opt_out);
+    //   senior = !senior;
+    //   opt_out = false;
+    //   setForm({ ...form, senior, opt_out });
+    // } else if (value.localeCompare("opt_out") == 0) {
+    //   if (
+    //     (form.junior_a || form.junior_b || form.senior || !form.opt_out) ==
+    //     false
+    //   ) {
+    //     return;
+    //   }
+    //   let junior_a = false;
+    //   let junior_b = false;
+    //   let senior = false;
+    //   let opt_out = true;
+    //   setForm({ ...form, junior_a, junior_b, senior, opt_out });
+    // }
   };
 
   /*
@@ -354,7 +357,6 @@ function Registration({ update }) {
    * Returns a form for a profile or registration page depending on the 'update'
    * property.
    */
-  const { junior_a, junior_b, senior, opt_out } = form;
   return (
     <form id="regForm" onSubmit={handleFormSubmit}>
       {header}
@@ -376,13 +378,8 @@ function Registration({ update }) {
       <hr />
       <h3 className="formHeader">Mailing List Opt In</h3>
       <MainOptInOptions
-        handleMailChange={(e, junior_a, junior_b, senior, opt_out) =>
-          handleMailChange(e, junior_a, junior_b, senior, opt_out)
-        }
-        junior_a={junior_a}
-        junior_b={junior_b}
-        senior={senior}
-        opt_out={opt_out}
+        handleMailChange={(e) => handleMailChange(e)}
+        section={form.section}
       />
       <p>{errStr}</p>
       <input id="regButton" type="submit" value={buttonVal} />

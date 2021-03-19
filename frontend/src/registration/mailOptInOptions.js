@@ -5,23 +5,17 @@
  */
 import React, { useState } from "react";
 
-function MailOptInOptions({
-  handleMailChange,
-  junior_a,
-  junior_b,
-  senior,
-  opt_out,
-}) {
+function MailOptInOptions({ handleMailChange, section }) {
   /*
    * 'juniorARadio' is a boolean indicating if Junior A is selected.
    * 'juniorBRadio' is a boolean indicating if Junior B is selected.
    * 'seniorRadio' is a boolean indicating if Senior is selected.
    * 'optOutRadio' is a boolean indicating if Opt Out is selected.
    */
-  const [juniorARadio, setJuniorARadio] = useState(true);
-  const [juniorBRadio, setJuniorBRadio] = useState(true);
-  const [seniorRadio, setSeniorRadio] = useState(true);
-  const [optOutRadio, setOptOutRadio] = useState(false);
+  // const [juniorARadio, setJuniorARadio] = useState(true);
+  // const [juniorBRadio, setJuniorBRadio] = useState(true);
+  // const [seniorRadio, setSeniorRadio] = useState(true);
+  // const [optOutRadio, setOptOutRadio] = useState(false);
 
   /*
    * 'handleClick' handles the event of a mail in option being clicked.
@@ -80,7 +74,7 @@ function MailOptInOptions({
           type="radio"
           value="junior_a"
           name="junior_a"
-          checked={junior_a}
+          checked={section.includes("junior_a")}
           onClick={handleMailChange}
         />
       </label>
@@ -91,14 +85,20 @@ function MailOptInOptions({
           type="radio"
           value="junior_b"
           name="junior_b"
-          checked={junior_b}
+          checked={section.includes("junior_b")}
           onClick={handleMailChange}
         />
       </label>
 
       <label className="mailRadio" onClick={handleMailChange}>
         Senior
-        <input type="radio" value="senior" name="senior" checked={senior} />
+        <input
+          type="radio"
+          value="senior"
+          name="senior"
+          checked={section.includes("senior")}
+          onClick={handleMailChange}
+        />
       </label>
 
       <label className="mailRadio">
@@ -107,7 +107,7 @@ function MailOptInOptions({
           type="radio"
           value="opt_out"
           name="opt_out"
-          checked={opt_out}
+          checked={section.includes("opt_out")}
           onClick={handleMailChange}
         />
       </label>
