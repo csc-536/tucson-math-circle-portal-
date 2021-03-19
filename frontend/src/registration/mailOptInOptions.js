@@ -5,7 +5,13 @@
  */
 import React, { useState } from "react";
 
-function MailOptInOptions(props) {
+function MailOptInOptions({
+  handleMailChange,
+  junior_a,
+  junior_b,
+  senior,
+  opt_out,
+}) {
   /*
    * 'juniorARadio' is a boolean indicating if Junior A is selected.
    * 'juniorBRadio' is a boolean indicating if Junior B is selected.
@@ -24,43 +30,44 @@ function MailOptInOptions(props) {
    * If 'Opt Out' is clicked and is selected, unselect all other options.
    * If the clicked radio button is the only currently selected, do nothing.
    */
-  const handleClick = (e) => {
-    if (e.target.value.localeCompare("juniorA") === 0) {
-      if (
-        (!juniorARadio || juniorBRadio || seniorRadio || optOutRadio) == false
-      ) {
-        return;
-      }
-      setJuniorARadio(!juniorARadio);
-      setOptOutRadio(false);
-    } else if (e.target.value.localeCompare("juniorB") == 0) {
-      if (
-        (juniorARadio || !juniorBRadio || seniorRadio || optOutRadio) == false
-      ) {
-        return;
-      }
-      setJuniorBRadio(!juniorBRadio);
-      setOptOutRadio(false);
-    } else if (e.target.value.localeCompare("senior") == 0) {
-      if (
-        (juniorARadio || juniorBRadio || !seniorRadio || optOutRadio) == false
-      ) {
-        return;
-      }
-      setSeniorRadio(!seniorRadio);
-      setOptOutRadio(false);
-    } else if (e.target.value.localeCompare("optOut") == 0) {
-      if (
-        (juniorARadio || juniorBRadio || seniorRadio || !optOutRadio) == false
-      ) {
-        return;
-      }
-      setOptOutRadio(!optOutRadio);
-      setJuniorARadio(false);
-      setJuniorBRadio(false);
-      setSeniorRadio(false);
-    }
-  };
+  // const handleClick = (e) => {
+  //   if (e.target.value.localeCompare("junior_a") === 0) {
+  //     if (
+  //       (!juniorARadio || juniorBRadio || seniorRadio || optOutRadio) == false
+  //     ) {
+  //       return;
+  //     }
+  //     setJuniorARadio(!juniorARadio);
+  //     setOptOutRadio(false);
+  //   } else if (e.target.value.localeCompare("junior_b") == 0) {
+  //     if (
+  //       (juniorARadio || !juniorBRadio || seniorRadio || optOutRadio) == false
+  //     ) {
+  //       return;
+  //     }
+  //     setJuniorBRadio(!juniorBRadio);
+  //     setOptOutRadio(false);
+  //   } else if (e.target.value.localeCompare("senior") == 0) {
+  //     if (
+  //       (juniorARadio || juniorBRadio || !seniorRadio || optOutRadio) == false
+  //     ) {
+  //       return;
+  //     }
+  //     setSeniorRadio(!seniorRadio);
+  //     setOptOutRadio(false);
+  //   } else if (e.target.value.localeCompare("opt_out") == 0) {
+  //     if (
+  //       (juniorARadio || juniorBRadio || seniorRadio || !optOutRadio) == false
+  //     ) {
+  //       return;
+  //     }
+  //     setOptOutRadio(!optOutRadio);
+  //     setJuniorARadio(false);
+  //     setJuniorBRadio(false);
+  //     setSeniorRadio(false);
+  //   }
+  //   handleMailChange(juniorARadio, juniorBRadio, seniorRadio, optOutRadio);
+  // };
 
   /*
    * Return a div providing main in options via radio buttons.
@@ -71,10 +78,10 @@ function MailOptInOptions(props) {
         Junior A
         <input
           type="radio"
-          value="juniorA"
-          id="juniorA"
-          checked={juniorARadio}
-          onClick={handleClick}
+          value="junior_a"
+          name="junior_a"
+          checked={junior_a}
+          onClick={handleMailChange}
         />
       </label>
 
@@ -82,32 +89,26 @@ function MailOptInOptions(props) {
         Junior B
         <input
           type="radio"
-          value="juniorB"
-          id="juniorB"
-          checked={juniorBRadio}
-          onClick={handleClick}
+          value="junior_b"
+          name="junior_b"
+          checked={junior_b}
+          onClick={handleMailChange}
         />
       </label>
 
-      <label className="mailRadio">
+      <label className="mailRadio" onClick={handleMailChange}>
         Senior
-        <input
-          type="radio"
-          value="senior"
-          id="senior"
-          checked={seniorRadio}
-          onClick={handleClick}
-        />
+        <input type="radio" value="senior" name="senior" checked={senior} />
       </label>
 
       <label className="mailRadio">
         Opt Out
         <input
           type="radio"
-          value="optOut"
-          id="optOut"
-          checked={optOutRadio}
-          onClick={handleClick}
+          value="opt_out"
+          name="opt_out"
+          checked={opt_out}
+          onClick={handleMailChange}
         />
       </label>
     </div>

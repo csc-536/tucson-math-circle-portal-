@@ -27,7 +27,6 @@ function Registration({ update }) {
     last_name: "",
     grade: "",
     age: "",
-    section: ["junior_a", "junior_b", "senior"],
   };
 
   const initialGuardian = {
@@ -44,30 +43,93 @@ function Registration({ update }) {
     newpassword: "",
     students: [initialStudent],
     guardians: [initialGuardian],
+    section: ["junior_a", "junior_b", "senior"],
+    junior_a: true,
+    junior_b: true,
+    senior: true,
+    opt_out: false,
   });
 
   const handleOnChange = (e, i, type) => {
     const { name, value } = e.target;
     if (type === "students") {
-      console.log(form.students);
       const students = clone(form.students);
       students[i][name] = value;
       // console.log(form.students);
       setForm({ ...form, students });
       return;
-    }
-    if (type === "guardians") {
+    } else if (type === "guardians") {
       const guardians = clone(form.guardians);
       guardians[i][name] = value;
       setForm({ ...form, guardians });
       return;
     }
-
     const input = {};
     input[name] = value;
 
     setForm({ ...form, ...input });
     // console.log(form);
+  };
+
+  /*
+   * 'handleMailChange' handles the event of a mail in option being clicked.
+   * If Junior A, B, or Senior is clicked, alternate its selected boolean and
+   * unselect 'Opt Out'.
+   * If 'Opt Out' is clicked and is selected, unselect all other options.
+   * If the clicked radio button is the only currently selected, do nothing.
+   */
+  const handleMailChange = (e) => {
+    const { value } = e.target;
+    console.log(form.senior);
+    if (value.localeCompare("junior_a") === 0) {
+      if (
+        (!form.junior_a || form.junior_b || form.senior || form.opt_out) ==
+        false
+      ) {
+        return;
+      }
+      let junior_a = clone(form.junior_a);
+      let opt_out = clone(form.opt_out);
+      junior_a = !junior_a;
+      opt_out = false;
+      setForm({ ...form, junior_a, opt_out });
+    } else if (value.localeCompare("junior_b") == 0) {
+      if (
+        (form.junior_a || !form.junior_b || form.senior || form.opt_out) ==
+        false
+      ) {
+        return;
+      }
+      let junior_b = clone(form.junior_b);
+      let opt_out = clone(form.opt_out);
+      junior_b = !junior_b;
+      opt_out = false;
+      setForm({ ...form, junior_b, opt_out });
+    } else if (value.localeCompare("senior") == 0) {
+      if (
+        (form.junior_a || form.junior_b || !form.senior || form.opt_out) ==
+        false
+      ) {
+        return;
+      }
+      let senior = clone(form.senior);
+      let opt_out = clone(form.opt_out);
+      senior = !senior;
+      opt_out = false;
+      setForm({ ...form, senior, opt_out });
+    } else if (value.localeCompare("opt_out") == 0) {
+      if (
+        (form.junior_a || form.junior_b || form.senior || !form.opt_out) ==
+        false
+      ) {
+        return;
+      }
+      let junior_a = false;
+      let junior_b = false;
+      let senior = false;
+      let opt_out = true;
+      setForm({ ...form, junior_a, junior_b, senior, opt_out });
+    }
   };
 
   /*
@@ -116,7 +178,6 @@ function Registration({ update }) {
         const {
           data: { student_list: students, ...rest },
         } = res;
-        students["section"] = ["junior_a"];
         console.log(students);
         setForm({ students, ...rest });
 
@@ -151,10 +212,10 @@ function Registration({ update }) {
       if (student.last_name === "") {
         errStr += "Student " + (i + 1) + ": Last name required\n";
       }
-      if (student.grade === "") {
+      if (student.grade === "" || isNaN(student.grade)) {
         errStr += "Student " + (i + 1) + ": Grade required\n";
       }
-      if (student.age === "") {
+      if (student.age === "" || isNaN(student.age)) {
         errStr += "Student " + (i + 1) + ": Age required\n";
       }
     });
@@ -168,8 +229,12 @@ function Registration({ update }) {
       if (!guardian.email.match(mailformat)) {
         errStr += "Guardian " + (i + 1) + ": email required\n";
       }
-      if (guardian.phone_number === null || guardian.phone_number === "") {
-        errStr += "Guardian " + (i + 1) + ": age required\n";
+      if (
+        guardian.phone_number === null ||
+        guardian.phone_number === "" ||
+        guardian.phone_number.length < 10
+      ) {
+        errStr += "Guardian " + (i + 1) + ": phone number required\n";
       }
     });
 
@@ -289,6 +354,7 @@ function Registration({ update }) {
    * Returns a form for a profile or registration page depending on the 'update'
    * property.
    */
+  const { junior_a, junior_b, senior, opt_out } = form;
   return (
     <form id="regForm" onSubmit={handleFormSubmit}>
       {header}
@@ -309,7 +375,15 @@ function Registration({ update }) {
       <RemGuardian handleRemGuardian={handleRemGuardian} />
       <hr />
       <h3 className="formHeader">Mailing List Opt In</h3>
-      <MainOptInOptions />
+      <MainOptInOptions
+        handleMailChange={(e, junior_a, junior_b, senior, opt_out) =>
+          handleMailChange(e, junior_a, junior_b, senior, opt_out)
+        }
+        junior_a={junior_a}
+        junior_b={junior_b}
+        senior={senior}
+        opt_out={opt_out}
+      />
       <p>{errStr}</p>
       <input id="regButton" type="submit" value={buttonVal} />
     </form>
