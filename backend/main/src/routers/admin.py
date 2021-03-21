@@ -1,4 +1,5 @@
 from fastapi import Depends, APIRouter
+from backend.main.src.routers.student import get_student_meeting_index
 
 # main db imports
 from backend.main.db.docs.student_profile_doc import (
@@ -8,6 +9,8 @@ from backend.main.db.models.meeting_model import (
     CreateMeetingModel,
     MeetingSearchModel,
     MeetingModel,
+    StudentMeetingRegistration,
+    UpdateMeeting,
 )
 from backend.main.db.docs.meeting_doc import (
     document as MeetingDoc,
@@ -59,9 +62,9 @@ async def create_meeting(create_meeting: CreateMeetingModel):
 
 
 @router.delete("/delete_meeting")
-async def delete_meeting(meeting_uuid: str):
+async def delete_meeting(update_meeting_model: UpdateMeeting):
     try:
-        meeting_doc = MeetingDocument.objects(uuid=meeting_uuid)[0]
+        meeting_doc = MeetingDocument.objects(uuid=update_meeting_model.meeting_id)[0]
     except Exception:
         return "Could not find the meeting"
     meeting_doc.remove(meeting_doc)
@@ -69,23 +72,16 @@ async def delete_meeting(meeting_uuid: str):
 
 @router.put("/check_student_attended")
 async def check_student_attended(
-    meeting_uuid: str,
-    student_first: str,
-    student_last: str,
-    update_meeting: CreateMeetingModel,
+    registration: StudentMeetingRegistration,
 ):
     try:
-        meeting_doc = MeetingDocument.objects(uuid=meeting_uuid)[0]
+        meeting_doc = MeetingDocument.objects(uuid=registration.meeting_id)[0]
     except Exception:
         return "Could not find the meeting"
-    i = 0
-    while i < len(meeting_doc.students):
-        if (
-            meeting_doc.students[i].first_name == student_first
-            and meeting_doc.students[i].last_name == student_last
-        ):
-            break
-        i += 1
+    i = get_student_meeting_index(
+        meeting_doc, registration.first_name, registration.last_name
+    )
+
     if i == len(meeting_doc.students):
         return "That student is not on the RSVP list"
     if meeting_doc.students[i].attended:
@@ -96,12 +92,13 @@ async def check_student_attended(
 
 
 @router.put("/update_meeting")
-async def update_meeting(meeting_uuid: str, update_meeting: CreateMeetingModel):
+async def update_meeting(update_meeting_model: UpdateMeeting):
     meeting_doc = None
     try:
-        meeting_doc = MeetingDocument.objects(uuid=meeting_uuid)[0]
+        meeting_doc = MeetingDocument.objects(uuid=update_meeting_model.meeting_id)[0]
     except Exception:
         print("Could not find the meeting")
+    update_meeting = update_meeting_model.CreateMeetingModel
     meeting_doc.dat_and_time = update_meeting.date_and_time
     meeting_doc.duration = update_meeting.duration
     meeting_doc.zoom_link = update_meeting.zoom_link
