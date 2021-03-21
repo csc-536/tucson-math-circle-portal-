@@ -20,6 +20,7 @@ class StudentMeetingInfo(BaseModel):
     email: EmailStr = Field()
     guardians: List[Guardian] = Field()
     account_uuid: UUID4 = Field()
+    attended: Optional[bool] = Field(default=False)
 
 
 class CreateMeetingModel(BaseModel):
