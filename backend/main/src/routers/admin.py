@@ -99,7 +99,7 @@ async def update_meeting(update_meeting_model: UpdateMeeting):
     except Exception:
         print("Could not find the meeting")
     update_meeting = update_meeting_model.CreateMeetingModel
-    meeting_doc.dat_and_time = update_meeting.date_and_time
+    meeting_doc.date_and_time = update_meeting.date_and_time
     meeting_doc.duration = update_meeting.duration
     meeting_doc.zoom_link = update_meeting.zoom_link
     meeting_doc.session_level = update_meeting.session_level
