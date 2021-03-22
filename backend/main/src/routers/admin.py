@@ -1,4 +1,5 @@
 from fastapi import Depends, APIRouter
+from backend.main.src.routers.student import get_student_meeting_index
 
 # main db imports
 from backend.main.db.docs.student_profile_doc import (
@@ -8,6 +9,8 @@ from backend.main.db.models.meeting_model import (
     CreateMeetingModel,
     MeetingSearchModel,
     MeetingModel,
+    StudentMeetingRegistration,
+    UpdateMeeting,
 )
 from backend.main.db.docs.meeting_doc import (
     document as MeetingDoc,
@@ -56,3 +59,51 @@ async def create_meeting(create_meeting: CreateMeetingModel):
     doc = MeetingDoc(meeting)
     doc.save()
     return doc.dict()
+
+
+@router.delete("/delete_meeting")
+async def delete_meeting(update_meeting_model: UpdateMeeting):
+    try:
+        meeting_doc = MeetingDocument.objects(uuid=update_meeting_model.meeting_id)[0]
+    except Exception:
+        return "Could not find the meeting"
+    meeting_doc.remove(meeting_doc)
+
+
+@router.put("/check_student_attended")
+async def check_student_attended(
+    registration: StudentMeetingRegistration,
+):
+    try:
+        meeting_doc = MeetingDocument.objects(uuid=registration.meeting_id)[0]
+    except Exception:
+        return "Could not find the meeting"
+    i = get_student_meeting_index(
+        meeting_doc, registration.first_name, registration.last_name
+    )
+
+    if i == len(meeting_doc.students):
+        return "That student is not on the RSVP list"
+    if meeting_doc.students[i].attended:
+        meeting_doc.students[i].attended = False
+    else:
+        meeting_doc.students[i].attended = True
+    return {"details": "Updated student attendance"}
+
+
+@router.put("/update_meeting")
+async def update_meeting(update_meeting_model: UpdateMeeting):
+    meeting_doc = None
+    try:
+        meeting_doc = MeetingDocument.objects(uuid=update_meeting_model.meeting_id)[0]
+    except Exception:
+        print("Could not find the meeting")
+    update_meeting = update_meeting_model.CreateMeetingModel
+    meeting_doc.date_and_time = update_meeting.date_and_time
+    meeting_doc.duration = update_meeting.duration
+    meeting_doc.zoom_link = update_meeting.zoom_link
+    meeting_doc.session_level = update_meeting.session_level
+    meeting_doc.topic = update_meeting.topic
+    meeting_doc.miro_link = update_meeting.miro_link
+    meeting_doc.save()
+    return meeting_doc.admin_dict()
