@@ -90,7 +90,7 @@ function MailOptInOptions({ handleMailChange, section }) {
         />
       </label>
 
-      <label className="mailRadio" onClick={handleMailChange}>
+      <label className="mailRadio">
         Senior
         <input
           type="radio"

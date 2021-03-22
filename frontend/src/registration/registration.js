@@ -78,61 +78,22 @@ function Registration({ update }) {
     const { value } = e.target;
     let section = form.section;
     if (section.includes(value)) {
-      let i = section.indexOf(value);
+      if (section.length === 1) {
+        return;
+      }
+      const i = section.indexOf(value);
       section.splice(i, 1);
     } else {
+      if (value === "opt_out") {
+        section = [];
+      } else if (value !== "out_out" && section.includes("opt_out")) {
+        const i = section.indexOf("out_out");
+        section.splice(i, 1);
+      }
       section.push(value);
     }
+    console.log(section);
     setForm({ ...form, section });
-
-    // if (value.localeCompare("junior_a") === 0) {
-    //   if (
-    //     (!form.boolSections["junior_a"] || form.boolSections["junior_b"] || form.boolSections["senior"] || form.boolSections["opt_out"]) ==
-    //     false
-    //   ) {
-    //     return;
-    //   }
-    //   let boolSections = clone(form.boolSections);
-    //   boolSections["junior_a"] = !boolSections["junior_a"];
-    //   boolSections["opt_out"] = false;
-    //   setForm({ ...form, boolSections });
-    // } else if (value.localeCompare("junior_b") == 0) {
-    //   if (
-    //     (form.junior_a || !form.junior_b || form.senior || form.opt_out) ==
-    //     false
-    //   ) {
-    //     return;
-    //   }
-    //   let junior_b = clone(form.junior_b);
-    //   let opt_out = clone(form.opt_out);
-    //   junior_b = !junior_b;
-    //   opt_out = false;
-    //   setForm({ ...form, junior_b, opt_out });
-    // } else if (value.localeCompare("senior") == 0) {
-    //   if (
-    //     (form.junior_a || form.junior_b || !form.senior || form.opt_out) ==
-    //     false
-    //   ) {
-    //     return;
-    //   }
-    //   let senior = clone(form.senior);
-    //   let opt_out = clone(form.opt_out);
-    //   senior = !senior;
-    //   opt_out = false;
-    //   setForm({ ...form, senior, opt_out });
-    // } else if (value.localeCompare("opt_out") == 0) {
-    //   if (
-    //     (form.junior_a || form.junior_b || form.senior || !form.opt_out) ==
-    //     false
-    //   ) {
-    //     return;
-    //   }
-    //   let junior_a = false;
-    //   let junior_b = false;
-    //   let senior = false;
-    //   let opt_out = true;
-    //   setForm({ ...form, junior_a, junior_b, senior, opt_out });
-    // }
   };
 
   /*
