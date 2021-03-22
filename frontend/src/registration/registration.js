@@ -46,6 +46,8 @@ function Registration({ update }) {
     section: ["junior_a", "junior_b", "senior"],
   });
 
+  const [checkBox, setCheckBox] = useState(false);
+
   const handleOnChange = (e, i, type) => {
     const { name, value } = e.target;
     if (type === "students") {
@@ -96,6 +98,12 @@ function Registration({ update }) {
     setForm({ ...form, section });
   };
 
+  const handleCheckBoxChange = (e) => {
+    const { checked } = e.target;
+    console.log(checked);
+    setCheckBox(checked);
+  };
+
   /*
    * 'studentList' is a list of all the students affiliated with the account.
    * 'guardianList' is a list of all the guardians affiliated with the account.
@@ -127,7 +135,7 @@ function Registration({ update }) {
    * 'buttonVal' is the text on the button for form submission.
    */
   let header = <RegHeader />;
-  let isUpdate = <CheckBox />;
+  let isUpdate = <CheckBox handleCheckBoxChange={handleCheckBoxChange} />;
   let buttonVal = "Register";
 
   /*
@@ -157,7 +165,14 @@ function Registration({ update }) {
 
   let errStr = "";
 
-  const checkFeilds = (email, password, repassword, students, guardians) => {
+  const checkFeilds = (
+    email,
+    password,
+    repassword,
+    students,
+    guardians,
+    checkBox
+  ) => {
     errStr = "";
     var mailformat = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
     if (!email.match(mailformat)) {
@@ -168,6 +183,9 @@ function Registration({ update }) {
     }
     if (!update && repassword !== password) {
       errStr += "Passwords do not match\n";
+    }
+    if (!update && checkBox !== true) {
+      errStr += "Must check the box\n";
     }
     students.map((student, i) => {
       if (student.first_name === "") {
@@ -213,7 +231,14 @@ function Registration({ update }) {
     e.preventDefault();
 
     const { email, password, repassword, students, guardians } = form;
-    const str = checkFeilds(email, password, repassword, students, guardians);
+    const str = checkFeilds(
+      email,
+      password,
+      repassword,
+      students,
+      guardians,
+      checkBox
+    );
     if (str !== "") {
       alert(str);
       return;
