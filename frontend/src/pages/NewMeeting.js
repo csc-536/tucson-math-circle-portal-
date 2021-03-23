@@ -1,6 +1,8 @@
 import { Button, makeStyles } from "@material-ui/core";
 import SaveIcon from "@material-ui/icons/Save";
+import { toNumber } from "lodash";
 import React, { useState } from "react";
+import { useHistory } from "react-router";
 import MeetingFields from "../components/MeetingFields";
 import { addMeeting } from "../http";
 
@@ -28,30 +30,37 @@ const NewMeeting = () => {
     miroLink: "",
     notes: "",
   });
-
+  const history = useHistory();
   const handleNewMeeting = async (e) => {
     e.preventDefault();
     console.log(form);
-    const { zoomLink, sessionLevel, topic, material, miroLink } = form;
+    const {
+      zoomLink,
+      sessionLevel,
+      topic,
+      material,
+      miroLink,
+      date,
+      duration,
+    } = form;
+    // TODO: validate inputs
+
+    // submit form
     try {
       const res = await addMeeting({
-        meeting_date: "2021-03-12",
-        meeting_time: "2021-03-12T18:46:34.851Z",
+        date_and_time: date,
+        duration: new Date(date.getTime() + toNumber(duration) * 60000),
         zoom_link: zoomLink,
         session_level: sessionLevel,
         topic,
         miro_link: miroLink,
         meeting_password: "string",
-        students: [null],
       });
-      // console.log(res);
+      console.log(res.data);
+      history.push("/meetings");
     } catch (error) {
       console.log(error.reponse);
     }
-
-    // TODO: Validate inputs
-
-    // TODO: submit form
   };
 
   return (

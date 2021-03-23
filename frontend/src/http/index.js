@@ -61,7 +61,7 @@ export async function profile() {
   const accessToken = sessionStorage.getItem("accessToken");
   console.log(accessToken);
 
-  const res = await main.get("/user_router/get_my_profile", {
+  const res = await main.get("/student/get_my_profile", {
     headers: {
       Authorization: `Bearer ${accessToken}`,
     },
@@ -115,7 +115,7 @@ export async function addMeeting(data) {
   const accessToken = sessionStorage.getItem("accessToken");
   console.log(accessToken);
 
-  const res = await main.post("/meetings_router/add_meeting", data, {
+  const res = await main.post("/admin/create_meeting", data, {
     headers: {
       Authorization: `Bearer ${accessToken}`,
     },

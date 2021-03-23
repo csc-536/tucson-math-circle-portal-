@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 import {
   FormControl,
@@ -8,7 +8,12 @@ import {
   Select,
   TextField,
 } from "@material-ui/core";
-import { DatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
+import {
+  DatePicker,
+  DateTimePicker,
+  MuiPickersUtilsProvider,
+  TimePicker,
+} from "@material-ui/pickers";
 import MomentUtils from "@date-io/moment";
 import { toNumber } from "lodash";
 
@@ -25,6 +30,13 @@ const useStyles = makeStyles((theme) => ({
 const MeetingFields = ({ form, setForm, disabled }) => {
   const classes = useStyles();
 
+  // const handleDateChange = (e) => {
+  //     setForm({ ...form, ...{ date: new Date(e) } });
+  // };
+
+  // const [selectedDate, handleDateChange] = useState(new Date());
+  // console.log(selectedDate.toJSON());
+
   const handleDateChange = (e) => {
     setForm({ ...form, ...{ date: new Date(e) } });
   };
@@ -32,7 +44,6 @@ const MeetingFields = ({ form, setForm, disabled }) => {
   const handleOnChange = (e) => {
     const { name, value } = e.target;
     let v = value;
-
     switch (name) {
       case "duration":
         v = isNaN(value) ? form[name] : toNumber(value);
@@ -51,34 +62,19 @@ const MeetingFields = ({ form, setForm, disabled }) => {
       <h3>Date and Time</h3>
       <div>
         <MuiPickersUtilsProvider utils={MomentUtils}>
-          <DatePicker
+          <DateTimePicker
+            autoOk
             required
-            disableToolbar
-            variant="inline"
-            label="Choose a Date"
-            value={form["date"]}
-            onChange={handleDateChange}
             className={classes.textField}
-            disabled={disabled}
+            label="Pick the Date and Time (Local)"
+            value={form["date"]}
+            InputLabelProps={{
+              shrink: true,
+            }}
+            onChange={handleDateChange}
           />
         </MuiPickersUtilsProvider>
-        <TextField
-          disabled={disabled}
-          required
-          id="time"
-          label="Choose a Time (Local Time)"
-          value={form["time"]}
-          type="time"
-          onChange={handleOnChange}
-          name="time"
-          className={classes.textField}
-          InputLabelProps={{
-            shrink: true,
-          }}
-          inputProps={{
-            step: 300, // 5 min
-          }}
-        />
+
         <TextField
           disabled={disabled}
           id="meeting-duration"

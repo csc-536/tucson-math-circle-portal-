@@ -20,6 +20,8 @@ import RemGuardian from "./remGuardian";
 import RemStudent from "./remStudent";
 import { addProfile, updateProfile, profile, register } from "../http";
 import { clone, uniqueId } from "lodash";
+import { AuthContext } from "../contexts/AuthContext";
+import { isLoggedIn, loggedInRole } from "../utils";
 
 function Registration({ update }) {
   const initialStudent = {
@@ -176,6 +178,8 @@ function Registration({ update }) {
     return errStr;
   };
 
+  const { setAuth } = useContext(AuthContext);
+
   /*
    * Handles the event of the form submission. Prevents the page from refreshing.
    * If property 'update' is true, return to the login page.
@@ -219,7 +223,8 @@ function Registration({ update }) {
           guardians,
           students,
         });
-        history.push("/");
+        setAuth({ userLoggedIn: isLoggedIn(), role: loggedInRole() });
+        history.push("/profile");
       } catch (error) {
         console.log(error.response);
       }
