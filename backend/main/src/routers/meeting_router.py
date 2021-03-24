@@ -70,9 +70,11 @@ async def get_all_meetings(token_data: TokenData = Depends(get_current_token_dat
     return ret_meetings
 
 
-@router.post("/add_student")
-async def add_student(
+@router.put("/update_student")
+async def update_student_meeting(
     meeting_id: UUID4,
+    student_first: str,
+    student_last: str,
     token_data: TokenData = Depends(get_current_token_data),
 ):
     current_user = get_current_user_doc(token_data)
@@ -81,19 +83,17 @@ async def add_student(
     except Exception:
         return {"details": "could not find meeting form id"}
 
-    add_student = []
+    add_student = {}
     for student in current_user.students:
-        for section in student["section"]:
-            if section == meeting.session_level:
-                add_student.append(student)
+        if student_first == student.first_name and student_last == student.last_name:
+            add_student = student
 
-    for student in add_student:
-        add = StudentMeetingInfo(
-            first_name=student["first_name"],
-            last_name=student["last_name"],
-            email=current_user.email,
-            guardians=current_user.guardians,
-        )
-        meeting.students.append(add.dict())
+    add = StudentMeetingInfo(
+        first_name=add_student["first_name"],
+        last_name=add_student["last_name"],
+        email=current_user.email,
+        guardians=current_user.guardians,
+    )
+    meeting.students.append(add.dict())
     meeting.save()
     return {"details": "Student added to meeting list"}
