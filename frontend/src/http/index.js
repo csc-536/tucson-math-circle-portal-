@@ -136,3 +136,16 @@ export async function user() {
   console.log(res);
   return res;
 }
+
+export async function getAllStudents() {
+  const accessToken = sessionStorage.getItem("accessToken");
+  console.log(accessToken);
+
+  const res = await main.get("/admin/get_student_profiles", {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+  console.log(res);
+  return res;
+}
