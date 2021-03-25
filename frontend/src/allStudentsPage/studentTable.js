@@ -1,7 +1,8 @@
+import "./allStudents.css";
 import React, { useState } from "react";
 function StudentTable({ studentList }) {
   return (
-    <table border="4">
+    <table id="studentTable" border="4">
       <tr>
         <th>Student Name</th>
         <th>Guardian Name</th>
