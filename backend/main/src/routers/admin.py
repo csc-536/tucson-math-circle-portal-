@@ -98,12 +98,11 @@ async def update_meeting(update_meeting_model: UpdateMeeting):
         meeting_doc = MeetingDocument.objects(uuid=update_meeting_model.meeting_id)[0]
     except Exception:
         print("Could not find the meeting")
-    update_meeting = update_meeting_model.CreateMeetingModel
-    meeting_doc.date_and_time = update_meeting.date_and_time
-    meeting_doc.duration = update_meeting.duration
-    meeting_doc.zoom_link = update_meeting.zoom_link
-    meeting_doc.session_level = update_meeting.session_level
-    meeting_doc.topic = update_meeting.topic
-    meeting_doc.miro_link = update_meeting.miro_link
+    meeting_doc.date_and_time = update_meeting_model.date_and_time
+    meeting_doc.duration = update_meeting_model.duration
+    meeting_doc.zoom_link = update_meeting_model.zoom_link
+    meeting_doc.session_level = update_meeting_model.session_level
+    meeting_doc.topic = update_meeting_model.topic
+    meeting_doc.miro_link = update_meeting_model.miro_link
     meeting_doc.save()
     return meeting_doc.admin_dict()

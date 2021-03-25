@@ -8,11 +8,6 @@ from backend.main.db.mixins import SessionLevel
 from backend.main.db.models.student_profile_model import Guardian
 
 
-class UpdateMeeting(BaseModel):
-    meeting_id: UUID4 = Field()
-    CreateMeetingModel = Field()
-
-
 class StudentMeetingRegistration(BaseModel):
     meeting_id: UUID4 = Field()
     first_name: str = Field()
@@ -41,6 +36,10 @@ class MeetingModel(CreateMeetingModel):
     uuid: UUID4 = Field(default_factory=uuid4)
     students: List[StudentMeetingInfo] = Field()
     password: str = Field()
+
+
+class UpdateMeeting(CreateMeetingModel):
+    meeting_id: UUID4 = Field()
 
 
 class MeetingSearchModel(BaseModel):
