@@ -3,13 +3,24 @@ import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
 import FormGroup from "@material-ui/core/FormGroup";
 import FormControl from "@material-ui/core/FormControl";
+import RegisteredStudentTable from "./RegisteredStudentTable";
+import StudentAttendingTable from "./StudentAttendingTable";
+import { Button } from "@material-ui/core";
+import SaveIcon from "@material-ui/icons/Save";
 
 const Meeting = forwardRef(
-  ({ meeting: { date, sessionLevel, topic, zoom_link } }, ref) => {
-    const [checked, setChecked] = useState(false);
-    const handleChange = (e) => {
-      setChecked(e.target.checked);
+  ({ meeting: { date, sessionLevel, topic, zoom_link, handleClose } }, ref) => {
+    const [students, setStudents] = useState([
+      { name: "jimmy", attending: true },
+      { name: "jimmy1", attending: false },
+    ]);
+
+    const handleSubmit = (e) => {
+      e.preventDefault();
+      console.log(students);
+      handleClose();
     };
+
     return (
       <div ref={ref}>
         <h2 id="meeting-title">Meeting</h2>
@@ -30,24 +41,30 @@ const Meeting = forwardRef(
             <b>here</b>
           </a>
         </p>
-
-        <FormControl component="fieldset">
-          <FormGroup>
-            <FormControlLabel
-              // labelPlacement="start"
-              // value="rsvp-checkbox"
-              control={
-                <Checkbox
-                  checked={checked}
-                  onChange={handleChange}
-                  name="rsvp-checkbox"
-                  color="primary"
-                />
-              }
-              label="I'm Attending"
-            />
-          </FormGroup>
-        </FormControl>
+        <form
+          noValidate
+          autoComplete="off"
+          id="student-attending-meeting-form"
+          onSubmit={handleSubmit}
+        >
+          <FormControl component="fieldset">
+            <FormGroup>
+              <StudentAttendingTable
+                students={students}
+                setStudents={setStudents}
+              />
+            </FormGroup>
+            <Button
+              variant="contained"
+              color="primary"
+              startIcon={<SaveIcon />}
+              type="submit"
+              disableElevation
+            >
+              Submit
+            </Button>
+          </FormControl>
+        </form>
       </div>
     );
   }

@@ -97,7 +97,15 @@ const MeetingCard = ({ meeting, past }) => {
         container={() => rootRef.current}
       >
         <div className={classes.paper}>
-          <Meeting meeting={{ date, sessionLevel, topic, zoom_link }} />
+          <Meeting
+            meeting={{
+              date,
+              sessionLevel,
+              topic,
+              zoom_link,
+              handleClose,
+            }}
+          />
         </div>
       </Modal>
       <CardContent>
