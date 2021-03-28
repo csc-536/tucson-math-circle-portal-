@@ -1,8 +1,17 @@
-from mongoengine import Document, ListField, EmailField, QuerySet, UUIDField
+from mongoengine import (
+    Document,
+    ListField,
+    EmailField,
+    QuerySet,
+    UUIDField,
+    ReferenceField,
+)
 
 from backend.main.db.models.student_profile_model import (
     StudentProfileModel,
 )
+
+from backend.main.db.docs.student_docs import StudentDocument
 
 
 class StudentProfileQuerySet(QuerySet):
@@ -10,6 +19,9 @@ class StudentProfileQuerySet(QuerySet):
 
 
 def document(model: StudentProfileModel):
+    print("------------------")
+    print("StudentProfileModel.dict():", model.dict())
+    print("------------------")
     doc = StudentProfileDocument(**model.dict())
     return doc
 
@@ -19,14 +31,13 @@ class StudentProfileDocument(Document):
 
     uuid = UUIDField(required=True)
     email = EmailField(required=True)
-    students = ListField(required=True)
+    students = ListField(ReferenceField(StudentDocument))
     guardians = ListField(required=True)
 
-    # QUESTION: should we add uuid to indexes?
     meta = {
         "query_class": StudentProfileQuerySet,
         "db_alias": "student-db",
-        "indexes": ["email"],
+        "indexes": ["email", "uuid"],
     }
 
     def dict(self):
