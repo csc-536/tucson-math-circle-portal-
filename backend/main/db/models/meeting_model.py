@@ -4,23 +4,22 @@ from uuid import uuid4
 
 from pydantic import Field, BaseModel, EmailStr, UUID4
 
-from backend.main.db.mixins import SessionLevel
+from backend.main.db.mixins import SessionLevel, PydanticObjectId
 from backend.main.db.models.student_profile_model import Guardian
 
 
 class StudentMeetingRegistration(BaseModel):
     meeting_id: UUID4 = Field()
-    first_name: str = Field()
-    last_name: str = Field()
+    student_id: PydanticObjectId = Field()
+    registered: bool
 
 
 class StudentMeetingInfo(BaseModel):
-    first_name: str = Field()
-    last_name: str = Field()
+    student_id: PydanticObjectId = Field()
     email: EmailStr = Field()
     guardians: List[Guardian] = Field()
     account_uuid: UUID4 = Field()
-    attended: Optional[bool] = Field(default=False)
+    attended: bool = Field(default=False)
 
 
 class CreateMeetingModel(BaseModel):
