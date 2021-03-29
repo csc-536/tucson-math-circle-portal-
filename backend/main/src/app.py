@@ -34,8 +34,9 @@ TESTING = True
 app = FastAPI()
 
 
-app.include_router(user_router.router, prefix="/user_router", tags=["Users"])
-app.include_router(meeting_router.router, prefix="/meetings_router", tags=["Meetings"])
+# TODO: delete these
+# app.include_router(user_router.router, prefix="/user_router", tags=["Users"])
+# app.include_router(meeting_router.router, prefix="/meetings_router", tags=["Meetings"])
 
 app.include_router(student.router, prefix="/student", tags=["Students"])
 app.include_router(admin.router, prefix="/admin", tags=["Admin"])

@@ -61,6 +61,17 @@ def get_student_meeting_index(meeting_doc, first, last):
     return i
 
 
+def remove_student_from_meeting(meeting_doc, student_id):
+    index = -1
+    for i, registration in enumerate(meeting_doc.students):
+        if registration["student_id"] == student_id:
+            index = i
+            break
+
+    del meeting_doc.students[i]
+    meeting_doc.save()
+
+
 def update_student_document(student_doc: StudentDocument, updates: StudentUpdateModel):
     student_doc.first_name = updates.first_name
     student_doc.last_name = updates.last_name
@@ -121,15 +132,45 @@ async def add_profile(
 async def get_meetings_by_filter(
     search: MeetingSearchModel, token_data: TokenData = Depends(get_student_token_data)
 ):
+    current_user = get_current_user_doc(token_data)
+    if not current_user:
+        print("This account has no profile!")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="This account has no profile",
+        )
+    current_students = current_user.students
+    student_ids = [str(s.id) for s in current_students]
+
+    # keep track of registrations for students from this profile
+    # this is a dict so it is easier to use with the registration seach
+    meeting_registrations = {}
+    for i, st in enumerate(current_students):
+        meeting_registrations[str(st.id)] = {
+            "id": str(st.id),
+            "first_name": st.first_name,
+            "last_name": st.last_name,
+            "registered": False,
+        }
+
     # TODO: Use the dates field from MeetingSearchModel
     meetings = []
     try:
         for level in search.session_levels:
             for meeting in MeetingDocument.objects(session_level=level):
-                meetings.append(meeting.student_dict())
-    # TODO: raise an HTTP exception instead of just returning details
-    except Exception:
-        return {"details": "Error finding meeting"}
+                for registration in meeting.students:
+                    reg_id = registration["student_id"]
+                    if reg_id in student_ids:
+                        meeting_registrations[reg_id]["registered"] = True
+
+                meeting_info = meeting.student_dict()
+                meeting_info["registrations"] = [
+                    meeting_registrations[sid] for sid in meeting_registrations.keys()
+                ]
+                meetings.append(meeting_info)
+    except Exception as e:
+        print("Exception type:", type(e))
+        return {"details": "Problem in get_meetings_by_filter"}
     return meetings
 
 
@@ -138,36 +179,43 @@ async def update_student(
     registration: StudentMeetingRegistration,
     token_data: TokenData = Depends(get_student_token_data),
 ):
+
     current_user = get_current_user_doc(token_data)
+    # FIXME: This assumes that the student id given in `registration`
+    # is a valid student id for this account
+    try:
+        student = StudentDocument.objects(id=registration.student_id)[0]
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid student id",
+        )
+
     try:
         meeting_doc = MeetingDocument.objects(uuid=registration.meeting_id)[0]
-    # TODO: raise an HTTP exception instead of just returning details
     except Exception:
-        return {"details": "could not find meeting from meeting_id"}
-
-    i = get_student_meeting_index(
-        meeting_doc, registration.first_name, registration.last_name
-    )
-
-    if i == len(meeting_doc.students):
-        student_info = StudentMeetingInfo(
-            first_name=registration.first_name,
-            last_name=registration.last_name,
-            email=current_user["email"],
-            guardians=current_user["guardians"],
-            account_uuid=token_data.id,
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid meeting id",
         )
-        meeting_doc.students.append(student_info)
-        meeting_doc.save()
+
+    if registration.registered == False:
+        remove_student_from_meeting(meeting_doc, registration.student_id)
         return {
-            "details": f"Student {student_info.first_name} {student_info.last_name} added to meeting list"
+            "details": f"Student with id {registration.student_id} removed from meeting list"
         }
-    else:
-        del meeting_doc.students[i]
-        meeting_doc.save()
-        return {
-            "details": f"Student {registration.first_name} {registration.last_name}  removed from meeting list"
-        }
+
+    student_info = StudentMeetingInfo(
+        student_id=registration.student_id,
+        email=current_user.email,
+        guardians=current_user.guardians,
+        account_uuid=token_data.id,
+    )
+    meeting_doc.students.append(student_info.dict())
+    meeting_doc.save()
+    return {
+        "details": f"Student with id {registration.student_id} added to meeting list"
+    }
 
 
 # PUT routes
@@ -186,7 +234,6 @@ async def update_profile(
         # if the student already existed update it
         if len(query) > 0:
             student_doc = query[0]
-            print(student_doc.dict())
             update_student_document(student_doc, student_update)
         # otherwise we need to create a new student
         else:

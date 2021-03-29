@@ -19,9 +19,6 @@ class StudentProfileQuerySet(QuerySet):
 
 
 def document(model: StudentProfileModel):
-    print("------------------")
-    print("StudentProfileModel.dict():", model.dict())
-    print("------------------")
     # create StudentDocument for each student in the student profile
     student_documents = []
     for student in model.students:
@@ -42,6 +39,7 @@ def document(model: StudentProfileModel):
 class StudentProfileDocument(Document):
     _model = StudentProfileModel
 
+    # TODO: change `student_list` to `students`?
     uuid = UUIDField(required=True)
     email = EmailField(required=True)
     students = ListField(ReferenceField(StudentDocument))
