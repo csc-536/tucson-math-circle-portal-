@@ -1,12 +1,22 @@
-from fastapi import Depends, APIRouter
+from fastapi import Depends, APIRouter, HTTPException, status
 
 # main db imports
 from backend.main.db.models.student_profile_model import (
     StudentProfileModel,
     StudentProfileCreateModel,
+    StudentProfileUpdateModel,
+)
+from backend.main.db.models.student_models import (
+    StudentModel,
+    StudentCreateModel,
+    StudentUpdateModel,
+)
+from backend.main.db.docs.student_doc import (
+    document as StudentDoc,
+    StudentDocument,
 )
 from backend.main.db.docs.student_profile_doc import (
-    document as StudentDoc,
+    document as ProfileDoc,
     StudentProfileDocument,
 )
 from backend.main.db.models.meeting_model import (
@@ -51,6 +61,14 @@ def get_student_meeting_index(meeting_doc, first, last):
     return i
 
 
+def update_student_document(student_doc: StudentDocument, updates: StudentUpdateModel):
+    student_doc.first_name = updates.first_name
+    student_doc.last_name = updates.last_name
+    student_doc.grade = updates.grade
+    student_doc.age = updates.age
+    student_doc.save()
+
+
 # GET routes
 @router.get("/get_my_profile")
 def get_current_user_profile(token_data: TokenData = Depends(get_student_token_data)):
@@ -70,8 +88,31 @@ async def add_profile(
     profile: StudentProfileCreateModel,
     token_data: TokenData = Depends(get_student_token_data),
 ):
-    model = StudentProfileModel(**profile.dict(), uuid=token_data.id)
-    doc = StudentDoc(model)
+    # raise exception if profile already exists
+    existing_user = get_current_user_doc(token_data)
+    if existing_user:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="A Profile for that account already exists",
+        )
+
+    profile_uuid = token_data.id
+    # create StudentModels for each student in the student profile
+    student_models = []
+    for student_create in profile.students:
+        student = StudentModel(**student_create.dict(), profile_uuid=profile_uuid)
+        student_models.append(student)
+
+    student_profile = StudentProfileModel(
+        uuid=token_data.id,
+        email=profile.email,
+        students=student_models,
+        guardians=profile.guardians,
+        mailing_lists=profile.mailing_lists,
+    )
+
+    # ProfileDoc handles creating StudentDocuments and saving them
+    doc = ProfileDoc(student_profile)
     doc.save()
     return doc.dict()
 
@@ -132,12 +173,25 @@ async def update_student(
 # PUT routes
 @router.put("/update_profile")
 async def update_profile(
-    new_profile: StudentProfileCreateModel,
+    new_profile: StudentProfileUpdateModel,
     token_data: TokenData = Depends(get_student_token_data),
 ):
     current_user = get_current_user_doc(token_data)
     current_user["email"] = new_profile.email
     current_user["guardians"] = [g.dict() for g in new_profile.guardians]
-    current_user["students"] = [s.dict() for s in new_profile.students]
+    # update StudentDocuments
+    # `new_profile.students` is a `List[StudentUpdateModel]`
+    for student_update in new_profile.students:
+        query = StudentDocument.objects(id=student_update.id)
+        # if the student already existed update it
+        if len(query) > 0:
+            student_doc = query[0]
+            print(student_doc.dict())
+            update_student_document(student_doc, student_update)
+        # otherwise we need to create a new student
+        else:
+            print("Need to add a new student")
+
+    # current_user["students"] = [s.dict() for s in new_profile.students]
     current_user.save()
     return current_user.dict()

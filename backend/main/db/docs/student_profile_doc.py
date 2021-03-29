@@ -11,7 +11,7 @@ from backend.main.db.models.student_profile_model import (
     StudentProfileModel,
 )
 
-from backend.main.db.docs.student_docs import StudentDocument
+from backend.main.db.docs.student_doc import StudentDocument, document as StudentDoc
 
 
 class StudentProfileQuerySet(QuerySet):
@@ -22,7 +22,20 @@ def document(model: StudentProfileModel):
     print("------------------")
     print("StudentProfileModel.dict():", model.dict())
     print("------------------")
-    doc = StudentProfileDocument(**model.dict())
+    # create StudentDocument for each student in the student profile
+    student_documents = []
+    for student in model.students:
+        student_document = StudentDoc(student)
+        student_document.save()
+        student_documents.append(student_document)
+
+    guardians = [g.dict() for g in model.guardians]
+    doc = StudentProfileDocument(
+        uuid=model.uuid,
+        email=model.email,
+        students=student_documents,
+        guardians=guardians,
+    )
     return doc
 
 
@@ -41,9 +54,10 @@ class StudentProfileDocument(Document):
     }
 
     def dict(self):
+        students = [s.dict() for s in self.students]
         return {
             "uuid": self.uuid,
             "email": self.email,
-            "student_list": self.students,
+            "student_list": students,
             "guardians": self.guardians,
         }

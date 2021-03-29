@@ -3,7 +3,7 @@ from enum import Enum
 
 from pydantic import BaseModel, Field, EmailStr, UUID4
 
-from backend.main.db.mixins import SessionLevel
+from backend.main.db.mixins import PydanticObjectId, SessionLevel
 
 
 class StudentMeetingCounter(BaseModel):
@@ -15,6 +15,7 @@ class StudentMeetingCounter(BaseModel):
 class StudentMeetingRegistration(BaseModel):
     meeting_uuid: UUID4 = Field()
     attended: bool = False
+
 
 class StudentGrade(str, Enum):
     pre_k = "PreK"
@@ -32,15 +33,25 @@ class StudentGrade(str, Enum):
     eleven = "11"
     twelve = "12"
 
+
 class StudentCreateModel(BaseModel):
     first_name: str = Field()
     last_name: str = Field()
     grade: StudentGrade = Field()
     age: int = Field()
 
+class StudentUpdateModel(StudentCreateModel):
+    id: PydanticObjectId
+
+
 class StudentModel(StudentCreateModel):
     profile_uuid: UUID4 = Field()
-    meetings_registered: List[StudentMeetingRegistration] = Field()
+    # dictionary of the form (meeting uuid, attended)
+    meetings_registered: Dict[UUID4, bool] = {}
     # meeting_counts is a convenience to track the number
     # of meetings registered and attended for each `SessionLevel`
-    meeting_counts: List[Dict[SessionLevel, StudentMeetingCounter]] = Field()
+    meeting_counts: Dict[SessionLevel, StudentMeetingCounter] = {
+        SessionLevel.junior_a: StudentMeetingCounter(),
+        SessionLevel.junior_b: StudentMeetingCounter(),
+        SessionLevel.senior: StudentMeetingCounter(),
+    }

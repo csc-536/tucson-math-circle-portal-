@@ -1,8 +1,8 @@
 from enum import Enum
 from typing import Any, Optional
 
-from pydantic import BaseModel, Field, validator
-from bson.objectid import ObjectId
+from pydantic import BaseModel, Field, validator, BaseConfig
+from bson.objectid import ObjectId, InvalidId
 
 
 class SessionLevel(str, Enum):
@@ -11,16 +11,23 @@ class SessionLevel(str, Enum):
     senior = "senior"
 
 
-class PydanticObjectId(ObjectId):
+class PydanticObjectId(str):
     @classmethod
     def __get_validators__(cls):
         yield cls.validate
 
     @classmethod
     def validate(cls, v):
-        if not isinstance(v, ObjectId):
-            raise TypeError("ObjectId required")
+        try:
+            ObjectId(str(v))
+        except InvalidId:
+            raise ValueError("Not a valid ObjectId")
         return str(v)
+
+    class Config(BaseConfig):
+        json_encoders = {
+            ObjectId: lambda oid: str(oid),
+        }
 
 
 class IdMixin(BaseModel):

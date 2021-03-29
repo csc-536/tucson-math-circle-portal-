@@ -1,4 +1,4 @@
-from mongoengine import Document, ListField, QuerySet, StringField, IntField, UUIDField
+from mongoengine import Document, ListField, QuerySet, StringField, IntField, UUIDField, DictField
 
 # TODO: What does QuerySet do?
 
@@ -23,16 +23,16 @@ class StudentDocument(Document):
     last_name = StringField(required=True)
     grade = StringField(required=True)
     age = IntField(required=True)
-    meetings_registered = ListField(required=True)
-    meeting_counts = ListField(required=True)
+    meetings_registered = DictField()
+    meeting_counts = DictField(required=True)
 
     meta = {
         "db_alias": "student-db",
-        "indexes": ["email", "uuid"],
     }
 
     def dict(self):
         return {
+            "id": str(self.id),
             "profile_uuid": self.profile_uuid,
             "first_name": self.first_name,
             "last_name": self.last_name,
