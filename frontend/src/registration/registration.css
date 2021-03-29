@@ -6,7 +6,7 @@
  */
 #regForm {
   margin: 0 auto;
-  max-width: 400px;
+  max-width: 450px;
 }
 /* div {
     clear: both;
@@ -49,12 +49,16 @@
 }
 #mailOptDiv {
   margin: 0 auto;
-  width: 400px;
+  width: 450px;
   display: flex;
 }
 .mailRadio {
   margin: 20px;
   display: flex;
+}
+#myCheckBox {
+  margin-top: 30px;
+  width: 50px;
 }
 #addStudent,
 #addGuardian,
@@ -63,7 +67,7 @@
   font-size: 20pt;
   border-radius: 20px;
   background-color: white;
-  width: 400px;
+  width: 450px;
   padding: 10px;
   cursor: pointer;
 }
@@ -84,4 +88,5 @@ select {
   display: inline-block;
   padding: 10px;
   border-radius: 20px;
+  width: 425px;
 }

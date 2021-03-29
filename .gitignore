@@ -2,3 +2,4 @@
 Pipfile
 Pipfile.lock
 backend/.coverage
+frontend/coverage
