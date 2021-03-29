@@ -31,7 +31,7 @@ class StudentDocument(Document):
     last_name = StringField(required=True)
     grade = StringField(required=True)
     age = IntField(required=True)
-    # TODO: Change meetings_registered?
+    # dictionary of the form (meeting uuid, attended (True/False))
     meetings_registered = DictField()
     meeting_counts = DictField(required=True)
 
