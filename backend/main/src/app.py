@@ -15,7 +15,6 @@ from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 
 # main db imports
-from backend.main.src.routers import user_router, meeting_router
 from backend.main.src.routers import student, admin
 from backend.connect_to_mongodb import connect_to_mongodb, connect_to_auth_db
 
@@ -32,10 +31,6 @@ from backend.auth.db.main import get_user_by_email
 TESTING = True
 
 app = FastAPI()
-
-
-app.include_router(user_router.router, prefix="/user_router", tags=["Users"])
-app.include_router(meeting_router.router, prefix="/meetings_router", tags=["Meetings"])
 
 app.include_router(student.router, prefix="/student", tags=["Students"])
 app.include_router(admin.router, prefix="/admin", tags=["Admin"])

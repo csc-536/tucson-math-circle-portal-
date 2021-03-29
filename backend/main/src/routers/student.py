@@ -43,8 +43,8 @@ def get_student_meeting_index(meeting_doc, first, last):
     i = 0
     while i < len(meeting_doc.students):
         if (
-            meeting_doc.students[i].first_name == first
-            and meeting_doc.students[i].last_name == last
+            meeting_doc.students[i]["first_name"] == first
+            and meeting_doc.students[i]["last_name"] == last
         ):
             return i
         i += 1
@@ -116,7 +116,7 @@ async def update_student(
             guardians=current_user["guardians"],
             account_uuid=token_data.id,
         )
-        meeting_doc.students.append(student_info)
+        meeting_doc.students.append(student_info.dict())
         meeting_doc.save()
         return {
             "details": f"Student {student_info.first_name} {student_info.last_name} added to meeting list"

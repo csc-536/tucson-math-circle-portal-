@@ -67,7 +67,8 @@ async def delete_meeting(update_meeting_model: UpdateMeeting):
         meeting_doc = MeetingDocument.objects(uuid=update_meeting_model.meeting_id)[0]
     except Exception:
         return "Could not find the meeting"
-    meeting_doc.remove(meeting_doc)
+    meeting_doc.delete()
+    del meeting_doc
 
 
 @router.put("/check_student_attended")
@@ -84,10 +85,11 @@ async def check_student_attended(
 
     if i == len(meeting_doc.students):
         return "That student is not on the RSVP list"
-    if meeting_doc.students[i].attended:
-        meeting_doc.students[i].attended = False
+    if meeting_doc.students[i]["attended"]:
+        meeting_doc.students[i]["attended"] = False
     else:
-        meeting_doc.students[i].attended = True
+        meeting_doc.students[i]["attended"] = True
+    meeting_doc.save()
     return {"details": "Updated student attendance"}
 
 

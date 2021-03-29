@@ -33,6 +33,6 @@ class StudentProfileDocument(Document):
         return {
             "uuid": self.uuid,
             "email": self.email,
-            "student_list": self.students,
+            "students": self.students,
             "guardians": self.guardians,
         }

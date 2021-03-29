@@ -1,8 +1,13 @@
 from typing import List
 
 from pydantic import BaseModel, Field, EmailStr, UUID4
+from enum import Enum
 
-from backend.main.db.mixins import SessionLevel
+
+class SessionLevel(str, Enum):
+    junior_a = "junior_a"
+    junior_b = "junior_b"
+    senior = "senior"
 
 
 class Guardian(BaseModel):
