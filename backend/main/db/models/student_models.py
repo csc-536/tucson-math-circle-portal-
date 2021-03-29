@@ -1,7 +1,7 @@
-from typing import List, Dict, Tuple
+from typing import Dict
 from enum import Enum
 
-from pydantic import BaseModel, Field, EmailStr, UUID4
+from pydantic import BaseModel, Field, UUID4
 
 from backend.main.db.mixins import PydanticObjectId, SessionLevel
 
@@ -40,13 +40,14 @@ class StudentCreateModel(BaseModel):
     grade: StudentGrade = Field()
     age: int = Field()
 
+
 class StudentUpdateModel(StudentCreateModel):
     id: PydanticObjectId
 
 
 class StudentModel(StudentCreateModel):
     profile_uuid: UUID4 = Field()
-    # dictionary of the form (meeting uuid, attended)
+    # dictionary of the form (meeting uuid, attended (True/False))
     meetings_registered: Dict[UUID4, bool] = {}
     # meeting_counts is a convenience to track the number
     # of meetings registered and attended for each `SessionLevel`

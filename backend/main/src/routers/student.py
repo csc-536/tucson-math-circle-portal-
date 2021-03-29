@@ -8,11 +8,9 @@ from backend.main.db.models.student_profile_model import (
 )
 from backend.main.db.models.student_models import (
     StudentModel,
-    StudentCreateModel,
     StudentUpdateModel,
 )
 from backend.main.db.docs.student_doc import (
-    document as StudentDoc,
     StudentDocument,
 )
 from backend.main.db.docs.student_profile_doc import (
@@ -62,13 +60,14 @@ def get_student_meeting_index(meeting_doc, first, last):
 
 
 def remove_student_from_meeting(meeting_doc, student_id):
+    # TODO: Update StudentDocument meeting info to reflect changes!
     index = -1
     for i, registration in enumerate(meeting_doc.students):
         if registration["student_id"] == student_id:
             index = i
             break
 
-    del meeting_doc.students[i]
+    del meeting_doc.students[index]
     meeting_doc.save()
 
 
@@ -199,7 +198,8 @@ async def update_student(
             detail="Invalid meeting id",
         )
 
-    if registration.registered == False:
+    if not registration.registered:
+        # TODO: Update StudentDocument meeting info to reflect changes!
         remove_student_from_meeting(meeting_doc, registration.student_id)
         return {
             "details": f"Student with id {registration.student_id} removed from meeting list"
@@ -213,6 +213,10 @@ async def update_student(
     )
     meeting_doc.students.append(student_info.dict())
     meeting_doc.save()
+
+    # Update StudentDocument
+    student.meetings_registered[str(registration.meeting_id)] = True
+    student.save()
     return {
         "details": f"Student with id {registration.student_id} added to meeting list"
     }

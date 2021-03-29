@@ -1,16 +1,24 @@
-from mongoengine import Document, ListField, QuerySet, StringField, IntField, UUIDField, DictField
+from mongoengine import (
+    Document,
+    QuerySet,
+    StringField,
+    IntField,
+    UUIDField,
+    DictField,
+)
 
-# TODO: What does QuerySet do?
 
 from backend.main.db.models.student_models import (
     StudentModel,
 )
 
 
+# TODO: What does QuerySet do?
+class StudentQuerySet(QuerySet):
+    pass
+
+
 def document(model: StudentModel):
-    print("------------------")
-    print("Student.dict():", model.dict())
-    print("------------------")
     doc = StudentDocument(**model.dict())
     return doc
 
@@ -23,6 +31,7 @@ class StudentDocument(Document):
     last_name = StringField(required=True)
     grade = StringField(required=True)
     age = IntField(required=True)
+    # TODO: Change meetings_registered?
     meetings_registered = DictField()
     meeting_counts = DictField(required=True)
 
@@ -41,4 +50,3 @@ class StudentDocument(Document):
             "meetings_registered": self.meetings_registered,
             "meeting_counts": self.meeting_counts,
         }
-

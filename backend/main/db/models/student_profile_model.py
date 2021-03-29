@@ -1,9 +1,13 @@
-from typing import List, Dict
+from typing import List
 
 from pydantic import BaseModel, Field, EmailStr, UUID4
 
-from backend.main.db.mixins import SessionLevel, PydanticObjectId
-from backend.main.db.models.student_models import StudentCreateModel, StudentModel, StudentUpdateModel
+from backend.main.db.mixins import SessionLevel
+from backend.main.db.models.student_models import (
+    StudentCreateModel,
+    StudentModel,
+    StudentUpdateModel,
+)
 
 
 class Guardian(BaseModel):
@@ -11,6 +15,7 @@ class Guardian(BaseModel):
     last_name: str = Field()
     phone_number: str = Field()
     email: EmailStr = Field()
+
 
 class Student(BaseModel):
     pass
@@ -33,6 +38,7 @@ class StudentProfileUpdateModel(BaseModel):
     students: List[StudentUpdateModel] = Field()
     guardians: List[Guardian] = Field()
     mailing_lists: List[SessionLevel] = Field()
+
 
 class StudentProfileModel(BaseModel):
     uuid: UUID4 = Field()
