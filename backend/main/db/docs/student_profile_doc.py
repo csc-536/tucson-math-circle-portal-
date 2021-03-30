@@ -32,6 +32,7 @@ def document(model: StudentProfileModel):
         email=model.email,
         students=student_documents,
         guardians=guardians,
+        mailing_lists=model.mailing_lists,
     )
     return doc
 
@@ -44,6 +45,7 @@ class StudentProfileDocument(Document):
     email = EmailField(required=True)
     students = ListField(ReferenceField(StudentDocument))
     guardians = ListField(required=True)
+    mailing_lists = ListField(required=False)
 
     meta = {
         "query_class": StudentProfileQuerySet,
@@ -58,4 +60,5 @@ class StudentProfileDocument(Document):
             "email": self.email,
             "student_list": students,
             "guardians": self.guardians,
+            "mailing_lists": self.mailing_lists,
         }
