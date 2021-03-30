@@ -229,8 +229,9 @@ async def update_profile(
     token_data: TokenData = Depends(get_student_token_data),
 ):
     current_user = get_current_user_doc(token_data)
-    current_user["email"] = new_profile.email
-    current_user["guardians"] = [g.dict() for g in new_profile.guardians]
+    current_user.email = new_profile.email
+    current_user.guardians = [g.dict() for g in new_profile.guardians]
+    current_user.mailing_lists = new_profile.mailing_lists
     # update StudentDocuments
     # `new_profile.students` is a `List[StudentUpdateModel]`
     for student_update in new_profile.students:
