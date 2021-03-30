@@ -29,6 +29,8 @@ function Registration({ update }) {
     last_name: "",
     grade: "",
     age: "",
+    selectedFile: null,
+    status: false,
   };
 
   const initialGuardian = {
@@ -116,6 +118,7 @@ function Registration({ update }) {
       <StudentInfo
         key={i}
         student={student}
+        update={update}
         handleOnChange={(e) => handleOnChange(e, i, "students")}
       />
     );
@@ -172,6 +175,7 @@ function Registration({ update }) {
     email,
     password,
     repassword,
+    newpassword,
     students,
     guardians,
     checkBox
@@ -185,6 +189,18 @@ function Registration({ update }) {
       errStr += "Password needs to be at least 6 characters long\n";
     }
     if (!update && repassword !== password) {
+      errStr += "Passwords do not match\n";
+    }
+    if (
+      update &&
+      newpassword != null &&
+      newpassword != "" &&
+      newpassword.length < 6
+    ) {
+      errStr += "New password needs to be at least 6 characters long\n";
+    }
+    if (update && repassword != newpassword) {
+      // console.log("|" + newpassword)
       errStr += "Passwords do not match\n";
     }
     if (!update && checkBox !== true) {
@@ -236,6 +252,7 @@ function Registration({ update }) {
       email,
       password,
       repassword,
+      newpassword,
       students,
       guardians,
       mailing_lists,
@@ -244,6 +261,7 @@ function Registration({ update }) {
       email,
       password,
       repassword,
+      newpassword,
       students,
       guardians,
       checkBox
@@ -267,13 +285,6 @@ function Registration({ update }) {
         console.log(error.response);
       }
     } else {
-      if (password !== repassword) {
-        return console.log("Two passwords don't match");
-      }
-
-      if (password.length < 6) {
-        return console.log("Password should be at least 6 characters");
-      }
       console.log("FORM:");
       console.log(form);
       try {
@@ -347,7 +358,11 @@ function Registration({ update }) {
    */
   if (update) {
     header = <ProfHeader handleSeeAllMeetings={handleSeeAllMeetings} />;
-    isUpdate = <ConsentUpload />;
+    isUpdate = (
+      <div>
+        <br />
+      </div>
+    );
     buttonVal = "Update";
   }
 
