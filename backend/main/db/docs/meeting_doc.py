@@ -6,6 +6,7 @@ from mongoengine import (
     DateTimeField,
     QuerySet,
     UUIDField,
+    URLField,
 )
 
 
@@ -30,6 +31,9 @@ class MeetingDocument(Document):
     miro_link = StringField(required=True)
     password = StringField(required=True)
     students = ListField(required=False)
+    coordinator_notes = StringField(reguired=False)
+    student_notes = StringField(reguired=False)
+    materials_link = URLField(required=False)
 
     meta = {
         "query_class": MeetingQuerySet,
@@ -46,6 +50,8 @@ class MeetingDocument(Document):
             "miro_link": self.miro_link,
             "topic": self.topic,
             "session_level": self.session_level,
+            "student_notes": self.student_notes,
+            "materials_link": self.materials_link,
         }
 
     def admin_dict(self):
@@ -59,6 +65,9 @@ class MeetingDocument(Document):
             "session_level": self.session_level,
             "password": self.password,
             "students": self.students,
+            "coordinator_notes": self.coordinator_notes,
+            "student_notes": self.student_notes,
+            "materials_link": self.materials_link,
         }
 
     def dict(self):
@@ -72,4 +81,7 @@ class MeetingDocument(Document):
             "session_level": self.session_level,
             "password": self.password,
             "students": self.students,
+            "coordinator_notes": self.coordinator_notes,
+            "student_notes": self.student_notes,
+            "materials_link": self.materials_link,
         }
