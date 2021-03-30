@@ -69,6 +69,7 @@ async def delete_meeting(update_meeting_model: UpdateMeeting):
         return "Could not find the meeting"
     meeting_doc.remove(meeting_doc)
 
+
 # TODO: Update!
 @router.put("/check_student_attended")
 async def check_student_attended(
