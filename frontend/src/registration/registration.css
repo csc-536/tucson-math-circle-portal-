@@ -20,6 +20,9 @@
   float: right;
   margin-right: 10px;
 }
+.formInput {
+  max-width: 175px;
+}
 #profileHeader {
   float: left;
 }
@@ -59,6 +62,16 @@
 #myCheckBox {
   margin-top: 30px;
   width: 50px;
+}
+#gradeDropDown {
+  padding: 5px;
+  width: 175px;
+  margin-top: 10px;
+}
+.regNote {
+  font-size: 12pt;
+  font-weight: normal;
+  color: #154cc5;
 }
 #addStudent,
 #addGuardian,

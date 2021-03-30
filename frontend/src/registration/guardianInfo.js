@@ -19,6 +19,7 @@ function GuardianInfo({
           name="first_name"
           onChange={handleOnChange}
           value={first_name}
+          className="formInput"
         />
       </label>
       <label className="col2">
@@ -28,6 +29,7 @@ function GuardianInfo({
           name="last_name"
           onChange={handleOnChange}
           value={last_name}
+          className="formInput"
         />
       </label>
       <label className="col1">
@@ -37,6 +39,7 @@ function GuardianInfo({
           name="email"
           onChange={handleOnChange}
           value={email}
+          className="formInput"
         />
       </label>
       <label className="col2">
@@ -46,6 +49,7 @@ function GuardianInfo({
           name="phone_number"
           onChange={handleOnChange}
           value={phone_number}
+          className="formInput"
         />
       </label>
     </div>

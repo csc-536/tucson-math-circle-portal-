@@ -45,13 +45,14 @@ function Registration({ update }) {
     newpassword: "",
     students: [initialStudent],
     guardians: [initialGuardian],
-    section: ["junior_a", "junior_b", "senior"],
+    mailing_lists: ["junior_a", "junior_b", "senior"],
   });
 
   const [checkBox, setCheckBox] = useState(false);
 
   const handleOnChange = (e, i, type) => {
     const { name, value } = e.target;
+    console.log(name + " : " + value);
     if (type === "students") {
       const students = clone(form.students);
       students[i][name] = value;
@@ -80,24 +81,24 @@ function Registration({ update }) {
    */
   const handleMailChange = (e) => {
     const { value } = e.target;
-    let section = form.section;
-    if (section.includes(value)) {
-      if (section.length === 1) {
+    let mailing_lists = form.mailing_lists;
+    if (mailing_lists.includes(value)) {
+      if (mailing_lists.length === 1) {
         return;
       }
-      const i = section.indexOf(value);
-      section.splice(i, 1);
+      const i = mailing_lists.indexOf(value);
+      mailing_lists.splice(i, 1);
     } else {
       if (value === "opt_out") {
-        section = [];
-      } else if (value !== "out_out" && section.includes("opt_out")) {
-        const i = section.indexOf("out_out");
-        section.splice(i, 1);
+        mailing_lists = [];
+      } else if (value !== "out_out" && mailing_lists.includes("opt_out")) {
+        const i = mailing_lists.indexOf("out_out");
+        mailing_lists.splice(i, 1);
       }
-      section.push(value);
+      mailing_lists.push(value);
     }
-    console.log(section);
-    setForm({ ...form, section });
+    console.log(mailing_lists);
+    setForm({ ...form, mailing_lists });
   };
 
   const handleCheckBoxChange = (e) => {
@@ -196,9 +197,6 @@ function Registration({ update }) {
       if (student.last_name === "") {
         errStr += "Student " + (i + 1) + ": Last name required\n";
       }
-      if (student.grade === "" || isNaN(student.grade)) {
-        errStr += "Student " + (i + 1) + ": Grade required\n";
-      }
       if (student.age === "" || isNaN(student.age)) {
         errStr += "Student " + (i + 1) + ": Age required\n";
       }
@@ -234,7 +232,14 @@ function Registration({ update }) {
   const handleFormSubmit = async (e) => {
     e.preventDefault();
 
-    const { email, password, repassword, students, guardians } = form;
+    const {
+      email,
+      password,
+      repassword,
+      students,
+      guardians,
+      mailing_lists,
+    } = form;
     const str = checkFeilds(
       email,
       password,
@@ -256,6 +261,7 @@ function Registration({ update }) {
           email,
           guardians,
           students,
+          mailing_lists,
         });
       } catch (error) {
         console.log(error.response);
@@ -268,7 +274,7 @@ function Registration({ update }) {
       if (password.length < 6) {
         return console.log("Password should be at least 6 characters");
       }
-
+      console.log("FORM:");
       console.log(form);
       try {
         await register({ email, password, role: "student" });
@@ -276,6 +282,7 @@ function Registration({ update }) {
           email,
           guardians,
           students,
+          mailing_lists,
         });
         setAuth({ userLoggedIn: isLoggedIn(), role: loggedInRole() });
         history.push("/profile");
@@ -352,25 +359,49 @@ function Registration({ update }) {
     <form id="regForm" onSubmit={handleFormSubmit}>
       {header}
       <h3 className="formHeader">Account Information</h3>
+      <p className="regNote">
+        Fill in the required fields to set up your account
+      </p>
+      <p className="regNote">
+        NOTE: The email provided below is shared between all students associated
+        with this account and will be used to recieve Tucson Math Circle meeting
+        reminders and notifications
+      </p>
       <AccInfo update={update} handleOnChange={handleOnChange} form={form} />
       {isUpdate}
       <hr />
       <h3 className="formHeader">Student Information</h3>
+      <p className="regNote">
+        Fill in the required fields for each participating student
+      </p>
       <div id="sList">{studentList}</div>
       <AddNewStudent handleAddStudent={handleAddStudent} />
       <RemStudent handleRemStudent={handleRemStudent} />
+      <br />
       <hr />
       <h3 className="formHeader">
         Guardian Information | <em>Emergency contact</em>
+        <br />
       </h3>
+      <p className="regNote">
+        Fill in the required guardian fields for emergency contact purposes
+      </p>
+      <p className="regNote">
+        NOTE: The first (top) guardian listed below will be the primary contact
+        for all students linked to this account
+      </p>
       <div id="gList">{guardianList}</div>
       <AddNewGuardian handleAddGuardian={handleAddGuardian} />
       <RemGuardian handleRemGuardian={handleRemGuardian} />
+      <br />
       <hr />
-      <h3 className="formHeader">Mailing List Opt In</h3>
+      <h3 className="formHeader">Mailing List Opt In </h3>
+      <p className="regNote">
+        Select which session levels you would like to get emails about
+      </p>
       <MainOptInOptions
         handleMailChange={(e) => handleMailChange(e)}
-        section={form.section}
+        mailing_lists={form.mailing_lists}
       />
       <p>{errStr}</p>
       <input id="regButton" type="submit" value={buttonVal} />
