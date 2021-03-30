@@ -58,7 +58,7 @@ async def create_meeting(create_meeting: CreateMeetingModel):
     meeting = MeetingModel(**create_meeting.dict(), password=password, students=[])
     doc = MeetingDoc(meeting)
     doc.save()
-    return doc.dict()
+    return doc.admin_dict()
 
 
 @router.delete("/delete_meeting")
@@ -69,7 +69,7 @@ async def delete_meeting(update_meeting_model: UpdateMeeting):
         return "Could not find the meeting"
     meeting_doc.remove(meeting_doc)
 
-
+# TODO: Update!
 @router.put("/check_student_attended")
 async def check_student_attended(
     registration: StudentMeetingRegistration,
@@ -104,5 +104,8 @@ async def update_meeting(update_meeting_model: UpdateMeeting):
     meeting_doc.session_level = update_meeting_model.session_level
     meeting_doc.topic = update_meeting_model.topic
     meeting_doc.miro_link = update_meeting_model.miro_link
+    meeting_doc.coordinator_notes = update_meeting_model.coordinator_notes
+    meeting_doc.student_notes = update_meeting_model.student_notes
+    meeting_doc.materials_link = update_meeting_model.materials_link
     meeting_doc.save()
     return meeting_doc.admin_dict()
