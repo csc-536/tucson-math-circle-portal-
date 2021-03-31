@@ -69,8 +69,8 @@ def remove_student_from_meeting(meeting_doc, student_id: PydanticObjectId):
         if check_id(registration):
             index = i
             break
-    reg_to_remove = meeting_doc.students[index]
-    meeting_doc.update(pull__students=reg_to_remove)
+    del meeting_doc.students[index]
+    meeting_doc.save()
 
 
 def remove_student_from_profile(
@@ -216,9 +216,12 @@ async def update_student(
         )
 
     if not registration.registered:
-        # TODO: Update StudentDocument meeting info to reflect changes!
         remove_student_from_meeting(meeting_doc, registration.student_id)
-        meeting_doc.save()
+        # Update StudentDocument `meetings_registered` to reflect changes
+        if str(registration.meeting_id) in student.meetings_registered:
+            mid = str(registration.meeting_id)
+            del student.meetings_registered[mid]
+            student.save()
         return {
             "details": f"Student with id {registration.student_id} removed from meeting list"
         }
@@ -229,11 +232,12 @@ async def update_student(
         guardians=current_user.guardians,
         account_uuid=token_data.id,
     )
-    meeting_doc.update(push__students=student_info.dict())
+    meeting_doc.students.append(student_info.dict())
     meeting_doc.save()
 
-    # Update StudentDocument
-    student.meetings_registered[str(registration.meeting_id)] = True
+    # Update StudentDocument `meetings_registered`
+    mid = str(registration.meeting_id)
+    student.meetings_registered[mid] = False
     student.save()
     return {
         "details": f"Student with id {registration.student_id} added to meeting list"
@@ -250,6 +254,15 @@ async def update_profile(
     current_user.email = new_profile.email
     current_user.guardians = [g.dict() for g in new_profile.guardians]
     current_user.mailing_lists = new_profile.mailing_lists
+
+    # keep track of id's seen so we know what students to remove from account
+    # student id is an Optional
+    ids_in_request = [st.id for st in new_profile.students if st.id]
+    # remove students not found in request
+    for student_doc in current_user.students:
+        if str(student_doc.id) not in ids_in_request:
+            current_user.update(pull__students=student_doc)
+
     # update StudentDocuments
     # `new_profile.students` is a `List[StudentUpdateModel]`
     for student_update in new_profile.students:
@@ -267,15 +280,9 @@ async def update_profile(
             # if the student already existed update it
             if len(query) > 0:
                 student_doc = query[0]
-                if student_update.remove:
-                    current_user.update(pull__students=student_doc)
-                    # remove_student_from_profile(current_user, student_update)
-                else:
-                    update_student_document(student_doc, student_update)
-            # otherwise we need to create a new student
+                update_student_document(student_doc, student_update)
             else:
                 print("ERROR: could not find student id in update_profile")
 
-    # current_user["students"] = [s.dict() for s in new_profile.students]
     current_user.save()
     return current_user.dict()
