@@ -73,15 +73,6 @@ def remove_student_from_meeting(meeting_doc, student_id: PydanticObjectId):
     meeting_doc.save()
 
 
-def remove_student_from_profile(
-    profile_doc: StudentProfileDocument, student_id: PydanticObjectId
-):
-    check_id = lambda st: st.id == student_id
-    student_generator = (
-        st for i, st in enumerate(profile_doc.students) if check_id(st)
-    )
-
-
 def generate_meeting_registrations(registrations, students):
     # dict of registration status for each student in students
     meeting_registrations = {}
