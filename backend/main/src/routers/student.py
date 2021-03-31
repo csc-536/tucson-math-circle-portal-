@@ -11,6 +11,7 @@ from backend.main.db.models.student_models import (
     StudentUpdateModel,
 )
 from backend.main.db.docs.student_doc import (
+    document as StudentDoc,
     StudentDocument,
 )
 from backend.main.db.docs.student_profile_doc import (
@@ -235,14 +236,22 @@ async def update_profile(
     # update StudentDocuments
     # `new_profile.students` is a `List[StudentUpdateModel]`
     for student_update in new_profile.students:
-        query = StudentDocument.objects(id=student_update.id)
-        # if the student already existed update it
-        if len(query) > 0:
-            student_doc = query[0]
-            update_student_document(student_doc, student_update)
-        # otherwise we need to create a new student
+        # add a new student if id is None
+        if not student_update.id:
+            new_student = StudentModel(**student_update.dict(), profile_uuid=current_user.id)
+            student_document = StudentDoc(new_student)
+            student_document.save()
+            current_user.students.append(student_document)
+
         else:
-            print("Need to add a new student")
+            query = StudentDocument.objects(id=student_update.id)
+            # if the student already existed update it
+            if len(query) > 0:
+                student_doc = query[0]
+                update_student_document(student_doc, student_update)
+            # otherwise we need to create a new student
+            else:
+                print("ERROR: could not find student id in update_profile")
 
     # current_user["students"] = [s.dict() for s in new_profile.students]
     current_user.save()
