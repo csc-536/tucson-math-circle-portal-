@@ -46,6 +46,8 @@ class StudentCreateModel(BaseModel):
 class StudentUpdateModel(StudentCreateModel):
     # if `id` is None, that means this is a new student
     id: Optional[PydanticObjectId] = None
+    # if `remove` is True reference to student will be removed from account
+    remove: Optional[bool] = False
 
 
 class StudentModel(StudentCreateModel):

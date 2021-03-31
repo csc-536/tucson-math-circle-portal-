@@ -36,8 +36,8 @@ class StudentDocument(Document):
     # dictionary of the form (meeting uuid, attended (True/False))
     meetings_registered = DictField()
     meeting_counts = DictField(required=True)
-    verification_status = BooleanField(required=True)
-    consent_form_link = URLField(required = False)
+    verification_status = BooleanField(required=False)
+    consent_form_link = URLField(required=False)
 
     meta = {
         "db_alias": "student-db",

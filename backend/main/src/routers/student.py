@@ -26,6 +26,7 @@ from backend.main.db.models.meeting_model import (
 from backend.main.db.docs.meeting_doc import (
     MeetingDocument,
 )
+from backend.main.db.mixins import PydanticObjectId
 
 
 # auth db imports
@@ -60,16 +61,44 @@ def get_student_meeting_index(meeting_doc, first, last):
     return i
 
 
-def remove_student_from_meeting(meeting_doc, student_id):
+def remove_student_from_meeting(meeting_doc, student_id: PydanticObjectId):
     # TODO: Update StudentDocument meeting info to reflect changes!
+    check_id = lambda reg: reg["student_id"] == student_id
     index = -1
     for i, registration in enumerate(meeting_doc.students):
-        if registration["student_id"] == student_id:
+        if check_id(registration):
             index = i
             break
+    reg_to_remove = meeting_doc.students[index]
+    meeting_doc.update(pull__students=reg_to_remove)
 
-    del meeting_doc.students[index]
-    meeting_doc.save()
+
+def remove_student_from_profile(
+    profile_doc: StudentProfileDocument, student_id: PydanticObjectId
+):
+    check_id = lambda st: st.id == student_id
+    student_generator = (
+        st for i, st in enumerate(profile_doc.students) if check_id(st)
+    )
+
+
+def generate_meeting_registrations(registrations, students):
+    # dict of registration status for each student in students
+    meeting_registrations = {}
+    for i, st in enumerate(students):
+        meeting_registrations[str(st.id)] = {
+            "id": str(st.id),
+            "first_name": st.first_name,
+            "last_name": st.last_name,
+            "registered": False,
+        }
+
+    for registration in registrations:
+        reg_id = registration["student_id"]
+        if reg_id in meeting_registrations.keys():
+            meeting_registrations[reg_id]["registered"] = True
+
+    return meeting_registrations
 
 
 def update_student_document(student_doc: StudentDocument, updates: StudentUpdateModel):
@@ -140,29 +169,16 @@ async def get_meetings_by_filter(
             detail="This account has no profile",
         )
     current_students = current_user.students
-    student_ids = [str(s.id) for s in current_students]
-
-    # keep track of registrations for students from this profile
-    # this is a dict so it is easier to use with the registration seach
-    meeting_registrations = {}
-    for i, st in enumerate(current_students):
-        meeting_registrations[str(st.id)] = {
-            "id": str(st.id),
-            "first_name": st.first_name,
-            "last_name": st.last_name,
-            "registered": False,
-        }
 
     # TODO: Use the dates field from MeetingSearchModel
     meetings = []
     try:
         for level in search.session_levels:
             for meeting in MeetingDocument.objects(session_level=level):
-                for registration in meeting.students:
-                    reg_id = registration["student_id"]
-                    if reg_id in student_ids:
-                        meeting_registrations[reg_id]["registered"] = True
-
+                registrations = meeting.students
+                meeting_registrations = generate_meeting_registrations(
+                    registrations, current_students
+                )
                 meeting_info = meeting.student_dict()
                 meeting_info["registrations"] = [
                     meeting_registrations[sid] for sid in meeting_registrations.keys()
@@ -202,6 +218,7 @@ async def update_student(
     if not registration.registered:
         # TODO: Update StudentDocument meeting info to reflect changes!
         remove_student_from_meeting(meeting_doc, registration.student_id)
+        meeting_doc.save()
         return {
             "details": f"Student with id {registration.student_id} removed from meeting list"
         }
@@ -212,7 +229,7 @@ async def update_student(
         guardians=current_user.guardians,
         account_uuid=token_data.id,
     )
-    meeting_doc.students.append(student_info.dict())
+    meeting_doc.update(push__students=student_info.dict())
     meeting_doc.save()
 
     # Update StudentDocument
@@ -238,7 +255,9 @@ async def update_profile(
     for student_update in new_profile.students:
         # add a new student if id is None
         if not student_update.id:
-            new_student = StudentModel(**student_update.dict(), profile_uuid=current_user.id)
+            new_student = StudentModel(
+                **student_update.dict(), profile_uuid=token_data.id
+            )
             student_document = StudentDoc(new_student)
             student_document.save()
             current_user.students.append(student_document)
@@ -248,7 +267,11 @@ async def update_profile(
             # if the student already existed update it
             if len(query) > 0:
                 student_doc = query[0]
-                update_student_document(student_doc, student_update)
+                if student_update.remove:
+                    current_user.update(pull__students=student_doc)
+                    # remove_student_from_profile(current_user, student_update)
+                else:
+                    update_student_document(student_doc, student_update)
             # otherwise we need to create a new student
             else:
                 print("ERROR: could not find student id in update_profile")
