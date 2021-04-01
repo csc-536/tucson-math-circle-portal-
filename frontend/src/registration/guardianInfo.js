@@ -6,7 +6,16 @@
 function GuardianInfo({
   guardian: { first_name, last_name, email, phone_number },
   handleOnChange,
+  handleRemGuardian,
 }) {
+  let remGuardianButton_1 = (
+    <div id="studentRemoveDiv">
+      <button type="button" id="remGuardian" onClick={handleRemGuardian}>
+        <b>Remove Guardian</b>
+      </button>
+    </div>
+  );
+
   /*
    * Return a div for inputting first and last name, email and phone number.
    */
@@ -52,6 +61,7 @@ function GuardianInfo({
           className="formInput"
         />
       </label>
+      {remGuardianButton_1}
     </div>
   );
 }

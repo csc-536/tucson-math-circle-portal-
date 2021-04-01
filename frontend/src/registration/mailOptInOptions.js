@@ -50,7 +50,7 @@ function MailOptInOptions({ handleMailChange, mailing_lists }) {
           type="radio"
           value="opt_out"
           name="opt_out"
-          checked={mailing_lists.includes("opt_out")}
+          checked={mailing_lists.length == 0}
           onClick={handleMailChange}
         />
       </label>

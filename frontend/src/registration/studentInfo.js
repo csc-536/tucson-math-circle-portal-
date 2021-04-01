@@ -11,6 +11,7 @@ function StudentInfo({
   student: { first_name, last_name, grade, age, selectedFile, status },
   update,
   handleOnChange,
+  handleRemStudent,
 }) {
   /*
    * 'selectedFile' is a state assigned to the file that is uploaded
@@ -34,20 +35,33 @@ function StudentInfo({
   // };
 
   let verifStyle = {};
+  let statusText = "";
 
   let consentMaterial_1 = "";
   let consentMaterial_2 = "";
 
+  let remStudentButton_1 = (
+    <div id="studentRemoveDiv">
+      <button type="button" id="remStudent" onClick={handleRemStudent}>
+        <b>Remove Student</b>
+      </button>
+    </div>
+  );
+
+  let remStudentButton_2 = "";
+
   if (status) {
     verifStyle = { background: "green" };
+    statusText = "Verified";
   } else {
     verifStyle = { background: "red" };
+    statusText = "Unverified";
   }
   if (update) {
     consentMaterial_1 = (
       <label className="col1">
         <div id="consentUpload">
-          Consent form upload (PDF):
+          Upload your <em>signed</em> consent form (PDF):
           <input type="file" name="file" onChange={handleOnChange} />
         </div>
       </label>
@@ -55,7 +69,9 @@ function StudentInfo({
     consentMaterial_2 = (
       <label className="col2">
         Consent form verification status:
-        <div style={verifStyle} id="consentStatus" />
+        <div style={verifStyle} id="consentStatus">
+          {statusText}
+        </div>
       </label>
     );
   }
@@ -118,6 +134,7 @@ function StudentInfo({
       </label>
       {consentMaterial_1}
       {consentMaterial_2}
+      {remStudentButton_1}
     </div>
   );
 }

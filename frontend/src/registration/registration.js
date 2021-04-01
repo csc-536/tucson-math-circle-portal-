@@ -25,6 +25,7 @@ import { isLoggedIn, loggedInRole } from "../utils";
 
 function Registration({ update }) {
   const initialStudent = {
+    id: "",
     first_name: "",
     last_name: "",
     grade: "",
@@ -91,13 +92,12 @@ function Registration({ update }) {
       const i = mailing_lists.indexOf(value);
       mailing_lists.splice(i, 1);
     } else {
+      console.log(value);
       if (value === "opt_out") {
         mailing_lists = [];
-      } else if (value !== "out_out" && mailing_lists.includes("opt_out")) {
-        const i = mailing_lists.indexOf("out_out");
-        mailing_lists.splice(i, 1);
+      } else if (value !== "out_out") {
+        mailing_lists.push(value);
       }
-      mailing_lists.push(value);
     }
     console.log(mailing_lists);
     setForm({ ...form, mailing_lists });
@@ -120,6 +120,7 @@ function Registration({ update }) {
         student={student}
         update={update}
         handleOnChange={(e) => handleOnChange(e, i, "students")}
+        handleRemStudent={(e) => handleRemStudent(e, i)}
       />
     );
   });
@@ -130,6 +131,7 @@ function Registration({ update }) {
         key={i}
         guardian={guardian}
         handleOnChange={(e) => handleOnChange(e, i, "guardians")}
+        handleRemGuardian={(e) => handleRemGuardian(e, i)}
       />
     );
   });
@@ -316,10 +318,10 @@ function Registration({ update }) {
   /*
    * Removes the newest student from the list of students 'studentList'.
    */
-  const handleRemStudent = (e) => {
+  const handleRemStudent = (e, i) => {
     if (form.students.length > 1) {
       const students = clone(form.students);
-      students.pop();
+      students.splice(i, 1);
       setForm({ ...form, students });
     }
   };
@@ -337,10 +339,10 @@ function Registration({ update }) {
   /*
    * Removes the newest guardian from the list of guardians 'guardianList'.
    */
-  const handleRemGuardian = (e) => {
+  const handleRemGuardian = (e, i) => {
     if (form.guardians.length > 1) {
       const guardians = clone(form.guardians);
-      guardians.pop();
+      guardians.splice(i, 1);
       setForm({ ...form, guardians });
     }
   };
@@ -391,7 +393,6 @@ function Registration({ update }) {
       </p>
       <div id="sList">{studentList}</div>
       <AddNewStudent handleAddStudent={handleAddStudent} />
-      <RemStudent handleRemStudent={handleRemStudent} />
       <br />
       <hr />
       <h3 className="formHeader">
@@ -407,7 +408,6 @@ function Registration({ update }) {
       </p>
       <div id="gList">{guardianList}</div>
       <AddNewGuardian handleAddGuardian={handleAddGuardian} />
-      <RemGuardian handleRemGuardian={handleRemGuardian} />
       <br />
       <hr />
       <h3 className="formHeader">Mailing List Opt In </h3>

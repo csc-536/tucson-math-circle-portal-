@@ -28,9 +28,10 @@
 #consentStatus {
   margin: 0 auto;
   margin-top: 10px;
-  width: 20px;
+  width: 175px;
   height: 20px;
   border-radius: 10px;
+  text-align: center;
 }
 #consentUpload {
   padding-top: 20px;
@@ -96,8 +97,20 @@
   padding: 10px;
   cursor: pointer;
 }
+#studentRemoveDiv {
+  clear: both;
+  width: 100%;
+}
+#addStudent,
+#addGuardian {
+  margin-top: 20px;
+}
 #remStudent,
 #remGuardian {
+  margin-top: 10px;
+  margin-left: 115px;
+  width: 200px;
+  font-size: 12pt;
   background-color: #990000;
   color: white;
 }
