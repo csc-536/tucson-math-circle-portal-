@@ -1,7 +1,7 @@
-from typing import Dict
+from typing import Dict, Optional
 from enum import Enum
 
-from pydantic import BaseModel, Field, UUID4
+from pydantic import BaseModel, Field, UUID4, AnyUrl
 
 from backend.main.db.mixins import PydanticObjectId, SessionLevel
 
@@ -39,10 +39,13 @@ class StudentCreateModel(BaseModel):
     last_name: str = Field()
     grade: StudentGrade = Field()
     age: int = Field()
+    verification_status: bool = False
+    consent_form_link: Optional[AnyUrl] = None
 
 
 class StudentUpdateModel(StudentCreateModel):
-    id: PydanticObjectId
+    # if `id` is None, that means this is a new student
+    id: Optional[PydanticObjectId] = None
 
 
 class StudentModel(StudentCreateModel):
