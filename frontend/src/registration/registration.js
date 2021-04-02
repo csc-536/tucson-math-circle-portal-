@@ -18,7 +18,14 @@ import React, { useContext, useEffect, useState } from "react";
 import RegHeader from "./registrationHeader";
 import RemGuardian from "./remGuardian";
 import RemStudent from "./remStudent";
-import { addProfile, updateProfile, profile, register } from "../http";
+import {
+  addProfile,
+  updateProfile,
+  profile,
+  register,
+  updateEmail,
+  updatePassword,
+} from "../http";
 import { clone, uniqueId } from "lodash";
 import { AuthContext } from "../contexts/AuthContext";
 import { isLoggedIn, loggedInRole } from "../utils";
@@ -55,11 +62,12 @@ function Registration({ update }) {
 
   const handleOnChange = (e, i, type) => {
     const { name, value } = e.target;
-    console.log(name + " : " + value);
+    // console.log(name + " : " + value + " : " + i);
     if (type === "students") {
       const students = clone(form.students);
+      console.log(form.students);
       students[i][name] = value;
-      // console.log(form.students);
+      console.log(form.students);
       setForm({ ...form, students });
       return;
     } else if (type === "guardians") {
@@ -114,6 +122,7 @@ function Registration({ update }) {
    * 'guardianList' is a list of all the guardians affiliated with the account.
    */
   const studentList = form.students.map((student, i) => {
+    console.log("KEY: " + i);
     return (
       <StudentInfo
         key={i}
@@ -195,8 +204,9 @@ function Registration({ update }) {
     }
     if (
       update &&
-      newpassword != null &&
-      newpassword != "" &&
+      newpassword !== null &&
+      newpassword !== undefined &&
+      newpassword !== "" &&
       newpassword.length < 6
     ) {
       errStr += "New password needs to be at least 6 characters long\n";
@@ -275,20 +285,40 @@ function Registration({ update }) {
 
     if (update) {
       try {
-        console.log("FORM: ");
-        console.log(form);
+        console.log("EMAIL: " + email);
+        console.log("PASSWORD: " + newpassword);
+        console.log("REPASSWORD: " + repassword);
         await updateProfile({
           email,
           guardians,
           students,
           mailing_lists,
         });
+        console.log(
+          ((newpassword !== null + " " + newpassword) !==
+            undefined + " " + newpassword) !==
+            ""
+        );
+        if (
+          newpassword !== null &&
+          newpassword !== undefined &&
+          newpassword !== ""
+        ) {
+          console.log(
+            "CHANGING PASSWORD FROM " + password + " TO " + newpassword
+          );
+          console.log("NEW PASSWORD: " + newpassword);
+          await updatePassword({
+            password: newpassword,
+          });
+        }
+        await updateEmail({
+          email,
+        });
       } catch (error) {
         console.log(error.response);
       }
     } else {
-      console.log("FORM:");
-      console.log(form);
       try {
         await register({ email, password, role: "student" });
         await addProfile({
@@ -309,10 +339,9 @@ function Registration({ update }) {
    * Adds a student to the list of students 'studentList'.
    */
   const handleAddStudent = (e) => {
-    const newStudent = initialStudent;
+    const newStudent = clone(initialStudent);
     const students = [...form.students, newStudent];
     setForm({ ...form, students });
-    console.log(form);
   };
 
   /*
@@ -330,10 +359,9 @@ function Registration({ update }) {
    * Adds a guardian to the list of guardians 'guardianList'.
    */
   const handleAddGuardian = (e) => {
-    const newGuardian = initialGuardian;
+    const newGuardian = clone(initialGuardian);
     const guardians = [...form.guardians, newGuardian];
     setForm({ ...form, guardians });
-    console.log(form);
   };
 
   /*
@@ -384,6 +412,7 @@ function Registration({ update }) {
         with this account and will be used to recieve Tucson Math Circle meeting
         reminders and notifications
       </p>
+      <p className="regNote">Password must be at least six characters long</p>
       <AccInfo update={update} handleOnChange={handleOnChange} form={form} />
       {isUpdate}
       <hr />

@@ -98,6 +98,32 @@ export async function updateProfile(data) {
   return res;
 }
 
+export async function updateEmail(data) {
+  const accessToken = sessionStorage.getItem("accessToken");
+  console.log(accessToken);
+
+  const res = await auth.put("/student/update_email", data, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+  console.log(res);
+  return res;
+}
+
+export async function updatePassword(data) {
+  const accessToken = sessionStorage.getItem("accessToken");
+  console.log(accessToken);
+
+  const res = await auth.put("/student/update_password", data, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+  console.log(res);
+  return res;
+}
+
 export async function allMeetings({ role, body }) {
   const accessToken = sessionStorage.getItem("accessToken");
   console.log(accessToken);
