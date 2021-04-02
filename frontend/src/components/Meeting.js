@@ -1,23 +1,58 @@
 import React, { forwardRef, useState } from "react";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import Checkbox from "@material-ui/core/Checkbox";
 import FormGroup from "@material-ui/core/FormGroup";
 import FormControl from "@material-ui/core/FormControl";
-import RegisteredStudentTable from "./RegisteredStudentTable";
 import StudentAttendingTable from "./StudentAttendingTable";
 import { Button } from "@material-ui/core";
 import SaveIcon from "@material-ui/icons/Save";
+import { registerMeeting } from "../http";
+import { clone } from "lodash";
 
 const Meeting = forwardRef(
-  ({ meeting: { date, sessionLevel, topic, zoom_link, handleClose } }, ref) => {
-    const [students, setStudents] = useState([
-      { name: "jimmy", attending: true },
-      { name: "jimmy1", attending: false },
-    ]);
+  (
+    {
+      meeting: {
+        uuid,
+        date,
+        sessionLevel,
+        topic,
+        zoom_link,
+        registrations,
+        setRegistrations,
+        handleClose,
+      },
+    },
+    ref
+  ) => {
+    const initalStudents = registrations.map(
+      ({ first_name, last_name, registered, id }) => {
+        return {
+          name: `${first_name} ${last_name}`,
+          attending: registered,
+          id,
+        };
+      }
+    );
+    const [students, setStudents] = useState(initalStudents);
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
       e.preventDefault();
-      console.log(students);
+
+      for (let i = 0; i < students.length; i++) {
+        if (students[i].attending !== initalStudents[i].attending) {
+          try {
+            await registerMeeting({
+              meeting_id: uuid,
+              student_id: students[i].id,
+              registered: students[i].attending,
+            });
+            const s = clone(registrations);
+            s[i].registered = students[i].attending;
+            setRegistrations(s);
+          } catch (error) {
+            console.log(error);
+          }
+        }
+      }
       handleClose();
     };
 
