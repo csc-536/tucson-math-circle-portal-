@@ -1,10 +1,12 @@
 from mongoengine import (
     Document,
     QuerySet,
+    BooleanField,
     StringField,
     IntField,
     UUIDField,
     DictField,
+    URLField,
 )
 
 
@@ -34,6 +36,8 @@ class StudentDocument(Document):
     # dictionary of the form (meeting uuid, attended (True/False))
     meetings_registered = DictField()
     meeting_counts = DictField(required=True)
+    verification_status = BooleanField(required=False)
+    consent_form_link = URLField(required=False)
 
     meta = {
         "db_alias": "student-db",
@@ -49,4 +53,6 @@ class StudentDocument(Document):
             "age": self.age,
             "meetings_registered": self.meetings_registered,
             "meeting_counts": self.meeting_counts,
+            "verification_status": self.verification_status,
+            "consent_form_link": self.consent_form_link,
         }
