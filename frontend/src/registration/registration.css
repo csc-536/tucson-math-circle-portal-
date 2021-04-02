@@ -4,14 +4,6 @@
  * Purpose: Provide CSS styling for components and elements affiliated with
  *          the registration and profile pages.
  */
-#regForm {
-  margin: 0 auto;
-  max-width: 450px;
-}
-/* div {
-    clear: both;
-    padding-top: 10px;
-} */
 .col1 {
   float: left;
   margin-right: 10px;
@@ -24,6 +16,22 @@
 }
 .formInput {
   max-width: 175px;
+}
+.formHeader {
+  color: #154cc5;
+  clear: both;
+}
+.mailRadio {
+  margin: 20px;
+  display: flex;
+}
+.regNote {
+  font-size: 12pt;
+  font-weight: normal;
+  color: #154cc5;
+}
+#allMeetings {
+  margin-top: 30px;
 }
 #consentStatus {
   margin: 0 auto;
@@ -48,12 +56,9 @@
   clear: both;
   margin-bottom: 50px;
 }
-#allMeetings {
-  margin-top: 30px;
-}
-.formHeader {
-  color: #154cc5;
-  clear: both;
+#regForm {
+  margin: 0 auto;
+  max-width: 450px;
 }
 #regButton,
 #allMeetings {
@@ -68,10 +73,7 @@
   width: 450px;
   display: flex;
 }
-.mailRadio {
-  margin: 20px;
-  display: flex;
-}
+
 #myCheckBox {
   margin-top: 30px;
   width: 50px;
@@ -80,11 +82,6 @@
   padding: 5px;
   width: 175px;
   margin-top: 10px;
-}
-.regNote {
-  font-size: 12pt;
-  font-weight: normal;
-  color: #154cc5;
 }
 #addStudent,
 #addGuardian,
@@ -114,11 +111,6 @@
   background-color: #990000;
   color: white;
 }
-select {
-  margin-top: 10px;
-  padding-right: 100px;
-  padding-bottom: 10px;
-}
 #studentInformation,
 #GuardianInformation,
 #accountInfo {
@@ -127,4 +119,9 @@ select {
   padding: 10px;
   border-radius: 20px;
   width: 425px;
+}
+select {
+  margin-top: 10px;
+  padding-right: 100px;
+  padding-bottom: 10px;
 }

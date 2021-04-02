@@ -1,3 +1,17 @@
+.sectionRadio {
+  margin: 20px;
+  display: flex;
+}
 #studentTable {
   margin: 0 auto;
+}
+#innerSectionFilterDiv {
+  margin: 0 auto;
+  width: 450px;
+  display: flex;
+}
+#sectionFilterHeader,
+#studentPageHeader {
+  clear: both;
+  text-align: center;
 }

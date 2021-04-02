@@ -16,8 +16,6 @@ import { useHistory } from "react-router";
 import ProfHeader from "./profileHeader";
 import React, { useContext, useEffect, useState } from "react";
 import RegHeader from "./registrationHeader";
-import RemGuardian from "./remGuardian";
-import RemStudent from "./remStudent";
 import {
   addProfile,
   updateProfile,
@@ -61,19 +59,16 @@ function Registration({ update }) {
   const [checkBox, setCheckBox] = useState(false);
 
   /*
-   *
+   * --------------------------------------------------------------------
    * BELOW IS ALL THE HANDLE FUNCTIONS FOR REGISTRATION AND PROFILE PAGES
-   *
+   * --------------------------------------------------------------------
    */
 
   const handleOnChange = (e, i, type) => {
     const { name, value } = e.target;
-    // console.log(name + " : " + value + " : " + i);
     if (type === "students") {
       const students = clone(form.students);
-      console.log(form.students);
       students[i][name] = value;
-      console.log(form.students);
       setForm({ ...form, students });
       return;
     } else if (type === "guardians") {
@@ -86,7 +81,6 @@ function Registration({ update }) {
     input[name] = value;
 
     setForm({ ...form, ...input });
-    // console.log(form);
   };
 
   /*
@@ -106,20 +100,17 @@ function Registration({ update }) {
       const i = mailing_lists.indexOf(value);
       mailing_lists.splice(i, 1);
     } else {
-      console.log(value);
       if (value === "opt_out") {
         mailing_lists = [];
       } else if (value !== "out_out") {
         mailing_lists.push(value);
       }
     }
-    console.log(mailing_lists);
     setForm({ ...form, mailing_lists });
   };
 
   const handleCheckBoxChange = (e) => {
     const { checked } = e.target;
-    console.log(checked);
     setCheckBox(checked);
   };
 
@@ -205,7 +196,6 @@ function Registration({ update }) {
       errStr += "New password needs to be at least 6 characters long\n";
     }
     if (update && repassword != newpassword) {
-      // console.log("|" + newpassword)
       errStr += "Passwords do not match\n";
     }
     if (!update && checkBox !== true) {
@@ -277,29 +267,17 @@ function Registration({ update }) {
     }
     if (update) {
       try {
-        console.log("EMAIL: " + email);
-        console.log("PASSWORD: " + newpassword);
-        console.log("REPASSWORD: " + repassword);
         await updateProfile({
           email,
           guardians,
           students,
           mailing_lists,
         });
-        console.log(
-          ((newpassword !== null + " " + newpassword) !==
-            undefined + " " + newpassword) !==
-            ""
-        );
         if (
           newpassword !== null &&
           newpassword !== undefined &&
           newpassword !== ""
         ) {
-          console.log(
-            "CHANGING PASSWORD FROM " + password + " TO " + newpassword
-          );
-          console.log("NEW PASSWORD: " + newpassword);
           await updatePassword({
             password: newpassword,
           });
@@ -328,10 +306,15 @@ function Registration({ update }) {
   };
 
   /*
+   * --------------------------------------------------------------------
+   * END OF HANDLE FUNCTIONS FOR REGISTRATION AND PROFILE PAGES
+   * --------------------------------------------------------------------
+   */
+
+  /*
    * 'studentList' is a list of all the students affiliated with the account.
    */
   const studentList = form.students.map((student, i) => {
-    console.log("KEY: " + i);
     return (
       <StudentInfo
         key={i}
@@ -383,10 +366,7 @@ function Registration({ update }) {
         const {
           data: { student_list: students, ...rest },
         } = res;
-        console.log(students);
         setForm({ students, ...rest });
-
-        // console.log(form);
       } catch (error) {
         console.log(error.response);
       }
