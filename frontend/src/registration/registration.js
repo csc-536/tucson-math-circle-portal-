@@ -60,6 +60,12 @@ function Registration({ update }) {
 
   const [checkBox, setCheckBox] = useState(false);
 
+  /*
+   *
+   * BELOW IS ALL THE HANDLE FUNCTIONS FOR REGISTRATION AND PROFILE PAGES
+   *
+   */
+
   const handleOnChange = (e, i, type) => {
     const { name, value } = e.target;
     // console.log(name + " : " + value + " : " + i);
@@ -118,70 +124,57 @@ function Registration({ update }) {
   };
 
   /*
-   * 'studentList' is a list of all the students affiliated with the account.
-   * 'guardianList' is a list of all the guardians affiliated with the account.
+   * Adds a student to the list of students 'studentList'.
    */
-  const studentList = form.students.map((student, i) => {
-    console.log("KEY: " + i);
-    return (
-      <StudentInfo
-        key={i}
-        student={student}
-        update={update}
-        handleOnChange={(e) => handleOnChange(e, i, "students")}
-        handleRemStudent={(e) => handleRemStudent(e, i)}
-      />
-    );
-  });
-
-  const guardianList = form.guardians.map((guardian, i) => {
-    return (
-      <GuardianInfo
-        key={i}
-        guardian={guardian}
-        handleOnChange={(e) => handleOnChange(e, i, "guardians")}
-        handleRemGuardian={(e) => handleRemGuardian(e, i)}
-      />
-    );
-  });
+  const handleAddStudent = (e) => {
+    const newStudent = clone(initialStudent);
+    const students = [...form.students, newStudent];
+    setForm({ ...form, students });
+  };
 
   /*
-   * 'header' is the header of the page for either registration or profile page.
-   * 'isUpdate' is affiliated with the consent form. Either is a checkbox or a
-   * file upload.
-   * 'buttonVal' is the text on the button for form submission.
+   * Removes the newest student from the list of students 'studentList'.
    */
-  let header = <RegHeader />;
-  let isUpdate = <CheckBox handleCheckBoxChange={handleCheckBoxChange} />;
-  let buttonVal = "Register";
-
-  /*
-   * 'history' used to render specified pages.
-   */
-  const history = useHistory();
-
-  useEffect(() => {
-    const pro = async () => {
-      try {
-        const res = await profile();
-        const {
-          data: { student_list: students, ...rest },
-        } = res;
-        console.log(students);
-        setForm({ students, ...rest });
-
-        // console.log(form);
-      } catch (error) {
-        console.log(error.response);
-      }
-    };
-    if (update) {
-      pro();
+  const handleRemStudent = (e, i) => {
+    if (form.students.length > 1) {
+      const students = clone(form.students);
+      students.splice(i, 1);
+      setForm({ ...form, students });
     }
-  }, []);
+  };
 
-  let errStr = "";
+  /*
+   * Adds a guardian to the list of guardians 'guardianList'.
+   */
+  const handleAddGuardian = (e) => {
+    const newGuardian = clone(initialGuardian);
+    const guardians = [...form.guardians, newGuardian];
+    setForm({ ...form, guardians });
+  };
 
+  /*
+   * Removes the newest guardian from the list of guardians 'guardianList'.
+   */
+  const handleRemGuardian = (e, i) => {
+    if (form.guardians.length > 1) {
+      const guardians = clone(form.guardians);
+      guardians.splice(i, 1);
+      setForm({ ...form, guardians });
+    }
+  };
+
+  /*
+   * Pushes page path to the meetings page.
+   */
+  const handleSeeAllMeetings = () => {
+    history.push("/meetings");
+  };
+
+  /*
+   * This funciton verifies that all required input fields are filled
+   * and are of the correct types. If not, it will return a string of
+   * errors that will be displayed as an alert on the page
+   */
   const checkFeilds = (
     email,
     password,
@@ -282,7 +275,6 @@ function Registration({ update }) {
       alert(str);
       return;
     }
-
     if (update) {
       try {
         console.log("EMAIL: " + email);
@@ -336,51 +328,75 @@ function Registration({ update }) {
   };
 
   /*
-   * Adds a student to the list of students 'studentList'.
+   * 'studentList' is a list of all the students affiliated with the account.
    */
-  const handleAddStudent = (e) => {
-    const newStudent = clone(initialStudent);
-    const students = [...form.students, newStudent];
-    setForm({ ...form, students });
-  };
+  const studentList = form.students.map((student, i) => {
+    console.log("KEY: " + i);
+    return (
+      <StudentInfo
+        key={i}
+        student={student}
+        update={update}
+        handleOnChange={(e) => handleOnChange(e, i, "students")}
+        handleRemStudent={(e) => handleRemStudent(e, i)}
+      />
+    );
+  });
 
   /*
-   * Removes the newest student from the list of students 'studentList'.
+   * 'guardianList' is a list of all the guardians affiliated with the account.
    */
-  const handleRemStudent = (e, i) => {
-    if (form.students.length > 1) {
-      const students = clone(form.students);
-      students.splice(i, 1);
-      setForm({ ...form, students });
+  const guardianList = form.guardians.map((guardian, i) => {
+    return (
+      <GuardianInfo
+        key={i}
+        guardian={guardian}
+        handleOnChange={(e) => handleOnChange(e, i, "guardians")}
+        handleRemGuardian={(e) => handleRemGuardian(e, i)}
+      />
+    );
+  });
+
+  /*
+   * 'header' is the header of the page for either registration or profile page.
+   * 'isUpdate' is affiliated with the consent form. Either is a checkbox or a
+   * file upload.
+   * 'buttonVal' is the text on the button for form submission.
+   */
+  let header = <RegHeader />;
+  let isUpdate = <CheckBox handleCheckBoxChange={handleCheckBoxChange} />;
+  let buttonVal = "Register";
+
+  /*
+   * 'history' used to render specified pages.
+   */
+  const history = useHistory();
+
+  /*
+   * If the page is a profile page, grabs the account information from the
+   * main server and displays it
+   */
+  useEffect(() => {
+    const pro = async () => {
+      try {
+        const res = await profile();
+        const {
+          data: { student_list: students, ...rest },
+        } = res;
+        console.log(students);
+        setForm({ students, ...rest });
+
+        // console.log(form);
+      } catch (error) {
+        console.log(error.response);
+      }
+    };
+    if (update) {
+      pro();
     }
-  };
+  }, []);
 
-  /*
-   * Adds a guardian to the list of guardians 'guardianList'.
-   */
-  const handleAddGuardian = (e) => {
-    const newGuardian = clone(initialGuardian);
-    const guardians = [...form.guardians, newGuardian];
-    setForm({ ...form, guardians });
-  };
-
-  /*
-   * Removes the newest guardian from the list of guardians 'guardianList'.
-   */
-  const handleRemGuardian = (e, i) => {
-    if (form.guardians.length > 1) {
-      const guardians = clone(form.guardians);
-      guardians.splice(i, 1);
-      setForm({ ...form, guardians });
-    }
-  };
-
-  /*
-   * Pushes page path to the meetings page.
-   */
-  const handleSeeAllMeetings = () => {
-    history.push("/meetings");
-  };
+  let errStr = "";
 
   /*
    * If the property 'update' is true, set up 'header', 'isUpdate' and
