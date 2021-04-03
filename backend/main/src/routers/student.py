@@ -82,16 +82,12 @@ def update_meeting_count(
 def remove_student_from_meeting(
     meeting_doc: MeetingDocument, student_id: PydanticObjectId
 ):
-    # check_id = lambda reg: reg["student_id"] == student_id
-    # index = -1
-    # for i, registration in enumerate(meeting_doc.students):
-    #     if check_id(registration):
-    #         index = i
-    #         break
     index = student_meeting_index(meeting_doc, student_id)
     if index:
         del meeting_doc.students[index]
         meeting_doc.save()
+    else:
+        print("ERROR: remove_student_from_meeting student not found in MeetingDocument")
 
 
 def generate_meeting_registrations(registrations, students):
