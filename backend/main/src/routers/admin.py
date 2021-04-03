@@ -1,7 +1,12 @@
 from fastapi import Depends, APIRouter
-from backend.main.src.routers.student import get_student_meeting_index
+from backend.main.src.routers.student import (
+    get_student_meeting_index,
+    student_meeting_index,
+    update_meeting_count,
+)
 
 # main db imports
+from backend.main.db.docs.student_doc import StudentDocument
 from backend.main.db.docs.student_profile_doc import (
     StudentProfileDocument,
 )
@@ -11,6 +16,7 @@ from backend.main.db.models.meeting_model import (
     MeetingModel,
     StudentMeetingRegistration,
     UpdateMeeting,
+    StudentMeetingAttendance,
 )
 from backend.main.db.docs.meeting_doc import (
     document as MeetingDoc,
@@ -27,6 +33,27 @@ from backend.auth.dependencies import (
 router = APIRouter()
 
 
+def update_attendance(
+    meeting_doc: MeetingDocument, attendance: StudentMeetingAttendance
+):
+    st_query = StudentDocument.objects(id=attendance.student_id)
+    if len(st_query) < 1:
+        print("ERROR: update_student_attendance, could not find Student Document")
+    else:
+        student = st_query[0]
+        student.meetings_registered[str(attendance.meeting_id)] = attendance.attended
+        update_count = 1 if attendance.attended else -1
+        update_meeting_count(student, meeting_doc.session_level, attended=update_count)
+        student.save()
+
+    index = student_meeting_index(meeting_doc, attendance.student_id)
+    if index:
+        meeting_doc.students[index]["attended"] = attendance.attended
+        meeting_doc.save()
+    else:
+        print("ERROR: update_student_attendance, student not registered for meeting")
+
+
 # GET routes
 @router.get("/get_student_profiles")
 def get_student_profiles(token_data: TokenData = Depends(get_admin_token_data)):
@@ -35,6 +62,14 @@ def get_student_profiles(token_data: TokenData = Depends(get_admin_token_data)):
         all_profiles.append(profile.dict())
     return all_profiles
 
+# GET routes
+@router.get("/get_student_profile")
+def get_student_profile(account_uuid: UUID4, token_data: TokenData = Depends(get_admin_token_data)):
+    profile = StudentProfileDocument.objects(uuid = account_uuid)
+    all_profiles = []
+    for profile in StudentProfileDocument.objects():
+        all_profiles.append(profile.dict())
+    return all_profiles
 
 # POST routes
 @router.post("/get_meetings")
@@ -70,26 +105,27 @@ async def delete_meeting(update_meeting_model: UpdateMeeting):
     meeting_doc.remove(meeting_doc)
 
 
-# TODO: Update!
-@router.put("/check_student_attended")
-async def check_student_attended(
-    registration: StudentMeetingRegistration,
+@router.put("/update_student_attendance")
+async def update_student_attendance(
+    attendance: StudentMeetingAttendance,
 ):
     try:
-        meeting_doc = MeetingDocument.objects(uuid=registration.meeting_id)[0]
+        meeting_doc = MeetingDocument.objects(uuid=attendance.meeting_id)[0]
     except Exception:
         return "Could not find the meeting"
-    i = get_student_meeting_index(
-        meeting_doc, registration.first_name, registration.last_name
-    )
 
-    if i == len(meeting_doc.students):
-        return "That student is not on the RSVP list"
-    if meeting_doc.students[i].attended:
-        meeting_doc.students[i].attended = False
-    else:
-        meeting_doc.students[i].attended = True
-    return {"details": "Updated student attendance"}
+    update_attendance(meeting_doc, attendance)
+    return {"details": f"Updated attendance for student id {attendance.student_id}"}
+    # i = get_student_meeting_index(
+    #     meeting_doc, registration.first_name, registration.last_name
+    # )
+
+    # if i == len(meeting_doc.students):
+    #     return "That student is not on the RSVP list"
+    # if meeting_doc.students[i].attended:
+    #     meeting_doc.students[i].attended = False
+    # else:
+    #     meeting_doc.students[i].attended = True
 
 
 @router.put("/update_meeting")
