@@ -227,7 +227,6 @@ async def update_student(
             detail="Invalid meeting id",
         )
 
-
     meeting_id = str(registration.meeting_id)
     if not registration.registered:
         remove_student_from_meeting(meeting_doc, registration.student_id)

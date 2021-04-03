@@ -2,7 +2,6 @@ from fastapi import Depends, APIRouter, HTTPException, status
 from pydantic import UUID4
 
 from backend.main.src.routers.student import (
-    get_student_meeting_index,
     student_meeting_index,
     update_meeting_count,
 )
@@ -17,7 +16,6 @@ from backend.main.db.models.meeting_model import (
     CreateMeetingModel,
     MeetingSearchModel,
     MeetingModel,
-    StudentMeetingRegistration,
     UpdateMeeting,
     StudentMeetingAttendance,
 )
@@ -98,13 +96,16 @@ async def get_meetings_by_filter(
 
 
 @router.post("/create_meeting")
-async def create_meeting(create_meeting: CreateMeetingModel, token_data: TokenData = Depends(get_admin_token_data)
+async def create_meeting(
+    create_meeting: CreateMeetingModel,
+    token_data: TokenData = Depends(get_admin_token_data),
 ):
     password = generate_random_password()
     meeting = MeetingModel(**create_meeting.dict(), password=password, students=[])
     doc = MeetingDoc(meeting)
     doc.save()
     return doc.admin_dict()
+
 
 # DELETE routes
 @router.delete("/delete_meeting")
@@ -115,11 +116,12 @@ async def delete_meeting(update_meeting_model: UpdateMeeting):
         return "Could not find the meeting"
     meeting_doc.remove(meeting_doc)
 
+
 # PUT routes
 @router.put("/update_student_attendance")
 async def update_student_attendance(
-    attendance: StudentMeetingAttendance, token_data: TokenData = Depends(get_admin_token_data)
-
+    attendance: StudentMeetingAttendance,
+    token_data: TokenData = Depends(get_admin_token_data),
 ):
     try:
         meeting_doc = MeetingDocument.objects(uuid=attendance.meeting_id)[0]
@@ -129,8 +131,11 @@ async def update_student_attendance(
     update_attendance(meeting_doc, attendance)
     return {"details": f"Updated attendance for student id {attendance.student_id}"}
 
+
 @router.put("/update_student_verification")
-async def update_student_verification(verification: StudentVerification, token_data: TokenData = Depends(get_admin_token_data)
+async def update_student_verification(
+    verification: StudentVerification,
+    token_data: TokenData = Depends(get_admin_token_data),
 ):
     st_query = StudentDocument.objects(id=verification.student_id)
     if len(st_query) == 0:
@@ -141,11 +146,15 @@ async def update_student_verification(verification: StudentVerification, token_d
     student = st_query[0]
     student.verification_status = verification.status
     student.save()
-    return {"details": f"Updated verification status for student id {verification.student_id}"}
+    return {
+        "details": f"Updated verification status for student id {verification.student_id}"
+    }
 
 
 @router.put("/update_meeting")
-async def update_meeting(update_meeting_model: UpdateMeeting, token_data: TokenData = Depends(get_admin_token_data)
+async def update_meeting(
+    update_meeting_model: UpdateMeeting,
+    token_data: TokenData = Depends(get_admin_token_data),
 ):
     meeting_doc = None
     try:
