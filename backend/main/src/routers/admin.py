@@ -1,4 +1,6 @@
-from fastapi import Depends, APIRouter
+from fastapi import Depends, APIRouter, HTTPException, status
+from pydantic import UUID4
+
 from backend.main.src.routers.student import (
     get_student_meeting_index,
     student_meeting_index,
@@ -6,6 +8,7 @@ from backend.main.src.routers.student import (
 )
 
 # main db imports
+from backend.main.db.models.student_models import StudentVerification
 from backend.main.db.docs.student_doc import StudentDocument
 from backend.main.db.docs.student_profile_doc import (
     StudentProfileDocument,
@@ -62,14 +65,21 @@ def get_student_profiles(token_data: TokenData = Depends(get_admin_token_data)):
         all_profiles.append(profile.dict())
     return all_profiles
 
-# GET routes
+
 @router.get("/get_student_profile")
-def get_student_profile(account_uuid: UUID4, token_data: TokenData = Depends(get_admin_token_data)):
-    profile = StudentProfileDocument.objects(uuid = account_uuid)
-    all_profiles = []
-    for profile in StudentProfileDocument.objects():
-        all_profiles.append(profile.dict())
-    return all_profiles
+def get_student_profile(
+    account_uuid: UUID4, token_data: TokenData = Depends(get_admin_token_data)
+):
+    pr_query = StudentProfileDocument.objects(uuid=account_uuid)
+    if len(pr_query) == 0:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Could not find account with that account_uuid",
+        )
+
+    profile = pr_query[0]
+    return profile.dict()
+
 
 # POST routes
 @router.post("/get_meetings")
@@ -88,14 +98,15 @@ async def get_meetings_by_filter(
 
 
 @router.post("/create_meeting")
-async def create_meeting(create_meeting: CreateMeetingModel):
+async def create_meeting(create_meeting: CreateMeetingModel, token_data: TokenData = Depends(get_admin_token_data)
+):
     password = generate_random_password()
     meeting = MeetingModel(**create_meeting.dict(), password=password, students=[])
     doc = MeetingDoc(meeting)
     doc.save()
     return doc.admin_dict()
 
-
+# DELETE routes
 @router.delete("/delete_meeting")
 async def delete_meeting(update_meeting_model: UpdateMeeting):
     try:
@@ -104,10 +115,11 @@ async def delete_meeting(update_meeting_model: UpdateMeeting):
         return "Could not find the meeting"
     meeting_doc.remove(meeting_doc)
 
-
+# PUT routes
 @router.put("/update_student_attendance")
 async def update_student_attendance(
-    attendance: StudentMeetingAttendance,
+    attendance: StudentMeetingAttendance, token_data: TokenData = Depends(get_admin_token_data)
+
 ):
     try:
         meeting_doc = MeetingDocument.objects(uuid=attendance.meeting_id)[0]
@@ -116,20 +128,25 @@ async def update_student_attendance(
 
     update_attendance(meeting_doc, attendance)
     return {"details": f"Updated attendance for student id {attendance.student_id}"}
-    # i = get_student_meeting_index(
-    #     meeting_doc, registration.first_name, registration.last_name
-    # )
 
-    # if i == len(meeting_doc.students):
-    #     return "That student is not on the RSVP list"
-    # if meeting_doc.students[i].attended:
-    #     meeting_doc.students[i].attended = False
-    # else:
-    #     meeting_doc.students[i].attended = True
+@router.put("/update_student_verification")
+async def update_student_verification(verification: StudentVerification, token_data: TokenData = Depends(get_admin_token_data)
+):
+    st_query = StudentDocument.objects(id=verification.student_id)
+    if len(st_query) == 0:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Could not find student with that student_id",
+        )
+    student = st_query[0]
+    student.verification_status = verification.status
+    student.save()
+    return {"details": f"Updated verification status for student id {verification.student_id}"}
 
 
 @router.put("/update_meeting")
-async def update_meeting(update_meeting_model: UpdateMeeting):
+async def update_meeting(update_meeting_model: UpdateMeeting, token_data: TokenData = Depends(get_admin_token_data)
+):
     meeting_doc = None
     try:
         meeting_doc = MeetingDocument.objects(uuid=update_meeting_model.meeting_id)[0]
