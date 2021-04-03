@@ -47,7 +47,7 @@ const NavBar = () => {
         links.push({
           title: "All Students",
           item: <People />,
-          path: "#",
+          path: "/allStudents",
         });
         break;
       default:

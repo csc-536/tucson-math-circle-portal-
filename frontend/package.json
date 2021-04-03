@@ -31,7 +31,9 @@
     "eject": "react-scripts eject",
     "lint": "eslint . && prettier --write .",
     "auth": "cd ../backend && pipenv run python auth/main.py",
-    "main": "cd ../backend && pipenv run python main/src/app.py"
+    "main": "cd ../backend && pipenv run python main/src/app.py",
+    "test:update": "react-scripts test --updateSnapshot",
+    "code:coverage": "react-scripts test --coverage"
   },
   "eslintConfig": {
     "extends": [
@@ -55,6 +57,7 @@
   "devDependencies": {
     "eslint": "^7.20.0",
     "prettier": "^2.2.1",
+    "react-test-renderer": "^17.0.2",
     "typescript": "^4.1.5"
   }
 }

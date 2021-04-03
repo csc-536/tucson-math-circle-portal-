@@ -4,10 +4,12 @@ import MeetingCards from "../components/MeetingCards";
 import { useHistory } from "react-router";
 import { allMeetings } from "../http";
 import { AuthContext } from "../contexts/AuthContext";
+import { partition } from "lodash";
 
 const Meetings = () => {
   const history = useHistory();
-  const [meetings, setMeetings] = useState([]);
+  const [pastMeetings, setPastMeetings] = useState([]);
+  const [futureMeetings, setFutureMeetings] = useState([]);
   if (sessionStorage.getItem("accessToken") === null) {
     history.push("/");
   }
@@ -24,7 +26,14 @@ const Meetings = () => {
           dates: ["2021-03-15"],
         };
         const res = await allMeetings({ role, body });
-        setMeetings(res.data);
+        // setMeetings(res.data);
+        // console.log(res.data);
+        const [future, past] = partition(res.data, (e) => {
+          return new Date(e.date_and_time) > new Date();
+        });
+
+        setFutureMeetings(future);
+        setPastMeetings(past);
       } catch (error) {
         console.log(error.response);
       }
@@ -37,11 +46,11 @@ const Meetings = () => {
     <div>
       <Box mb={3}>
         <Typography variant="h4">Upcoming Meetings</Typography>
-        <MeetingCards past={false} meetings={meetings} />
+        <MeetingCards past={false} meetings={futureMeetings} />
       </Box>
       <Box mb={3}>
         <Typography variant="h4">Past Meetings</Typography>
-        <MeetingCards past={true} meetings={meetings} />
+        <MeetingCards past={true} meetings={pastMeetings} />
       </Box>
     </div>
   );

@@ -32,6 +32,7 @@ TESTING = True
 
 app = FastAPI()
 
+
 app.include_router(student.router, prefix="/student", tags=["Students"])
 app.include_router(admin.router, prefix="/admin", tags=["Admin"])
 

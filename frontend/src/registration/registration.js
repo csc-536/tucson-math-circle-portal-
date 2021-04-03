@@ -20,6 +20,8 @@ import RemGuardian from "./remGuardian";
 import RemStudent from "./remStudent";
 import { addProfile, updateProfile, profile, register } from "../http";
 import { clone, uniqueId } from "lodash";
+import { AuthContext } from "../contexts/AuthContext";
+import { isLoggedIn, loggedInRole } from "../utils";
 
 function Registration({ update }) {
   const initialStudent = {
@@ -27,7 +29,6 @@ function Registration({ update }) {
     last_name: "",
     grade: "",
     age: "",
-    section: ["junior_a", "junior_b", "senior"],
   };
 
   const initialGuardian = {
@@ -44,30 +45,65 @@ function Registration({ update }) {
     newpassword: "",
     students: [initialStudent],
     guardians: [initialGuardian],
+    section: ["junior_a", "junior_b", "senior"],
   });
+
+  const [checkBox, setCheckBox] = useState(false);
 
   const handleOnChange = (e, i, type) => {
     const { name, value } = e.target;
     if (type === "students") {
-      console.log(form.students);
       const students = clone(form.students);
       students[i][name] = value;
       // console.log(form.students);
       setForm({ ...form, students });
       return;
-    }
-    if (type === "guardians") {
+    } else if (type === "guardians") {
       const guardians = clone(form.guardians);
       guardians[i][name] = value;
       setForm({ ...form, guardians });
       return;
     }
-
     const input = {};
     input[name] = value;
 
     setForm({ ...form, ...input });
     // console.log(form);
+  };
+
+  /*
+   * 'handleMailChange' handles the event of a mail in option being clicked.
+   * If Junior A, B, or Senior is clicked, alternate its selected boolean and
+   * unselect 'Opt Out'.
+   * If 'Opt Out' is clicked and is selected, unselect all other options.
+   * If the clicked radio button is the only currently selected, do nothing.
+   */
+  const handleMailChange = (e) => {
+    const { value } = e.target;
+    let section = form.section;
+    if (section.includes(value)) {
+      if (section.length === 1) {
+        return;
+      }
+      const i = section.indexOf(value);
+      section.splice(i, 1);
+    } else {
+      if (value === "opt_out") {
+        section = [];
+      } else if (value !== "out_out" && section.includes("opt_out")) {
+        const i = section.indexOf("out_out");
+        section.splice(i, 1);
+      }
+      section.push(value);
+    }
+    console.log(section);
+    setForm({ ...form, section });
+  };
+
+  const handleCheckBoxChange = (e) => {
+    const { checked } = e.target;
+    console.log(checked);
+    setCheckBox(checked);
   };
 
   /*
@@ -101,7 +137,7 @@ function Registration({ update }) {
    * 'buttonVal' is the text on the button for form submission.
    */
   let header = <RegHeader />;
-  let isUpdate = <CheckBox />;
+  let isUpdate = <CheckBox handleCheckBoxChange={handleCheckBoxChange} />;
   let buttonVal = "Register";
 
   /*
@@ -116,7 +152,6 @@ function Registration({ update }) {
         const {
           data: { student_list: students, ...rest },
         } = res;
-        students["section"] = ["junior_a"];
         console.log(students);
         setForm({ students, ...rest });
 
@@ -132,7 +167,14 @@ function Registration({ update }) {
 
   let errStr = "";
 
-  const checkFeilds = (email, password, repassword, students, guardians) => {
+  const checkFeilds = (
+    email,
+    password,
+    repassword,
+    students,
+    guardians,
+    checkBox
+  ) => {
     errStr = "";
     var mailformat = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
     if (!email.match(mailformat)) {
@@ -144,6 +186,9 @@ function Registration({ update }) {
     if (!update && repassword !== password) {
       errStr += "Passwords do not match\n";
     }
+    if (!update && checkBox !== true) {
+      errStr += "Must check the box\n";
+    }
     students.map((student, i) => {
       if (student.first_name === "") {
         errStr += "Student " + (i + 1) + ": First name required\n";
@@ -151,10 +196,10 @@ function Registration({ update }) {
       if (student.last_name === "") {
         errStr += "Student " + (i + 1) + ": Last name required\n";
       }
-      if (student.grade === "") {
+      if (student.grade === "" || isNaN(student.grade)) {
         errStr += "Student " + (i + 1) + ": Grade required\n";
       }
-      if (student.age === "") {
+      if (student.age === "" || isNaN(student.age)) {
         errStr += "Student " + (i + 1) + ": Age required\n";
       }
     });
@@ -168,13 +213,19 @@ function Registration({ update }) {
       if (!guardian.email.match(mailformat)) {
         errStr += "Guardian " + (i + 1) + ": email required\n";
       }
-      if (guardian.phone_number === null || guardian.phone_number === "") {
-        errStr += "Guardian " + (i + 1) + ": age required\n";
+      if (
+        guardian.phone_number === null ||
+        guardian.phone_number === "" ||
+        guardian.phone_number.length < 10
+      ) {
+        errStr += "Guardian " + (i + 1) + ": phone number required\n";
       }
     });
 
     return errStr;
   };
+
+  const { setAuth } = useContext(AuthContext);
 
   /*
    * Handles the event of the form submission. Prevents the page from refreshing.
@@ -184,7 +235,14 @@ function Registration({ update }) {
     e.preventDefault();
 
     const { email, password, repassword, students, guardians } = form;
-    const str = checkFeilds(email, password, repassword, students, guardians);
+    const str = checkFeilds(
+      email,
+      password,
+      repassword,
+      students,
+      guardians,
+      checkBox
+    );
     if (str !== "") {
       alert(str);
       return;
@@ -219,7 +277,8 @@ function Registration({ update }) {
           guardians,
           students,
         });
-        history.push("/");
+        setAuth({ userLoggedIn: isLoggedIn(), role: loggedInRole() });
+        history.push("/profile");
       } catch (error) {
         console.log(error.response);
       }
@@ -309,7 +368,10 @@ function Registration({ update }) {
       <RemGuardian handleRemGuardian={handleRemGuardian} />
       <hr />
       <h3 className="formHeader">Mailing List Opt In</h3>
-      <MainOptInOptions />
+      <MainOptInOptions
+        handleMailChange={(e) => handleMailChange(e)}
+        section={form.section}
+      />
       <p>{errStr}</p>
       <input id="regButton" type="submit" value={buttonVal} />
     </form>

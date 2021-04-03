@@ -1,0 +1,251 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`My first snapshot test testing app button 1`] = `
+Array [
+  <div
+    className="makeStyles-root-2"
+  >
+    <header
+      className="MuiPaper-root MuiAppBar-root MuiAppBar-positionFixed MuiAppBar-colorPrimary mui-fixed MuiPaper-elevation4"
+    >
+      <div
+        className="MuiToolbar-root MuiToolbar-regular MuiToolbar-gutters"
+      >
+        <a
+          href="/meetings"
+          onClick={[Function]}
+        >
+          <button
+            aria-describedby={null}
+            aria-haspopup="true"
+            aria-label="home"
+            className="MuiButtonBase-root MuiIconButton-root makeStyles-menuButton-4 MuiIconButton-colorInherit MuiIconButton-edgeEnd"
+            disabled={false}
+            onBlur={[Function]}
+            onDragLeave={[Function]}
+            onFocus={[Function]}
+            onKeyDown={[Function]}
+            onKeyUp={[Function]}
+            onMouseDown={[Function]}
+            onMouseLeave={[Function]}
+            onMouseOver={[Function]}
+            onMouseUp={[Function]}
+            onTouchEnd={[Function]}
+            onTouchMove={[Function]}
+            onTouchStart={[Function]}
+            tabIndex={0}
+            title="All Meetings"
+            type="button"
+          >
+            <span
+              className="MuiIconButton-label"
+            >
+              <svg
+                aria-hidden={true}
+                className="MuiSvgIcon-root"
+                focusable="false"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"
+                />
+              </svg>
+            </span>
+            <span
+              className="MuiTouchRipple-root"
+            />
+          </button>
+        </a>
+        <h5
+          className="MuiTypography-root makeStyles-title-3 MuiTypography-h5"
+        >
+          Tucson Math Circle
+        </h5>
+        
+        
+      </div>
+    </header>
+  </div>,
+  <br />,
+  <br />,
+  <br />,
+  <br />,
+  <div
+    className="MuiContainer-root makeStyles-container-1 MuiContainer-fixed MuiContainer-maxWidthLg"
+  >
+    <form
+      id="loginForm"
+      onSubmit={[Function]}
+    >
+      <h1>
+        Login
+      </h1>
+      <label>
+        Email:
+        <input
+          name="email"
+          onChange={[Function]}
+          type="text"
+          value=""
+        />
+      </label>
+      <label>
+        Password:
+        <input
+          name="password"
+          onChange={[Function]}
+          type="password"
+          value=""
+        />
+      </label>
+      <div>
+        <p
+          id="fgtPasswrd"
+        >
+          Forget password?
+        </p>
+        <p
+          id="signUp"
+          onClick={[Function]}
+        >
+          Signup
+        </p>
+      </div>
+      <input
+        id="login"
+        type="submit"
+        value="Login"
+      />
+    </form>
+  </div>,
+  <br />,
+  <br />,
+  <br />,
+  <br />,
+]
+`;
+
+exports[`Should render login page testing base app 1`] = `
+Array [
+  <div
+    className="makeStyles-root-2"
+  >
+    <header
+      className="MuiPaper-root MuiAppBar-root MuiAppBar-positionFixed MuiAppBar-colorPrimary mui-fixed MuiPaper-elevation4"
+    >
+      <div
+        className="MuiToolbar-root MuiToolbar-regular MuiToolbar-gutters"
+      >
+        <a
+          href="/meetings"
+          onClick={[Function]}
+        >
+          <button
+            aria-describedby={null}
+            aria-haspopup="true"
+            aria-label="home"
+            className="MuiButtonBase-root MuiIconButton-root makeStyles-menuButton-4 MuiIconButton-colorInherit MuiIconButton-edgeEnd"
+            disabled={false}
+            onBlur={[Function]}
+            onDragLeave={[Function]}
+            onFocus={[Function]}
+            onKeyDown={[Function]}
+            onKeyUp={[Function]}
+            onMouseDown={[Function]}
+            onMouseLeave={[Function]}
+            onMouseOver={[Function]}
+            onMouseUp={[Function]}
+            onTouchEnd={[Function]}
+            onTouchMove={[Function]}
+            onTouchStart={[Function]}
+            tabIndex={0}
+            title="All Meetings"
+            type="button"
+          >
+            <span
+              className="MuiIconButton-label"
+            >
+              <svg
+                aria-hidden={true}
+                className="MuiSvgIcon-root"
+                focusable="false"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"
+                />
+              </svg>
+            </span>
+            <span
+              className="MuiTouchRipple-root"
+            />
+          </button>
+        </a>
+        <h5
+          className="MuiTypography-root makeStyles-title-3 MuiTypography-h5"
+        >
+          Tucson Math Circle
+        </h5>
+        
+        
+      </div>
+    </header>
+  </div>,
+  <br />,
+  <br />,
+  <br />,
+  <br />,
+  <div
+    className="MuiContainer-root makeStyles-container-1 MuiContainer-fixed MuiContainer-maxWidthLg"
+  >
+    <form
+      id="loginForm"
+      onSubmit={[Function]}
+    >
+      <h1>
+        Login
+      </h1>
+      <label>
+        Email:
+        <input
+          name="email"
+          onChange={[Function]}
+          type="text"
+          value=""
+        />
+      </label>
+      <label>
+        Password:
+        <input
+          name="password"
+          onChange={[Function]}
+          type="password"
+          value=""
+        />
+      </label>
+      <div>
+        <p
+          id="fgtPasswrd"
+        >
+          Forget password?
+        </p>
+        <p
+          id="signUp"
+          onClick={[Function]}
+        >
+          Signup
+        </p>
+      </div>
+      <input
+        id="login"
+        type="submit"
+        value="Login"
+      />
+    </form>
+  </div>,
+  <br />,
+  <br />,
+  <br />,
+  <br />,
+]
+`;

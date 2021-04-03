@@ -1,13 +1,33 @@
 from enum import Enum
 from typing import Any, Optional
 
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, validator, BaseConfig
+from bson.objectid import ObjectId, InvalidId
 
 
 class SessionLevel(str, Enum):
     junior_a = "junior_a"
     junior_b = "junior_b"
     senior = "senior"
+
+
+class PydanticObjectId(str):
+    @classmethod
+    def __get_validators__(cls):
+        yield cls.validate
+
+    @classmethod
+    def validate(cls, v):
+        try:
+            ObjectId(str(v))
+        except InvalidId:
+            raise ValueError("Not a valid ObjectId")
+        return str(v)
+
+    class Config(BaseConfig):
+        json_encoders = {
+            ObjectId: lambda oid: str(oid),
+        }
 
 
 class IdMixin(BaseModel):
