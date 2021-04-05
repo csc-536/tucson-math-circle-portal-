@@ -17,6 +17,12 @@ class StudentMeetingRegistration(BaseModel):
     attended: bool = False
 
 
+# used for `admin/update_student_verification` route
+class StudentVerification(BaseModel):
+    student_id: PydanticObjectId
+    status: bool
+
+
 class StudentGrade(str, Enum):
     pre_k = "PreK"
     k = "K"
