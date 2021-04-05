@@ -4,10 +4,13 @@ function StudentTable({ studentList, sectionList }) {
   return (
     <table id="studentTable" border="4">
       <tr>
-        <th>Student Name</th>
+        <th>Student Last Name, First Name</th>
+        <th>Junior (A) Attended/Registered</th>
+        <th>Junior (B) Attended/Registered</th>
+        <th>Senior Attended/Registered</th>
         <th>Guardian Name</th>
-        <th>Contact Phone</th>
-        <th>Email</th>
+        <th>Guardian Phone</th>
+        <th>Guardian Email</th>
       </tr>
       {studentList.map((account) => {
         let filteredIn = false;
@@ -24,7 +27,19 @@ function StudentTable({ studentList, sectionList }) {
             return (
               <tr>
                 <td>
-                  {student["first_name"]} {student["last_name"]}
+                  {student["last_name"]}, {student["first_name"]}
+                </td>
+                <td>
+                  {student["meeting_counts"]["junior_a"]["attended"]}/
+                  {student["meeting_counts"]["junior_a"]["registered"]}
+                </td>
+                <td>
+                  {student["meeting_counts"]["junior_b"]["attended"]}/
+                  {student["meeting_counts"]["junior_b"]["registered"]}
+                </td>
+                <td>
+                  {student["meeting_counts"]["senior"]["attended"]}/
+                  {student["meeting_counts"]["senior"]["registered"]}
                 </td>
                 <td>
                   {account["guardians"][0]["first_name"]}{" "}
