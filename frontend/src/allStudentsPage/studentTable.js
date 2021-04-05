@@ -11,6 +11,9 @@ function StudentTable({ studentList, sectionList }) {
       </tr>
       {studentList.map((account) => {
         let filteredIn = false;
+        if (account["mailing_lists"].length === 0 && sectionList.length === 0) {
+          filteredIn = true;
+        }
         account["mailing_lists"].map((section) => {
           if (sectionList.includes(section)) {
             filteredIn = true;
