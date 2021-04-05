@@ -84,6 +84,7 @@ function StudentInfo({
         Grade:
         <form name="grade" onChange={handleOnChange}>
           <select id="gradeDropDown" name="grade" value={grade}>
+            <option value="select">Select</option>
             <option value="PreK">Pre-K</option>
             <option value="K">K</option>
             <option value="1">1</option>

@@ -88,7 +88,7 @@ export async function addProfile(data) {
 export async function updateProfile(data) {
   const accessToken = sessionStorage.getItem("accessToken");
   console.log(accessToken);
-
+  console.log(data);
   const res = await main.put("/student/update_profile", data, {
     headers: {
       Authorization: `Bearer ${accessToken}`,

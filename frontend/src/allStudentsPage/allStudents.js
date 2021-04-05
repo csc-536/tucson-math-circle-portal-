@@ -66,7 +66,6 @@ function AllStudents(props) {
   };
 
   function sortTable() {
-    console.log("HELLO");
     var table, rows, switching, i, x, y, shouldSwitch;
     table = document.getElementById("studentTable");
     switching = true;
@@ -85,6 +84,9 @@ function AllStudents(props) {
         one from current row and one from the next: */
         x = rows[i].getElementsByTagName("TD")[0];
         y = rows[i + 1].getElementsByTagName("TD")[0];
+        console.log(
+          x.innerHTML.toLowerCase() + " | " + y.innerHTML.toLowerCase()
+        );
         // Check if the two rows should switch place:
         if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
           // If so, mark as a switch and break the loop:

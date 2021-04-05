@@ -211,6 +211,10 @@ function Registration({ update }) {
       if (student.age === "" || isNaN(student.age)) {
         errStr += "Student " + (i + 1) + ": Age required\n";
       }
+      console.log(student.grade);
+      if (student.grade === "select" || student.grade === "") {
+        errStr += "Student " + (i + 1) + ": Grade required\n";
+      }
     });
     guardians.map((guardian, i) => {
       if (guardian.first_name === "") {
