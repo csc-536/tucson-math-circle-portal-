@@ -37,15 +37,20 @@ const MeetingCard = ({ meeting, past }) => {
   console.log(meeting);
 
   const {
+    uuid,
     topic,
     date_and_time,
     duration,
     session_level,
     zoom_link,
     miro_link,
+    materials_link,
+    student_notes,
     password,
     students,
   } = meeting;
+
+  const [registrations, setRegistrations] = useState(meeting.registrations);
 
   const {
     auth: { role },
@@ -68,10 +73,13 @@ const MeetingCard = ({ meeting, past }) => {
       pathname: "/meeting",
       state: {
         meeting: {
+          uuid,
           date: date_and_time,
           sessionLevel: session_level,
           zoom_link,
           miro_link,
+          materials_link,
+          student_notes,
           zoomPassword: password,
           topic,
           duration,
@@ -99,10 +107,16 @@ const MeetingCard = ({ meeting, past }) => {
         <div className={classes.paper}>
           <Meeting
             meeting={{
+              uuid,
               date,
               sessionLevel,
               topic,
               zoom_link,
+              miro_link,
+              materials_link,
+              student_notes,
+              registrations,
+              setRegistrations,
               handleClose,
             }}
           />

@@ -1,23 +1,61 @@
 import React, { forwardRef, useState } from "react";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import Checkbox from "@material-ui/core/Checkbox";
 import FormGroup from "@material-ui/core/FormGroup";
 import FormControl from "@material-ui/core/FormControl";
-import RegisteredStudentTable from "./RegisteredStudentTable";
 import StudentAttendingTable from "./StudentAttendingTable";
 import { Button } from "@material-ui/core";
 import SaveIcon from "@material-ui/icons/Save";
+import { registerMeeting } from "../http";
+import { clone } from "lodash";
 
 const Meeting = forwardRef(
-  ({ meeting: { date, sessionLevel, topic, zoom_link, handleClose } }, ref) => {
-    const [students, setStudents] = useState([
-      { name: "jimmy", attending: true },
-      { name: "jimmy1", attending: false },
-    ]);
+  (
+    {
+      meeting: {
+        uuid,
+        date,
+        sessionLevel,
+        topic,
+        zoom_link,
+        miro_link,
+        materials_link,
+        registrations,
+        student_notes,
+        setRegistrations,
+        handleClose,
+      },
+    },
+    ref
+  ) => {
+    const initalStudents = registrations.map(
+      ({ first_name, last_name, registered, id }) => {
+        return {
+          name: `${first_name} ${last_name}`,
+          attending: registered,
+          id,
+        };
+      }
+    );
+    const [students, setStudents] = useState(initalStudents);
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
       e.preventDefault();
-      console.log(students);
+
+      for (let i = 0; i < students.length; i++) {
+        if (students[i].attending !== initalStudents[i].attending) {
+          try {
+            await registerMeeting({
+              meeting_id: uuid,
+              student_id: students[i].id,
+              registered: students[i].attending,
+            });
+            const s = clone(registrations);
+            s[i].registered = students[i].attending;
+            setRegistrations(s);
+          } catch (error) {
+            console.log(error);
+          }
+        }
+      }
       handleClose();
     };
 
@@ -32,15 +70,26 @@ const Meeting = forwardRef(
         <p>{topic}</p>
         <h3>How can I join?</h3>
         <p>
-          Join us on <a href={zoom_link}>Zoom</a> and <a href="#">Miro</a>
+          Join us on <a href={zoom_link}>Zoom</a> and{" "}
+          <a href={miro_link}>Miro</a>
         </p>
         <h3>Need meeting materials?</h3>
         <p>
           Download meeting materials{" "}
-          <a href="#">
+          <a href={materials_link}>
             <b>here</b>
           </a>
         </p>
+
+        {student_notes !== null ? (
+          <>
+            <h3>Notes</h3>
+            <p>{student_notes}</p>
+          </>
+        ) : (
+          ""
+        )}
+
         <form
           noValidate
           autoComplete="off"
