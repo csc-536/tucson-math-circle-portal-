@@ -35,7 +35,7 @@ meeting3 = MeetingModel(
         date_and_time="2021-03-20T18:00:00.860+00:00",
         duration="2021-03-20T18:00:00.860+00:00",
         zoom_link="zoomlink3",
-        session_level=SessionLevel("junior_a"),
+        session_level=SessionLevel("junior_b"),
         topic="topic3",
         miro_link="miro_link3",
     ).dict(),

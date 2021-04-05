@@ -83,9 +83,10 @@ def remove_student_from_meeting(
     meeting_doc: MeetingDocument, student_id: PydanticObjectId
 ):
     index = student_meeting_index(meeting_doc, student_id)
-    if index:
+    if index is not None:
         del meeting_doc.students[index]
         meeting_doc.save()
+        pass
     else:
         print("ERROR: remove_student_from_meeting student not found in MeetingDocument")
 
@@ -233,6 +234,7 @@ async def update_student(
             # decrement registered count
             update_meeting_count(student, meeting_doc.session_level, registered=-1)
             student.save()
+
         return {
             "details": f"Student with id {registration.student_id} removed from meeting list"
         }

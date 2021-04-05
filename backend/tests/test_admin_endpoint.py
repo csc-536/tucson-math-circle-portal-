@@ -15,6 +15,8 @@ from backend.main.db.models.meeting_model import (
     MeetingModel,
     CreateMeetingModel,
     UpdateMeeting,
+    StudentMeetingAttendance,
+    MeetingSearchModel,
     StudentMeetingRegistration,
 )
 from backend.tests.test_student_endpoint import (
@@ -22,6 +24,8 @@ from backend.tests.test_student_endpoint import (
     pre_save_profile_docs,
 )
 from backend.main.db.models.student_profile_model import SessionLevel
+from backend.main.db.models.student_models import StudentVerification
+from backend.main.db.docs.student_doc import StudentDocument
 from backend.main.db.docs.student_profile_doc import StudentProfileDocument
 from backend.tests.pre_save_meetings import pre_save_meetings
 
@@ -75,6 +79,8 @@ meeting1 = MeetingModel(
     students=[],
 )
 
+meeting_search = MeetingSearchModel(session_levels=[SessionLevel("junior_a")])
+
 
 @pytest.fixture()
 def mock_database():
@@ -104,12 +110,55 @@ def test_get_all_students(mock_database):
     assert len(students) == 3
 
 
+def test_get_student(mock_database):
+    pre_save_user_auths()
+    pre_save_profile_docs()
+    response = client2.post(
+        "/token", data={"username": "admin@email.com", "password": "password"}
+    )
+    account_id = StudentProfileDocument.objects().first().uuid
+    json = response.json()
+    access_token = json["access_token"]
+    response = client.get(
+        "/admin/get_student_profile",
+        json=account_id,
+        headers={"Authorization": f"Bearer {access_token}"},
+    )
+    student = response.json()
+    assert len(student) == 1
+
+
 def test_create_meeting(mock_database):
-    response = client.post("/admin/create_meeting", json=test_meeting_model.dict())
+    response = client2.post(
+        "/token", data={"username": "admin@email.com", "password": "password"}
+    )
+    json = response.json()
+    access_token = json["access_token"]
+    response = client.post(
+        "/admin/create_meeting",
+        json=test_meeting_model.dict(),
+        headers={"Authorization": f"Bearer {access_token}"},
+    )
     meeting = MeetingDocument.objects()
     json = response.json()
     assert len(meeting) == 1
     assert json["topic"] == "test_topic"
+
+
+def test_get_meeting_by_filter(mock_database):
+    pre_save_meetings()
+    response = client2.post(
+        "/token", data={"username": "admin@email.com", "password": "password"}
+    )
+    json = response.json()
+    access_token = json["access_token"]
+    response = client.post(
+        "/admin/get_meetings",
+        json=meeting_search.dict(),
+        headers={"Authorization": f"Bearer {access_token}"},
+    )
+    json = response.json()
+    assert len(json) == 2
 
 
 def test_delete_meeting(mock_database):
@@ -123,48 +172,87 @@ def test_delete_meeting(mock_database):
     assert len(meeting) == 0
 
 
-def test_update_meeting(mock_database):
-    pre_save_meetings()
-    meeting = MeetingDocument.objects()[0]
-    id = meeting.uuid
-    update = UpdateMeeting(**meeting1.dict(), meeting_id=id)
-    response = client.put("/admin/update_meeting", json=update.dict())
-    assert response.status_code == 200
-    meeting = MeetingDocument.objects(uuid=id)[0]
-    assert meeting.miro_link == "test_miro_link"
-    assert meeting.topic == "test_topic"
-    assert meeting.zoom_link == "test_zoom_link"
-
-
-def test_check_student_attended(mock_database):
-    pre_save_user_auths()
-    pre_save_profile_docs()
-    pre_save_meetings()
+def add_student_to_meeting():
     response = client2.post(
         "/token",
         data={"username": "jimmyteststudent@email.com", "password": "password"},
     )
     student_doc = StudentProfileDocument.objects(email="jimmyteststudent@email.com")[0]
+    student_id = student_doc.students[0].id
     meeting = MeetingDocument.objects()[0]
-    add_student = student_doc.students[0]
     json = response.json()
     access_token = json["access_token"]
     client.post(
         "/student/update_student_for_meeting",
         json=StudentMeetingRegistration(
             meeting_id=meeting.uuid,
-            first_name=add_student["first_name"],
-            last_name=add_student["last_name"],
+            student_id=student_id,
+            registered=True,
         ).dict(),
         headers={"Authorization": f"Bearer {access_token}"},
     )
-    client.put(
-        "/admin/check_student_attended",
-        json=StudentMeetingRegistration(
-            meeting_id=meeting.uuid,
-            first_name=add_student["first_name"],
-            last_name=add_student["last_name"],
-        ).dict(),
+    return student_id
+
+
+def test_update_student_attendance(mock_database):
+    pre_save_user_auths()
+    pre_save_profile_docs()
+    pre_save_meetings()
+    response = client2.post(
+        "/token", data={"username": "admin@email.com", "password": "password"}
     )
-    meetings = MeetingDocument.objects(uuid=meeting.uuid)[0]
-    assert meetings.students[0]["attended"] is True
+    meeting_id = MeetingDocument.objects().first().uuid
+    json = response.json()
+    access_token = json["access_token"]
+    student_id = add_student_to_meeting()
+    response = client.put(
+        "/admin/update_student_attendance",
+        json=StudentMeetingAttendance(
+            meeting_id=meeting_id, student_id=student_id, attended=True
+        ).dict(),
+        headers={"Authorization": f"Bearer {access_token}"},
+    )
+    assert response.status_code == 200
+    student = StudentDocument.objects(id=student_id).first()
+    assert student.meeting_counts["junior_a"]["attended"] == 1
+
+
+def test_update_student_verification(mock_database):
+    pre_save_user_auths()
+    pre_save_profile_docs()
+    response = client2.post(
+        "/token", data={"username": "admin@email.com", "password": "password"}
+    )
+    student_doc = StudentProfileDocument.objects(email="jimmyteststudent@email.com")[0]
+    student_id = student_doc.students[0].id
+    json = response.json()
+    access_token = json["access_token"]
+    client.put(
+        "/admin/update_student_verification",
+        json=StudentVerification(student_id=student_id, status=True).dict(),
+        headers={"Authorization": f"Bearer {access_token}"},
+    )
+    student = StudentDocument.objects(id=student_id).first()
+    assert student.verification_status is True
+
+
+def test_update_meeting(mock_database):
+    pre_save_meetings()
+    meeting = MeetingDocument.objects()[0]
+    id = meeting.uuid
+    response = client2.post(
+        "/token", data={"username": "admin@email.com", "password": "password"}
+    )
+    json = response.json()
+    access_token = json["access_token"]
+    update = UpdateMeeting(**meeting1.dict(), meeting_id=id)
+    response = client.put(
+        "/admin/update_meeting",
+        json=update.dict(),
+        headers={"Authorization": f"Bearer {access_token}"},
+    )
+    assert response.status_code == 200
+    meeting = MeetingDocument.objects(uuid=id)[0]
+    assert meeting.miro_link == "test_miro_link"
+    assert meeting.topic == "test_topic"
+    assert meeting.zoom_link == "test_zoom_link"

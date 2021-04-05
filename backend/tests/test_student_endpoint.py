@@ -14,11 +14,12 @@ from backend.main.db.models.meeting_model import (
     StudentMeetingRegistration,
 )
 from backend.main.db.docs.meeting_doc import MeetingDocument
+from backend.main.db.models.student_models import StudentCreateModel, StudentGrade
 from backend.main.db.models.student_profile_model import (
     StudentProfileCreateModel,
-    Student,
     Guardian,
     SessionLevel,
+    StudentUpdateModel,
 )
 from backend.main.db.docs.student_profile_doc import StudentProfileDocument
 
@@ -38,12 +39,12 @@ connect_to_db(
 student = StudentProfileCreateModel(
     email="jaketeststudent@email.com",
     students=[
-        Student(
+        StudentCreateModel(
             first_name="jake",
             last_name="lasalle",
-            grade=5,
+            grade=StudentGrade("5"),
             age=11,
-            section=[SessionLevel("junior_a")],
+            verification_status=False,
         )
     ],
     guardians=[
@@ -54,16 +55,48 @@ student = StudentProfileCreateModel(
             email="jaketeststudent@email.com",
         )
     ],
+    mailing_lists=[SessionLevel("junior_a")],
 )
+
+student_extra_student = StudentProfileCreateModel(
+    email="jimmyteststudent@email.com",
+    students=[
+        StudentUpdateModel(
+            id=None,
+            first_name="jake",
+            last_name="lasalle",
+            grade=StudentGrade("6"),
+            age=11,
+            verification_status=False,
+        ),
+        StudentUpdateModel(
+            first_name="jimmy",
+            last_name="lasalle",
+            grade=StudentGrade("2"),
+            age=6,
+            verification_status=False,
+        ),
+    ],
+    guardians=[
+        Guardian(
+            first_name="jimmy",
+            last_name="smith",
+            phone_number="123456789",
+            email="jaketeststudent@email.com",
+        )
+    ],
+    mailing_lists=[SessionLevel("junior_a")],
+)
+
 student2 = StudentProfileCreateModel(
     email="jimmyteststudent@email.com",
     students=[
-        Student(
+        StudentCreateModel(
             first_name="jimmy",
-            last_name="smithers",
-            grade=5,
+            last_name="Smithers",
+            grade=StudentGrade("7"),
             age=11,
-            section=[SessionLevel("junior_a")],
+            verification_status=False,
         )
     ],
     guardians=[
@@ -74,17 +107,18 @@ student2 = StudentProfileCreateModel(
             email="jimmyteststudent@email.com",
         )
     ],
+    mailing_lists=[SessionLevel("junior_a")],
 )
 
 student3 = StudentProfileCreateModel(
     email="johnnyteststudent@email.com",
     students=[
-        Student(
-            first_name="johnny",
-            last_name="paul",
-            grade=5,
+        StudentCreateModel(
+            first_name="johhny",
+            last_name="Smith",
+            grade=StudentGrade("6"),
             age=11,
-            section=[SessionLevel("junior_a")],
+            verification_status=False,
         )
     ],
     guardians=[
@@ -95,6 +129,7 @@ student3 = StudentProfileCreateModel(
             email="johnnyteststudent@email.com",
         )
     ],
+    mailing_lists=[SessionLevel("junior_a")],
 )
 
 
@@ -213,29 +248,46 @@ def test_get_my_profile(mock_database):
     )
     json = response.json()
     assert json["email"] == "jaketeststudent@email.com"
-    assert json["students"][0]["first_name"] == "jake"
+    assert len(json["student_list"]) == 1
+
+
+def test_get_students(mock_database):
+    pre_save_user_auths()
+    pre_save_profile_docs()
+    response = client2.post(
+        "/token", data={"username": "jaketeststudent@email.com", "password": "password"}
+    )
+    json = response.json()
+    access_token = json["access_token"]
+    response = client.get(
+        "/student/get_students", headers={"Authorization": f"Bearer {access_token}"}
+    )
+    json = response.json()
+    assert len(json) == 1
 
 
 def test_update_student_profile(mock_database):
     pre_save_user_auths()
     pre_save_profile_docs()
-    jimmy = StudentProfileDocument.objects(email="jimmyteststudent@email.com")
-    jake = StudentProfileDocument.objects(email="jaketeststudent@email.com")
-    assert len(jake) == 1 and len(jimmy) == 1
     response = client2.post(
         "/token",
         data={"username": "jimmyteststudent@email.com", "password": "password"},
     )
     json = response.json()
     access_token = json["access_token"]
-    client.put(
+    response = client.get(
+        "/student/get_my_profile", headers={"Authorization": f"Bearer {access_token}"}
+    )
+    json = response.json()
+    student_id = json["student_list"][0]["id"]
+    student_extra_student.students[0].id = student_id
+    response = client.put(
         "/student/update_profile",
-        json=student.dict(),
+        json=student_extra_student.dict(),
         headers={"Authorization": f"Bearer {access_token}"},
     )
-    jimmy = StudentProfileDocument.objects(email="jimmyteststudent@email.com")
-    jake = StudentProfileDocument.objects(email="jaketeststudent@email.com")
-    assert len(jake) == 2 and len(jimmy) == 0
+    json = response.json()
+    assert len(json["student_list"]) == 2
 
 
 def test_get_meetings(mock_database):
@@ -266,19 +318,30 @@ def test_update_student_for_meeting(mock_database):
         data={"username": "jimmyteststudent@email.com", "password": "password"},
     )
     student_doc = StudentProfileDocument.objects(email="jimmyteststudent@email.com")[0]
+    student_id = student_doc.students[0].id
     meeting = MeetingDocument.objects()[0]
-    add_student = student_doc.students[0]
     json = response.json()
     access_token = json["access_token"]
     client.post(
         "/student/update_student_for_meeting",
         json=StudentMeetingRegistration(
             meeting_id=meeting.uuid,
-            first_name=add_student["first_name"],
-            last_name=add_student["last_name"],
+            student_id=student_id,
+            registered=True,
         ).dict(),
         headers={"Authorization": f"Bearer {access_token}"},
     )
     meetings = MeetingDocument.objects(uuid=meeting.uuid)[0]
     assert len(meetings.students) == 1
-    assert meetings.students[0]["first_name"] == "jimmy"
+    assert meetings.students[0]["student_id"] == str(student_id)
+    client.post(
+        "/student/update_student_for_meeting",
+        json=StudentMeetingRegistration(
+            meeting_id=meeting.uuid,
+            student_id=student_id,
+            registered=False,
+        ).dict(),
+        headers={"Authorization": f"Bearer {access_token}"},
+    )
+    meetings = MeetingDocument.objects(uuid=meeting.uuid)[0]
+    assert len(meetings.students) == 0
