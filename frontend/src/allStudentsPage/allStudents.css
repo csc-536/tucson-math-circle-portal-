@@ -2,6 +2,9 @@
   margin: 20px;
   display: flex;
 }
+#allStudentsPage {
+  text-align: center;
+}
 #studentTable {
   margin: 0 auto;
   text-align: center;
@@ -15,4 +18,11 @@
 #studentPageHeader {
   clear: both;
   text-align: center;
+}
+#studentSortButton {
+  margin-bottom: 10px;
+  color: white;
+  background-color: #008ae6;
+  cursor: pointer;
+  padding: 10px;
 }

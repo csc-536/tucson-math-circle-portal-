@@ -30,7 +30,6 @@ import { isLoggedIn, loggedInRole } from "../utils";
 
 function Registration({ update }) {
   const initialStudent = {
-    id: "",
     first_name: "",
     last_name: "",
     grade: "",

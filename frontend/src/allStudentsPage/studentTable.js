@@ -14,7 +14,10 @@ function StudentTable({ studentList, sectionList }) {
       </tr>
       {studentList.map((account) => {
         let filteredIn = false;
-        if (account["mailing_lists"].length === 0 && sectionList.length === 0) {
+        if (
+          account["mailing_lists"].length === 0 &&
+          sectionList.includes("opt_out")
+        ) {
           filteredIn = true;
         }
         account["mailing_lists"].map((section) => {
@@ -30,15 +33,15 @@ function StudentTable({ studentList, sectionList }) {
                   {student["last_name"]}, {student["first_name"]}
                 </td>
                 <td>
-                  {student["meeting_counts"]["junior_a"]["attended"]}/
+                  {student["meeting_counts"]["junior_a"]["attended"]} /{" "}
                   {student["meeting_counts"]["junior_a"]["registered"]}
                 </td>
                 <td>
-                  {student["meeting_counts"]["junior_b"]["attended"]}/
+                  {student["meeting_counts"]["junior_b"]["attended"]} /{" "}
                   {student["meeting_counts"]["junior_b"]["registered"]}
                 </td>
                 <td>
-                  {student["meeting_counts"]["senior"]["attended"]}/
+                  {student["meeting_counts"]["senior"]["attended"]} /{" "}
                   {student["meeting_counts"]["senior"]["registered"]}
                 </td>
                 <td>

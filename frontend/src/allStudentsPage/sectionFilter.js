@@ -52,7 +52,7 @@ function SectionFilter({ sectionList, handleRadioChange }) {
             type="radio"
             value="opt_out"
             name="opt_out"
-            checked={sectionList.length == 0}
+            checked={sectionList.includes("opt_out")}
             onClick={handleRadioChange}
           />
         </label>

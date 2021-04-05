@@ -19,7 +19,9 @@ function AllStudents(props) {
     "junior_a",
     "junior_b",
     "senior",
+    "opt_out",
   ]);
+  const [studentTable, setStudentTable] = useState();
 
   if (sessionStorage.getItem("accessToken") === null) {
     history.push("/");
@@ -37,6 +39,10 @@ function AllStudents(props) {
     };
 
     students();
+
+    setStudentTable(
+      <StudentTable studentList={studentList} sectionList={sectionList} />
+    );
   }, []);
 
   /*
@@ -56,18 +62,19 @@ function AllStudents(props) {
       const i = newSectionList.indexOf(value);
       newSectionList.splice(i, 1);
     } else {
-      if (value === "opt_out") {
-        newSectionList = [];
-      } else if (value !== "out_out") {
-        newSectionList.push(value);
-      }
+      newSectionList.push(value);
     }
     setSectionList(newSectionList);
   };
 
-  function sortTable() {
+  const sortTable = (e) => {
     var table, rows, switching, i, x, y, shouldSwitch;
     table = document.getElementById("studentTable");
+    console.log("HELP");
+    if (table === null) {
+      console.log("NULL");
+      return;
+    }
     switching = true;
     /* Make a loop that will continue until
     no switching has been done: */
@@ -101,17 +108,19 @@ function AllStudents(props) {
         switching = true;
       }
     }
-  }
+  };
 
   return (
-    <div>
+    <div id="allStudentsPage">
       <h1 id="studentPageHeader">All Students</h1>
       <SectionFilter
         sectionList={sectionList}
         handleRadioChange={handleRadioChange}
       />
+      <button id="studentSortButton" onClick={sortTable}>
+        Sort Table By Student Last Name
+      </button>
       <StudentTable studentList={studentList} sectionList={sectionList} />
-      {sortTable()}
     </div>
   );
 }
