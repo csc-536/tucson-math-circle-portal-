@@ -26,7 +26,7 @@ from backend.main.db.models.meeting_model import (
 from backend.main.db.docs.meeting_doc import (
     MeetingDocument,
 )
-from backend.main.db.mixins import PydanticObjectId
+from backend.main.db.mixins import PydanticObjectId, SessionLevel
 
 
 # auth db imports
@@ -61,16 +61,33 @@ def get_student_meeting_index(meeting_doc, first, last):
     return i
 
 
-def remove_student_from_meeting(meeting_doc, student_id: PydanticObjectId):
-    # TODO: Update StudentDocument meeting info to reflect changes!
+def student_meeting_index(meeting_doc: MeetingDocument, student_id: PydanticObjectId):
     check_id = lambda reg: reg["student_id"] == student_id
-    index = -1
     for i, registration in enumerate(meeting_doc.students):
         if check_id(registration):
-            index = i
-            break
-    del meeting_doc.students[index]
-    meeting_doc.save()
+            return i
+    print("ERROR: get_student_meeting_index could not find student in MeetingDocument")
+    return None
+
+
+def update_meeting_count(
+    student: StudentDocument, level: SessionLevel, registered=0, attended=0
+):
+    """Increment `student`'s `meeting_counts` for SessionLevel `level` according to
+    `registered` and `attended`"""
+    student.meeting_counts[level]["registered"] += registered
+    student.meeting_counts[level]["attended"] += attended
+
+
+def remove_student_from_meeting(
+    meeting_doc: MeetingDocument, student_id: PydanticObjectId
+):
+    index = student_meeting_index(meeting_doc, student_id)
+    if index is not None:
+        del meeting_doc.students[index]
+        meeting_doc.save()
+    else:
+        print("ERROR: remove_student_from_meeting student not found in MeetingDocument")
 
 
 def generate_meeting_registrations(registrations, students):
@@ -206,17 +223,22 @@ async def update_student(
             detail="Invalid meeting id",
         )
 
+    meeting_id = str(registration.meeting_id)
     if not registration.registered:
         remove_student_from_meeting(meeting_doc, registration.student_id)
         # Update StudentDocument `meetings_registered` to reflect changes
-        if str(registration.meeting_id) in student.meetings_registered:
-            mid = str(registration.meeting_id)
-            del student.meetings_registered[mid]
+        if meeting_id in student.meetings_registered:
+            # remove registration
+            del student.meetings_registered[meeting_id]
+            # decrement registered count
+            update_meeting_count(student, meeting_doc.session_level, registered=-1)
             student.save()
+
         return {
             "details": f"Student with id {registration.student_id} removed from meeting list"
         }
 
+    # otherwise add student to meeting
     student_info = StudentMeetingInfo(
         student_id=registration.student_id,
         email=current_user.email,
@@ -227,8 +249,11 @@ async def update_student(
     meeting_doc.save()
 
     # Update StudentDocument `meetings_registered`
-    mid = str(registration.meeting_id)
-    student.meetings_registered[mid] = False
+    if meeting_id not in student.meetings_registered:
+        # add the registration
+        student.meetings_registered[meeting_id] = False
+        # increment registered count
+        update_meeting_count(student, meeting_doc.session_level, registered=1)
     student.save()
     return {
         "details": f"Student with id {registration.student_id} added to meeting list"

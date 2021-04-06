@@ -175,3 +175,9 @@ export async function getAllStudents() {
   console.log(res);
   return res;
 }
+
+export async function registerMeeting(data) {
+  const res = await main.post("/student/update_student_for_meeting", data);
+  console.log(res);
+  return res;
+}
