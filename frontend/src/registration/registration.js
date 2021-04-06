@@ -35,7 +35,7 @@ function Registration({ update }) {
     grade: "",
     age: "",
     selectedFile: null,
-    status: false,
+    verification_status: false,
   };
 
   const initialGuardian = {

@@ -8,7 +8,14 @@
 import React, { useEffect } from "react";
 
 function StudentInfo({
-  student: { first_name, last_name, grade, age, selectedFile, status },
+  student: {
+    first_name,
+    last_name,
+    grade,
+    age,
+    selectedFile,
+    verification_status,
+  },
   update,
   handleOnChange,
   handleRemStudent,
@@ -29,7 +36,7 @@ function StudentInfo({
 
   let remStudentButton_2 = "";
 
-  if (status) {
+  if (verification_status) {
     verifStyle = { background: "green" };
     statusText = "Verified";
   } else {

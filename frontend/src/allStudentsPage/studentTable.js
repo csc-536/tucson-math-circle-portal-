@@ -4,6 +4,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import Modal from "@material-ui/core/Modal";
 import Backdrop from "@material-ui/core/Backdrop";
 import MoreInfo from "./moreInfo";
+import { updateStudentVerification } from "../http";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -52,6 +53,22 @@ function StudentTable({ studentList, sectionList }) {
     setOpen(false);
   };
 
+  const handleVerificationChange = async (student_id, status) => {
+    alert(student_id + " : " + status);
+    if (status === null) {
+      status = false;
+    }
+    status = !status;
+    try {
+      await updateStudentVerification({
+        student_id,
+        status,
+      });
+    } catch (error) {
+      console.log(error.response);
+    }
+  };
+
   const rootRef = React.useRef(null);
   const moreInfo = () => {
     return (
@@ -91,6 +108,7 @@ function StudentTable({ studentList, sectionList }) {
           <th>Guardian Name</th>
           <th>Guardian Phone</th>
           <th>Guardian Email</th>
+          <th>Verify Student</th>
           <th>More Info</th>
         </tr>
         {studentList.map((account) => {
@@ -131,6 +149,21 @@ function StudentTable({ studentList, sectionList }) {
                   </td>
                   <td>{account["guardians"][0]["phone_number"]}</td>
                   <td>{account["guardians"][0]["email"]}</td>
+                  <td>
+                    <input
+                      type="checkbox"
+                      checked={student["verification_status"]}
+                      value="verify"
+                      onClick={() => {
+                        setCurrStudent(student);
+                        console.log(student);
+                        handleVerificationChange(
+                          student["id"],
+                          student["verification_status"]
+                        );
+                      }}
+                    />
+                  </td>
                   <td
                     id="moreStudentInfo"
                     onClick={() => {

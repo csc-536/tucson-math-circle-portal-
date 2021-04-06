@@ -124,6 +124,19 @@ export async function updatePassword(data) {
   return res;
 }
 
+export async function updateStudentVerification(data) {
+  const accessToken = sessionStorage.getItem("accessToken");
+  console.log(accessToken);
+
+  const res = await main.put("/admin/update_student_verification", data, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+  console.log(res);
+  return res;
+}
+
 export async function allMeetings({ role, body }) {
   const accessToken = sessionStorage.getItem("accessToken");
   console.log(accessToken);
