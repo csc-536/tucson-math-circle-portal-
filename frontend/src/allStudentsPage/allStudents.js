@@ -21,7 +21,6 @@ function AllStudents(props) {
     "senior",
     "opt_out",
   ]);
-  const [studentTable, setStudentTable] = useState();
 
   if (sessionStorage.getItem("accessToken") === null) {
     history.push("/");
@@ -39,10 +38,7 @@ function AllStudents(props) {
     };
 
     students();
-
-    setStudentTable(
-      <StudentTable studentList={studentList} sectionList={sectionList} />
-    );
+    sortTable();
   }, []);
 
   /*
@@ -70,9 +66,7 @@ function AllStudents(props) {
   const sortTable = (e) => {
     var table, rows, switching, i, x, y, shouldSwitch;
     table = document.getElementById("studentTable");
-    console.log("HELP");
     if (table === null) {
-      console.log("NULL");
       return;
     }
     switching = true;
@@ -91,9 +85,6 @@ function AllStudents(props) {
         one from current row and one from the next: */
         x = rows[i].getElementsByTagName("TD")[0];
         y = rows[i + 1].getElementsByTagName("TD")[0];
-        console.log(
-          x.innerHTML.toLowerCase() + " | " + y.innerHTML.toLowerCase()
-        );
         // Check if the two rows should switch place:
         if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
           // If so, mark as a switch and break the loop:
@@ -121,6 +112,7 @@ function AllStudents(props) {
         Sort Table By Student Last Name
       </button>
       <StudentTable studentList={studentList} sectionList={sectionList} />
+      {sortTable()}
     </div>
   );
 }
