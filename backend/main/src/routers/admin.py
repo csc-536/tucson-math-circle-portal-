@@ -48,7 +48,7 @@ def update_attendance(
         student.save()
 
     index = student_meeting_index(meeting_doc, attendance.student_id)
-    if index:
+    if index is not None:
         meeting_doc.students[index]["attended"] = attendance.attended
         meeting_doc.save()
     else:
@@ -114,7 +114,7 @@ async def delete_meeting(update_meeting_model: UpdateMeeting):
         meeting_doc = MeetingDocument.objects(uuid=update_meeting_model.meeting_id)[0]
     except Exception:
         return "Could not find the meeting"
-    meeting_doc.remove(meeting_doc)
+    meeting_doc.delete()
 
 
 # PUT routes
