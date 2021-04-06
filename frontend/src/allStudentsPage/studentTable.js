@@ -1,33 +1,48 @@
 import "./allStudents.css";
 import React, { useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import Modal from '@material-ui/core/Modal';
+import Modal from "@material-ui/core/Modal";
 import Backdrop from "@material-ui/core/Backdrop";
+import MoreInfo from "./moreInfo";
 
 const useStyles = makeStyles((theme) => ({
-    root: {
-      width: "100%",
-    },
-    cardActions: {
-      float: "right",
-    },
-    modal: {
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-    },
-    paper: {
-      backgroundColor: theme.palette.background.paper,
-      boxShadow: theme.shadows[2],
-      borderRadius: 5,
-      padding: theme.spacing(2, 4, 3),
-    },
-  }));
+  root: {
+    width: "100%",
+  },
+  cardActions: {
+    float: "right",
+  },
+  modal: {
+    display: "flex",
+    height: "100%",
+    alignItems: "baseline",
+    justifyContent: "center",
+    overflow: "auto",
+    overflowY: "auto",
+  },
+  paper: {
+    backgroundColor: theme.palette.background.paper,
+    boxShadow: theme.shadows[2],
+    borderRadius: 5,
+    padding: theme.spacing(2, 4, 3),
+  },
+  sInfoTag: {
+    // float: "left",
+  },
+  sInfo: {
+    // width: "100%",
+    marginTop: "-20px",
+  },
+}));
 
 function StudentTable({ studentList, sectionList }) {
   const classes = useStyles();
 
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = useState(false);
+  const [currStudent, setCurrStudent] = useState(null);
+  const [currAccount, setCurrAccount] = useState(null);
+
+  // let currStudent = null;
 
   const handleOpen = () => {
     setOpen(true);
@@ -38,27 +53,35 @@ function StudentTable({ studentList, sectionList }) {
   };
 
   const rootRef = React.useRef(null);
-  let moreInfo = (
-    <Modal
-      id="moreStudentInfo"
-      open={open}
-      className={classes.modal}
-      onClose={handleClose}
-      BackdropComponent={Backdrop}
-      aria-labelledby="simple-modal-title"
-      aria-describedby="simple-modal-description"
-      disableEnforceFocus
-      disableAutoFocus
-      container={() => rootRef.current}>
-      <div className={classes.paper}>
-        Some text
-      </div>
-    </Modal>
-  );
+  const moreInfo = () => {
+    return (
+      <Modal
+        id="moreStudentInfo"
+        open={open}
+        className={classes.modal}
+        onClose={handleClose}
+        BackdropComponent={Backdrop}
+        aria-labelledby="simple-modal-title"
+        aria-describedby="simple-modal-description"
+        disableEnforceFocus
+        disableAutoFocus
+        container={() => rootRef.current}
+      >
+        <div className={classes.paper}>
+          <MoreInfo
+            sInfoTag={classes.sInfoTag}
+            sInfo={classes.sInfo}
+            student={currStudent}
+            account={currAccount}
+          />
+        </div>
+      </Modal>
+    );
+  };
 
   return (
     <div>
-      {moreInfo}
+      {moreInfo()}
       <table id="studentTable" border="4">
         <tr>
           <th>Student Last Name, First Name</th>
@@ -108,7 +131,16 @@ function StudentTable({ studentList, sectionList }) {
                   </td>
                   <td>{account["guardians"][0]["phone_number"]}</td>
                   <td>{account["guardians"][0]["email"]}</td>
-                  <td id="moreStudentInfo" onClick={handleOpen}>Click here</td>
+                  <td
+                    id="moreStudentInfo"
+                    onClick={() => {
+                      setCurrStudent(student);
+                      setCurrAccount(account);
+                      handleOpen();
+                    }}
+                  >
+                    Click here
+                  </td>
                 </tr>
               );
             });
