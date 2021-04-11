@@ -14,6 +14,12 @@ class StudentMeetingRegistration(BaseModel):
     registered: bool
 
 
+class StudentMeetingAttendance(BaseModel):
+    meeting_id: UUID4 = Field()
+    student_id: PydanticObjectId = Field()
+    attended: bool
+
+
 class StudentMeetingInfo(BaseModel):
     student_id: PydanticObjectId = Field()
     email: EmailStr = Field()
