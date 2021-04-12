@@ -112,6 +112,7 @@ const MeetingInfo = () => {
         student_notes: "ddddddd",
         materials_link: "https://test.com",
         meeting_id,
+        students,
       });
     } catch (error) {
       console.log(error.response);

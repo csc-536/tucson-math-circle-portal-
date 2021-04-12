@@ -184,3 +184,29 @@ export async function registerMeeting(data) {
   console.log(res);
   return res;
 }
+
+export async function getS3UploadURL() {
+  const res = await auth.post("//...");
+}
+
+export async function uploadFile(file) {
+  const url = "";
+  console.log({
+    params: {
+      Key: file.name,
+      ContentType: file.type,
+    },
+    headers: {
+      "Content-Type": file.type,
+    },
+  });
+  // await axios.put(url, file, {
+  //     params: {
+  //         Key: file.name,
+  //         ContentType: file.type,
+  //     },
+  //     headers: {
+  //         "Content-Type": file.type,
+  //     },
+  // });
+}
