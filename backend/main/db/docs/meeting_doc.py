@@ -1,4 +1,5 @@
 from backend.main.db.models.meeting_model import MeetingModel
+from backend.main.db.docs.student_doc import StudentDocument
 from mongoengine import (
     Document,
     StringField,
@@ -56,6 +57,20 @@ class MeetingDocument(Document):
         }
 
     def admin_dict(self):
+        students_to_return = []
+        for st in self.students:
+            query = StudentDocument.objects(id=st["student_id"])
+            if len(query) < 1:
+                print(
+                    f"ERROR: student_id {st.student_id} in MeetingDocument but StudentDocument does not exist"
+                )
+            else:
+                student = query[0]
+                st["first_name"] = student.first_name
+                st["last_name"] = student.last_name
+
+            students_to_return.append(st)
+
         return {
             "uuid": self.uuid,
             "date_and_time": self.date_and_time,
@@ -65,13 +80,27 @@ class MeetingDocument(Document):
             "topic": self.topic,
             "session_level": self.session_level,
             "password": self.password,
-            "students": self.students,
+            "students": students_to_return,
             "coordinator_notes": self.coordinator_notes,
             "student_notes": self.student_notes,
             "materials_uploaded": self.materials_uploaded,
         }
 
     def dict(self):
+        students_to_return = []
+        for st in self.students:
+            query = StudentDocument.objects(id=st["student_id"])
+            if len(query) < 1:
+                print(
+                    f"ERROR: student_id {st.student_id} in MeetingDocument but StudentDocument does not exist"
+                )
+            else:
+                student = query[0]
+                st["first_name"] = student.first_name
+                st["last_name"] = student.last_name
+
+            students_to_return.append(st)
+
         return {
             "uuid": self.uuid,
             "date_and_time": self.date_and_time,
@@ -81,7 +110,7 @@ class MeetingDocument(Document):
             "topic": self.topic,
             "session_level": self.session_level,
             "password": self.password,
-            "students": self.students,
+            "students": students_to_return,
             "coordinator_notes": self.coordinator_notes,
             "student_notes": self.student_notes,
             "materials_uploaded": self.materials_uploaded,

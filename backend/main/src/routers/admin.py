@@ -145,7 +145,8 @@ async def get_meetings_by_filter(
         for level in search.session_levels:
             for meeting in MeetingDocument.objects(session_level=level):
                 meetings.append(meeting.admin_dict())
-    except Exception:
+    except Exception as e:
+        print(e)
         return {"details": "Error finding meeting"}
     return meetings
 
