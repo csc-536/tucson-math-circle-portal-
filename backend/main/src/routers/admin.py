@@ -18,17 +18,20 @@ from backend.main.db.models.meeting_model import (
     MeetingModel,
     UpdateMeeting,
     StudentMeetingAttendance,
+    MeetingIdModel,
 )
 from backend.main.db.docs.meeting_doc import (
     document as MeetingDoc,
     MeetingDocument,
 )
 from backend.main.db.password_generator import generate_random_password
+from backend.main.db.mixins import PydanticObjectId
 
 # auth db imports
 from backend.auth.dependencies import (
     TokenData,
     get_admin_token_data,
+    create_presigned_url,
 )
 
 router = APIRouter()
@@ -79,6 +82,58 @@ def get_student_profile(
     return profile.dict()
 
 
+@router.get("/get_student_consent_form_url")
+async def get_student_consent_form_url(
+    student_id: PydanticObjectId, token_data: TokenData = Depends(get_admin_token_data)
+):
+    st_query = StudentDocument.objects(id=student_id)
+    if len(st_query) == 0:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Could not find student with id {student_id}",
+        )
+
+    student = st_query[0]
+    object_name = student.consent_form_object_name
+    if object_name is None:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Student has not uploaded consent form yet",
+        )
+
+    response = create_presigned_url(object_name)
+    if response is not None:
+        return response
+
+    return {"details": "Could not generate presigned url"}
+
+
+@router.get("/get_meeting_material_url")
+async def get_meeting_material_url(
+    meeting_uuid: UUID4, token_data: TokenData = Depends(get_admin_token_data)
+):
+    meeting_query = MeetingDocument.objects(uuid=meeting_uuid)
+    if len(meeting_query) == 0:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Could not find meeting with uuid {meeting_uuid}",
+        )
+
+    meeting = meeting_query[0]
+    object_name = meeting.materials_object_name
+    if object_name is None:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Meeting does not have a materials_object_name",
+        )
+
+    response = create_presigned_url(object_name)
+    if response is not None:
+        return response
+
+    return {"details": "Could not generate presigned url"}
+
+
 # POST routes
 @router.post("/get_meetings")
 async def get_meetings_by_filter(
@@ -109,9 +164,9 @@ async def create_meeting(
 
 # DELETE routes
 @router.delete("/delete_meeting")
-async def delete_meeting(update_meeting_model: UpdateMeeting):
+async def delete_meeting(meeting: MeetingIdModel):
     try:
-        meeting_doc = MeetingDocument.objects(uuid=update_meeting_model.meeting_id)[0]
+        meeting_doc = MeetingDocument.objects(uuid=meeting.meeting_id)[0]
     except Exception:
         return "Could not find the meeting"
     meeting_doc.delete()
@@ -169,6 +224,7 @@ async def update_meeting(
     meeting_doc.miro_link = update_meeting_model.miro_link
     meeting_doc.coordinator_notes = update_meeting_model.coordinator_notes
     meeting_doc.student_notes = update_meeting_model.student_notes
-    meeting_doc.materials_link = update_meeting_model.materials_link
+    meeting_doc.materials_uploaded = update_meeting_model.materials_uploaded
+    meeting_doc.materials_object_name = update_meeting_model.materials_object_name
     meeting_doc.save()
     return meeting_doc.admin_dict()
