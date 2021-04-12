@@ -85,8 +85,8 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
     return {"access_token": access_token, "token_type": "bearer"}
 
 
-@app.post("/presigned_url_for_url")
-async def generate_student_consent_form_url(
+@app.post("/presigned_url_for_upload")
+async def generate_presigned_post_url(
     info: PresignedPostUrlInfo, token_data: TokenData = Depends(get_current_token_data)
 ):
     response = create_presigned_post(info.object_name, info.fields, info.conditions)
