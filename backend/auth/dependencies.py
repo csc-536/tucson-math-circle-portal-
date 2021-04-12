@@ -4,6 +4,8 @@ from datetime import datetime, timedelta
 from typing import Optional
 
 import toml
+import boto3
+from botocore.exceptions import ClientError
 from fastapi import HTTPException, status, Depends
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
@@ -17,9 +19,17 @@ from backend.auth.db.main import get_user_by_email, add_user, get_user_by_id
 # get the config file path
 CONFIG_PATH = Path(__file__).resolve().parent.joinpath("db-config.toml")
 print("Using CONFIG_PATH:", CONFIG_PATH)
-
 config = toml.load(str(CONFIG_PATH))
 SECRET_KEY = config["secret"]
+
+# aws s3 config stuff
+AWS_CONFIG_PATH = Path(__file__).resolve().parent.joinpath("aws-config.toml")
+if AWS_CONFIG_PATH.exists():
+    aws_config = toml.load(str(AWS_CONFIG_PATH))
+    AWS_ACCESS_KEY_ID = aws_config["aws-access-key-id"]
+    AWS_SECRET_ACCESS_KEY = aws_config["aws-secret-access-key"]
+    AWS_BUCKET_NAME = aws_config["aws-bucket-name"]
+
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MIN = 240
 
@@ -50,6 +60,72 @@ def authenticate_user(user: UserInDB, password: str):
     if not verify_password(password, user.hashed_password):
         return False
     return user
+
+
+# s3 presigned url helpers
+# based on "https://boto3.amazonaws.com/v1/documentation/api/latest/guide/s3-presigned-urls.html"
+def create_presigned_url(object_name, expiration=3600):
+    """Generate a presigned URL to share an S3 object
+
+    :param object_name: string
+    :param expiration: Time in seconds for the presigned URL to remain valid
+    :return: Presigned URL as string. If error, returns None.
+    """
+
+    # Generate a presigned URL for the S3 object
+    s3_client = boto3.client(
+        "s3",
+        aws_access_key_id=AWS_ACCESS_KEY_ID,
+        aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
+    )
+    try:
+        response = s3_client.generate_presigned_url(
+            "get_object",
+            Params={"Bucket": AWS_BUCKET_NAME, "Key": object_name},
+            ExpiresIn=expiration,
+        )
+    except ClientError as e:
+        print("ERROR:", e)
+        return None
+
+    # The response contains the presigned URL
+    return response
+
+
+# based on "https://boto3.amazonaws.com/v1/documentation/api/latest/guide/s3-presigned-urls.html"
+def create_presigned_post(object_name, fields=None, conditions=None, expiration=3600):
+    """Generate a presigned URL S3 POST request to upload a file
+
+    :param object_name: string
+    :param fields: Dictionary of prefilled form fields
+    :param conditions: List of conditions to include in the policy
+    :param expiration: Time in seconds for the presigned URL to remain valid
+    :return: Dictionary with the following keys:
+        url: URL to post to
+        fields: Dictionary of form fields and values to submit with the POST
+    :return: None if error.
+    """
+
+    # Generate a presigned S3 POST URL
+    s3_client = boto3.client(
+        "s3",
+        aws_access_key_id=AWS_ACCESS_KEY_ID,
+        aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
+    )
+    try:
+        response = s3_client.generate_presigned_post(
+            AWS_BUCKET_NAME,
+            object_name,
+            Fields=fields,
+            Conditions=conditions,
+            ExpiresIn=expiration,
+        )
+    except ClientError as e:
+        print("ERROR:", e)
+        return None
+
+    # The response contains the presigned URL and required fields
+    return response
 
 
 async def create_user(user: UserCreate) -> User:

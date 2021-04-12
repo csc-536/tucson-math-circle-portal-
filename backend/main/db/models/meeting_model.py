@@ -2,7 +2,7 @@ from typing import Optional, List
 from datetime import datetime, date
 from uuid import uuid4
 
-from pydantic import Field, BaseModel, EmailStr, UUID4, AnyUrl
+from pydantic import Field, BaseModel, EmailStr, UUID4
 
 from backend.main.db.mixins import SessionLevel, PydanticObjectId
 from backend.main.db.models.student_profile_model import Guardian
@@ -37,7 +37,8 @@ class CreateMeetingModel(BaseModel):
     miro_link: Optional[str] = Field()
     coordinator_notes: Optional[str] = Field(default=None)
     student_notes: Optional[str] = Field(default=None)
-    materials_link: Optional[AnyUrl] = Field(default=None)
+    materials_uploaded: Optional[bool] = Field(default=False)
+    materials_object_name: Optional[str] = Field(default=None)
 
 
 class MeetingModel(CreateMeetingModel):
@@ -47,6 +48,10 @@ class MeetingModel(CreateMeetingModel):
 
 
 class UpdateMeeting(CreateMeetingModel):
+    meeting_id: UUID4 = Field()
+
+
+class MeetingIdModel(BaseModel):
     meeting_id: UUID4 = Field()
 
 
