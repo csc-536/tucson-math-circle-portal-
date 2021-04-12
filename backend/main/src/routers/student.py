@@ -27,7 +27,7 @@ from backend.main.db.models.meeting_model import (
 from backend.main.db.docs.meeting_doc import (
     MeetingDocument,
 )
-from backend.main.db.mixins import PydanticObjectId, SessionLevel, PresignedPostUrlInfo
+from backend.main.db.mixins import PydanticObjectId, SessionLevel
 
 
 # auth db imports
@@ -35,7 +35,6 @@ from backend.auth.dependencies import (
     TokenData,
     get_student_token_data,
     create_presigned_url,
-    create_presigned_post,
 )
 
 router = APIRouter()
@@ -163,7 +162,6 @@ async def get_student_consent_form_url(
     response = create_presigned_url(object_name)
 
     if response is not None:
-        print(response)
         return response
 
     return {"details": "Could not generate presigned url"}
@@ -323,19 +321,6 @@ async def update_student(
     return {
         "details": f"Student with id {registration.student_id} added to meeting list"
     }
-
-
-@router.post("/create_consent_form_url")
-async def generate_student_consent_form_url(
-    info: PresignedPostUrlInfo, token_data: TokenData = Depends(get_student_token_data)
-):
-    response = create_presigned_post(info.object_name, info.fields, info.conditions)
-
-    if response is not None:
-        print(response)
-        return response
-
-    return {"details": "Could not generate presigned url"}
 
 
 # PUT routes

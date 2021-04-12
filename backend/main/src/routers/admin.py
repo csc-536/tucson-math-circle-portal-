@@ -25,13 +25,12 @@ from backend.main.db.docs.meeting_doc import (
     MeetingDocument,
 )
 from backend.main.db.password_generator import generate_random_password
-from backend.main.db.mixins import PydanticObjectId, PresignedPostUrlInfo
+from backend.main.db.mixins import PydanticObjectId
 
 # auth db imports
 from backend.auth.dependencies import (
     TokenData,
     get_admin_token_data,
-    create_presigned_post,
     create_presigned_url,
 )
 
@@ -104,7 +103,6 @@ async def get_student_consent_form_url(
 
     response = create_presigned_url(object_name)
     if response is not None:
-        print(response)
         return response
 
     return {"details": "Could not generate presigned url"}
@@ -162,19 +160,6 @@ async def create_meeting(
     doc = MeetingDoc(meeting)
     doc.save()
     return doc.admin_dict()
-
-
-@router.post("/create_meeting_material_url")
-async def generate_admin_material_url(
-    info: PresignedPostUrlInfo, token_data: TokenData = Depends(get_admin_token_data)
-):
-    response = create_presigned_post(info.object_name, info.fields, info.conditions)
-
-    if response is not None:
-        print(response)
-        return response
-
-    return {"details": "Could not generate presigned url"}
 
 
 # DELETE routes
