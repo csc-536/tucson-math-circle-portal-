@@ -163,6 +163,35 @@ export async function addMeeting(data) {
   return res;
 }
 
+export async function updateMeeting(data) {
+  const accessToken = sessionStorage.getItem("accessToken");
+  console.log(accessToken);
+
+  const res = await main.put("/admin/update_meeting", data, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+  console.log(res);
+  return res;
+}
+
+export async function deleteMeeting(id) {
+  const accessToken = sessionStorage.getItem("accessToken");
+  console.log(accessToken);
+
+  const res = await main.delete("/admin/delete_meeting", {
+    headers: {
+      Authorization: accessToken,
+    },
+    data: {
+      meeting_id: id,
+    },
+  });
+  console.log(res);
+  return res;
+}
+
 export async function user() {
   const accessToken = sessionStorage.getItem("accessToken");
   console.log(accessToken);
@@ -193,4 +222,30 @@ export async function registerMeeting(data) {
   const res = await main.post("/student/update_student_for_meeting", data);
   console.log(res);
   return res;
+}
+
+export async function getS3UploadURL() {
+  const res = await auth.post("//...");
+}
+
+export async function uploadFile(file) {
+  const url = "";
+  console.log({
+    params: {
+      Key: file.name,
+      ContentType: file.type,
+    },
+    headers: {
+      "Content-Type": file.type,
+    },
+  });
+  // await axios.put(url, file, {
+  //     params: {
+  //         Key: file.name,
+  //         ContentType: file.type,
+  //     },
+  //     headers: {
+  //         "Content-Type": file.type,
+  //     },
+  // });
 }
