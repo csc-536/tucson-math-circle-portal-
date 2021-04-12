@@ -21,6 +21,7 @@ function AllStudents(props) {
     "senior",
     "opt_out",
   ]);
+  const [sort, setSort] = useState(false);
 
   if (sessionStorage.getItem("accessToken") === null) {
     history.push("/");
@@ -61,6 +62,7 @@ function AllStudents(props) {
       newSectionList.push(value);
     }
     setSectionList(newSectionList);
+    setSort(!sort);
   };
 
   const sortTable = (e) => {
@@ -111,8 +113,11 @@ function AllStudents(props) {
       <button id="studentSortButton" onClick={sortTable}>
         Sort Table By Student Last Name
       </button>
-      <StudentTable studentList={studentList} sectionList={sectionList} />
-      {sortTable()}
+      <StudentTable
+        sortTable={sortTable}
+        paramStudentList={studentList}
+        sectionList={sectionList}
+      />
     </div>
   );
 }

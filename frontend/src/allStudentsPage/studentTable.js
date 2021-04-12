@@ -1,10 +1,10 @@
 import "./allStudents.css";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Modal from "@material-ui/core/Modal";
 import Backdrop from "@material-ui/core/Backdrop";
 import MoreInfo from "./moreInfo";
-import { updateStudentVerification } from "../http";
+import { updateStudentVerification, getAllStudents } from "../http";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -36,14 +36,31 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function StudentTable({ studentList, sectionList }) {
+function StudentTable({ sortTable, paramStudentList, sectionList }) {
   const classes = useStyles();
 
   const [open, setOpen] = useState(false);
+  const [studentList, setCurrStudentList] = useState(paramStudentList);
   const [currStudent, setCurrStudent] = useState(null);
   const [currAccount, setCurrAccount] = useState(null);
 
   // let currStudent = null;
+  console.log("STUDENTS");
+  console.log(studentList);
+  useEffect(() => {
+    const students = async () => {
+      try {
+        const res = await getAllStudents();
+        console.log(res.data);
+        setCurrStudentList(res.data);
+      } catch (error) {
+        console.log(error.response);
+      }
+    };
+
+    students();
+    sortTable();
+  }, []);
 
   const handleOpen = () => {
     setOpen(true);
@@ -54,7 +71,6 @@ function StudentTable({ studentList, sectionList }) {
   };
 
   const handleVerificationChange = async (student_id, status) => {
-    alert(student_id + " : " + status);
     if (status === null) {
       status = false;
     }
@@ -100,87 +116,90 @@ function StudentTable({ studentList, sectionList }) {
     <div>
       {moreInfo()}
       <table id="studentTable" border="4">
-        <tr>
-          <th>Student Last Name, First Name</th>
-          <th>Junior (A) Attended/Registered</th>
-          <th>Junior (B) Attended/Registered</th>
-          <th>Senior Attended/Registered</th>
-          <th>Guardian Name</th>
-          <th>Guardian Phone</th>
-          <th>Guardian Email</th>
-          <th>Verify Student</th>
-          <th>More Info</th>
-        </tr>
-        {studentList.map((account) => {
-          let filteredIn = false;
-          if (
-            account["mailing_lists"].length === 0 &&
-            sectionList.includes("opt_out")
-          ) {
-            filteredIn = true;
-          }
-          account["mailing_lists"].map((section) => {
-            if (sectionList.includes(section)) {
+        <thead>
+          <tr>
+            <th>Student Last Name, First Name</th>
+            <th>Junior (A) Attended/Registered</th>
+            <th>Junior (B) Attended/Registered</th>
+            <th>Senior Attended/Registered</th>
+            <th>Guardian Name</th>
+            <th>Guardian Phone</th>
+            <th>Guardian Email</th>
+            <th>Verify Student</th>
+            <th>More Info</th>
+          </tr>
+        </thead>
+        <tbody>
+          {studentList.map((account) => {
+            let filteredIn = false;
+            if (
+              account["mailing_lists"].length === 0 &&
+              sectionList.includes("opt_out")
+            ) {
               filteredIn = true;
             }
-          });
-          if (filteredIn) {
-            return account["student_list"].map((student) => {
-              return (
-                <tr>
-                  <td>
-                    {student["last_name"]}, {student["first_name"]}
-                  </td>
-                  <td>
-                    {student["meeting_counts"]["junior_a"]["attended"]} /{" "}
-                    {student["meeting_counts"]["junior_a"]["registered"]}
-                  </td>
-                  <td>
-                    {student["meeting_counts"]["junior_b"]["attended"]} /{" "}
-                    {student["meeting_counts"]["junior_b"]["registered"]}
-                  </td>
-                  <td>
-                    {student["meeting_counts"]["senior"]["attended"]} /{" "}
-                    {student["meeting_counts"]["senior"]["registered"]}
-                  </td>
-                  <td>
-                    {account["guardians"][0]["first_name"]}{" "}
-                    {account["guardians"][0]["last_name"]}
-                  </td>
-                  <td>{account["guardians"][0]["phone_number"]}</td>
-                  <td>{account["guardians"][0]["email"]}</td>
-                  <td>
-                    <input
-                      type="checkbox"
-                      checked={student["verification_status"]}
-                      value="verify"
+            account["mailing_lists"].map((section) => {
+              if (sectionList.includes(section)) {
+                filteredIn = true;
+              }
+            });
+            if (filteredIn) {
+              return account["student_list"].map((student) => {
+                return (
+                  <tr>
+                    <td>
+                      {student["last_name"]}, {student["first_name"]}
+                    </td>
+                    <td>
+                      {student["meeting_counts"]["junior_a"]["attended"]} /{" "}
+                      {student["meeting_counts"]["junior_a"]["registered"]}
+                    </td>
+                    <td>
+                      {student["meeting_counts"]["junior_b"]["attended"]} /{" "}
+                      {student["meeting_counts"]["junior_b"]["registered"]}
+                    </td>
+                    <td>
+                      {student["meeting_counts"]["senior"]["attended"]} /{" "}
+                      {student["meeting_counts"]["senior"]["registered"]}
+                    </td>
+                    <td>
+                      {account["guardians"][0]["first_name"]}{" "}
+                      {account["guardians"][0]["last_name"]}
+                    </td>
+                    <td>{account["guardians"][0]["phone_number"]}</td>
+                    <td>{account["guardians"][0]["email"]}</td>
+                    <td>
+                      <input
+                        type="checkbox"
+                        id="verifyStatus"
+                        defaultChecked={student["verification_status"]}
+                        onClick={() => {
+                          setCurrStudent(student);
+                          handleVerificationChange(
+                            student["id"],
+                            student["verification_status"]
+                          );
+                        }}
+                      />
+                    </td>
+                    <td
+                      id="moreStudentInfo"
                       onClick={() => {
                         setCurrStudent(student);
-                        console.log(student);
-                        handleVerificationChange(
-                          student["id"],
-                          student["verification_status"]
-                        );
+                        setCurrAccount(account);
+                        handleOpen();
                       }}
-                    />
-                  </td>
-                  <td
-                    id="moreStudentInfo"
-                    onClick={() => {
-                      setCurrStudent(student);
-                      setCurrAccount(account);
-                      handleOpen();
-                    }}
-                  >
-                    Click here
-                  </td>
-                </tr>
-              );
-            });
-          } else {
-            return;
-          }
-        })}
+                    >
+                      Click here
+                    </td>
+                  </tr>
+                );
+              });
+            } else {
+              return;
+            }
+          })}
+        </tbody>
       </table>
     </div>
   );
