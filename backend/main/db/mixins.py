@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Any, Optional
+from typing import Any, Optional, Dict, List
 
 from pydantic import BaseModel, Field, validator, BaseConfig
 from bson.objectid import ObjectId, InvalidId
@@ -28,6 +28,12 @@ class PydanticObjectId(str):
         json_encoders = {
             ObjectId: lambda oid: str(oid),
         }
+
+
+class PresignedPostUrlInfo(BaseModel):
+    fields: Optional[Dict[str, str]] = Field(None, title="This is optional")
+    conditions: Optional[List] = Field(None, title="This is optional")
+    object_name: str
 
 
 class IdMixin(BaseModel):

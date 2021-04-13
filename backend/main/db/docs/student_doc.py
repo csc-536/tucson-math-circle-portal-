@@ -6,7 +6,6 @@ from mongoengine import (
     IntField,
     UUIDField,
     DictField,
-    URLField,
 )
 
 
@@ -37,7 +36,7 @@ class StudentDocument(Document):
     meetings_registered = DictField()
     meeting_counts = DictField(required=True)
     verification_status = BooleanField(required=False)
-    consent_form_link = URLField(required=False)
+    consent_form_object_name = StringField(required=False)
 
     meta = {
         "db_alias": "student-db",
@@ -54,5 +53,5 @@ class StudentDocument(Document):
             "meetings_registered": self.meetings_registered,
             "meeting_counts": self.meeting_counts,
             "verification_status": self.verification_status,
-            "consent_form_link": self.consent_form_link,
+            "consent_form_object_name": self.consent_form_object_name,
         }

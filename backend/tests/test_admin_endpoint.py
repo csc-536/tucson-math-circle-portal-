@@ -174,8 +174,7 @@ def test_delete_meeting(mock_database):
     pre_save_meetings()
     meeting = MeetingDocument.objects()[0]
     id = meeting.uuid
-    update = UpdateMeeting(**meeting1.dict(), meeting_id=id)
-    response = client.delete("/admin/delete_meeting", json=update.dict())
+    response = client.delete("/admin/delete_meeting", json={"meeting_id": f"{id}"})
     assert response.status_code == 200
     meeting = MeetingDocument.objects(uuid=id)
     assert len(meeting) == 0

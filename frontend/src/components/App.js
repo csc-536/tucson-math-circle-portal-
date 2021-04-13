@@ -12,6 +12,7 @@ import { isLoggedIn, loggedInRole } from "../utils";
 import MeetingInfo from "../pages/MeetingInfo";
 import { makeStyles } from "@material-ui/core";
 import Logout from "../pages/Logout";
+import S3UploadInput from "./S3UploadInput";
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -35,6 +36,7 @@ function App() {
         <br />
         <br />
         <Container fixed className={classes.container}>
+          {/* <S3UploadInput /> */}
           <Route exact path="/" component={Login} />
           <Route
             exact

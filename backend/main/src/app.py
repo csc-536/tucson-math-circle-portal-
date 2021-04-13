@@ -17,13 +17,17 @@ import uvicorn
 # main db imports
 from backend.main.src.routers import student, admin
 from backend.connect_to_mongodb import connect_to_mongodb, connect_to_auth_db
+from backend.main.db.mixins import PresignedPostUrlInfo
 
 # auth db imports
 from backend.auth.dependencies import (
     Token,
+    TokenData,
     create_access_token,
     authenticate_user,
     ACCESS_TOKEN_EXPIRE_MIN,
+    create_presigned_post,
+    get_current_token_data,
 )
 from backend.auth.db.main import get_user_by_email
 
@@ -79,6 +83,18 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
         expires_delta=access_token_expires,
     )
     return {"access_token": access_token, "token_type": "bearer"}
+
+
+@app.post("/presigned_url_for_upload")
+async def generate_presigned_post_url(
+    info: PresignedPostUrlInfo, token_data: TokenData = Depends(get_current_token_data)
+):
+    response = create_presigned_post(info.object_name, info.fields, info.conditions)
+
+    if response is not None:
+        return response
+
+    return {"details": "Could not generate presigned url"}
 
 
 if __name__ == "__main__":

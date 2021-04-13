@@ -1,5 +1,7 @@
 from fastapi import Depends, APIRouter, HTTPException, status, BackgroundTasks
 from starlette.responses import JSONResponse
+from fastapi import Depends, APIRouter, HTTPException, status
+from pydantic import UUID4
 
 # main db imports
 from backend.main.db.models.student_profile_model import (
@@ -28,7 +30,7 @@ from backend.main.db.docs.meeting_doc import (
     MeetingDocument,
 )
 from backend.main.db.mixins import PydanticObjectId, SessionLevel
-from backend.main.email_handler.email_handler import EmailSchema, email_handler
+
 
 # auth db imports
 from backend.auth.dependencies import (
@@ -129,6 +131,66 @@ def get_current_user_profile(token_data: TokenData = Depends(get_student_token_d
 def get_student_names(token_data: TokenData = Depends(get_student_token_data)):
     current_user = get_current_user_doc(token_data)
     return current_user["students"]
+
+
+@router.get("/get_consent_form_url")
+async def get_student_consent_form_url(
+    student_id: PydanticObjectId,
+    token_data: TokenData = Depends(get_student_token_data),
+):
+    st_query = StudentDocument.objects(id=student_id)
+    if len(st_query) == 0:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Could not find student with id {student_id}",
+        )
+
+    student = st_query[0]
+    if student.profile_uuid != token_data.id:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Student id is associated with a different account",
+        )
+
+    object_name = student.consent_form_object_name
+    if object_name is None:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Student has not uploaded consent form yet",
+        )
+
+    response = create_presigned_url(object_name)
+
+    if response is not None:
+        return response
+
+    return {"details": "Could not generate presigned url"}
+
+
+@router.get("/get_meeting_material_url")
+async def get_meeting_material_url(
+    meeting_uuid: UUID4, token_data: TokenData = Depends(get_student_token_data)
+):
+    meeting_query = MeetingDocument.objects(uuid=meeting_uuid)
+    if len(meeting_query) == 0:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Could not find meeting with uuid {meeting_uuid}",
+        )
+
+    meeting = meeting_query[0]
+    object_name = meeting.materials_object_name
+    if object_name is None:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Meeting does not have a materials_object_name",
+        )
+
+    response = create_presigned_url(object_name)
+    if response is not None:
+        return response
+
+    return {"details": "Could not generate presigned url"}
 
 
 @router.post("/send_verification_email")
