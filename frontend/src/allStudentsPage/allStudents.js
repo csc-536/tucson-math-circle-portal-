@@ -31,7 +31,7 @@ function AllStudents(props) {
     const students = async () => {
       try {
         const res = await getAllStudents();
-        console.log(res.data);
+        // console.log(res.data);
         setStudentList(res.data);
       } catch (error) {
         console.log(error.response);

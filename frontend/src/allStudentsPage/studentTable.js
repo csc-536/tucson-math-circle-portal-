@@ -1,5 +1,6 @@
 import "./allStudents.css";
 import React, { useEffect, useState } from "react";
+import ReactDOM from "react-dom";
 import { makeStyles } from "@material-ui/core/styles";
 import Modal from "@material-ui/core/Modal";
 import Backdrop from "@material-ui/core/Backdrop";
@@ -46,8 +47,8 @@ function StudentTable({ paramStudentList, sectionList }) {
   const [currAccount, setCurrAccount] = useState(null);
 
   // let currStudent = null;
-  console.log("STUDENTS");
-  console.log(studentList);
+  // console.log("STUDENTS");
+  // console.log(studentList);
   useEffect(() => {
     const students = async () => {
       try {
@@ -60,7 +61,6 @@ function StudentTable({ paramStudentList, sectionList }) {
     };
 
     students();
-    sortTable();
   }, []);
 
   const handleOpen = () => {
@@ -113,37 +113,35 @@ function StudentTable({ paramStudentList, sectionList }) {
     );
   };
 
-  const sortTable = (table) => {
+  const sortTable = (rowList) => {
+    console.log("ROWLIST");
+    console.log(rowList);
     var rows, switching, i, x, y, shouldSwitch;
     // var table, rows, switching, i, x, y, shouldSwitch;
     // let table = document.getElementById("studentTable");
-    if (table === null || table === undefined) {
+    if (rowList === []) {
       return;
     }
-    // console.log("TABLE");
-    // console.log(table.props.children[1].props.children[0]);
+    // console.log("TABLE1");
+    // console.log(table);//.props.children[1].props.children[0]);
     switching = true;
     /* Make a loop that will continue until
     no switching has been done: */
     while (switching) {
       // Start by saying: no switching is done:
       switching = false;
-      rows = table.props.children[1].props.children[0];
-      if (rows === undefined) {
-        return "";
-      }
       // console.log("ROWS");
       // console.log(rows.length);
       /* Loop through all table rows (except the
       first, which contains table headers): */
-      for (i = 0; i < rows.length - 1; i++) {
+      for (i = 0; i < rowList.length - 1; i++) {
         // console.log("LOOP");
         // Start by saying there should be no switching:
         shouldSwitch = false;
         /* Get the two elements you want to compare,
         one from current row and one from the next: */
-        x = rows[i].props.children[0].props.children[0];
-        y = rows[i + 1].props.children[0].props.children[0];
+        x = rowList[i].props.children[0].props.children[0];
+        y = rowList[i + 1].props.children[0].props.children[0];
         // Check if the two rows should switch place:
         // console.log(x + " <> " + y);
         if (x.toLowerCase() > y.toLowerCase()) {
@@ -157,114 +155,121 @@ function StudentTable({ paramStudentList, sectionList }) {
         /* If a switch has been marked, make the switch
         and mark that a switch has been done: */
         // rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
-        const temp = clone(rows[i]);
-        rows[i] = rows[i + 1];
-        rows[i + 1] = temp;
+        const temp = clone(rowList[i]);
+        rowList[i] = rowList[i + 1];
+        rowList[i + 1] = temp;
         switching = true;
       }
     }
-    console.log(table.props.children[1].props.children[0]);
-    return (
-      <div>
-        {moreInfo()}
-        {table}
-      </div>
-    );
   };
 
+  let rowList = [];
+
+  const makeTable = () => {
+    rowList = [];
+    studentList.map((account) => {
+      let filteredIn = false;
+      if (
+        account["mailing_lists"].length === 0 &&
+        sectionList.includes("opt_out")
+      ) {
+        filteredIn = true;
+      }
+      account["mailing_lists"].map((section) => {
+        if (sectionList.includes(section)) {
+          filteredIn = true;
+        }
+      });
+      if (filteredIn) {
+        account["student_list"].map((student) => {
+          console.log(student["last_name"]);
+          rowList.push(
+            <tr>
+              <td>
+                {student["last_name"]}, {student["first_name"]}
+              </td>
+              <td>
+                {student["meeting_counts"]["junior_a"]["attended"]} /{" "}
+                {student["meeting_counts"]["junior_a"]["registered"]}
+              </td>
+              <td>
+                {student["meeting_counts"]["junior_b"]["attended"]} /{" "}
+                {student["meeting_counts"]["junior_b"]["registered"]}
+              </td>
+              <td>
+                {student["meeting_counts"]["senior"]["attended"]} /{" "}
+                {student["meeting_counts"]["senior"]["registered"]}
+              </td>
+              <td>
+                {account["guardians"][0]["first_name"]}{" "}
+                {account["guardians"][0]["last_name"]}
+              </td>
+              <td>{account["guardians"][0]["phone_number"]}</td>
+              <td>{account["guardians"][0]["email"]}</td>
+              <td>
+                <input
+                  type="checkbox"
+                  id="verifyStatus"
+                  defaultChecked={student["verification_status"]}
+                  onClick={() => {
+                    setCurrStudent(student);
+                    handleVerificationChange(
+                      student["id"],
+                      student["verification_status"]
+                    );
+                  }}
+                />
+              </td>
+              <td
+                id="moreStudentInfo"
+                onClick={() => {
+                  setCurrStudent(student);
+                  setCurrAccount(account);
+                  handleOpen();
+                }}
+              >
+                Click here
+              </td>
+            </tr>
+          );
+        });
+      }
+    });
+  };
+
+  makeTable();
+
   let sTable = (
-    <div>
-      {moreInfo()}
-      <table id="studentTable" border="4">
-        <thead>
-          <tr>
-            <th>Student Last Name, First Name</th>
-            <th>Junior (A) Attended/Registered</th>
-            <th>Junior (B) Attended/Registered</th>
-            <th>Senior Attended/Registered</th>
-            <th>Guardian Name</th>
-            <th>Guardian Phone</th>
-            <th>Guardian Email</th>
-            <th>Verify Student</th>
-            <th>More Info</th>
-          </tr>
-        </thead>
-        <tbody>
-          {studentList.map((account) => {
-            let filteredIn = false;
-            if (
-              account["mailing_lists"].length === 0 &&
-              sectionList.includes("opt_out")
-            ) {
-              filteredIn = true;
-            }
-            account["mailing_lists"].map((section) => {
-              if (sectionList.includes(section)) {
-                filteredIn = true;
-              }
-            });
-            if (filteredIn) {
-              return account["student_list"].map((student) => {
-                return (
-                  <tr>
-                    <td>
-                      {student["last_name"]}, {student["first_name"]}
-                    </td>
-                    <td>
-                      {student["meeting_counts"]["junior_a"]["attended"]} /{" "}
-                      {student["meeting_counts"]["junior_a"]["registered"]}
-                    </td>
-                    <td>
-                      {student["meeting_counts"]["junior_b"]["attended"]} /{" "}
-                      {student["meeting_counts"]["junior_b"]["registered"]}
-                    </td>
-                    <td>
-                      {student["meeting_counts"]["senior"]["attended"]} /{" "}
-                      {student["meeting_counts"]["senior"]["registered"]}
-                    </td>
-                    <td>
-                      {account["guardians"][0]["first_name"]}{" "}
-                      {account["guardians"][0]["last_name"]}
-                    </td>
-                    <td>{account["guardians"][0]["phone_number"]}</td>
-                    <td>{account["guardians"][0]["email"]}</td>
-                    <td>
-                      <input
-                        type="checkbox"
-                        id="verifyStatus"
-                        defaultChecked={student["verification_status"]}
-                        onClick={() => {
-                          setCurrStudent(student);
-                          handleVerificationChange(
-                            student["id"],
-                            student["verification_status"]
-                          );
-                        }}
-                      />
-                    </td>
-                    <td
-                      id="moreStudentInfo"
-                      onClick={() => {
-                        setCurrStudent(student);
-                        setCurrAccount(account);
-                        handleOpen();
-                      }}
-                    >
-                      Click here
-                    </td>
-                  </tr>
-                );
-              });
-            } else {
-              return;
-            }
-          })}
-        </tbody>
-      </table>
-    </div>
+    <table id="studentTable" border="4">
+      <thead>
+        <tr>
+          <th>Student Last Name, First Name</th>
+          <th>Junior (A) Attended/Registered</th>
+          <th>Junior (B) Attended/Registered</th>
+          <th>Senior Attended/Registered</th>
+          <th>Guardian Name</th>
+          <th>Guardian Phone</th>
+          <th>Guardian Email</th>
+          <th>Verify Student</th>
+          <th>More Info</th>
+        </tr>
+      </thead>
+      <tbody>
+        {sortTable(rowList)}
+        {rowList.map((row) => {
+          console.log("HERE");
+          return row;
+        })}
+      </tbody>
+    </table>
   );
 
-  return sortTable(sTable.props.children[1]);
+  return (
+    <div>
+      {moreInfo()}
+      {sTable}
+    </div>
+  );
 }
 
 export default StudentTable;
