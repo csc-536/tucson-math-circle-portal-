@@ -87,7 +87,6 @@ def remove_student_from_meeting(
     if index is not None:
         del meeting_doc.students[index]
         meeting_doc.save()
-        pass
     else:
         print("ERROR: remove_student_from_meeting student not found in MeetingDocument")
 

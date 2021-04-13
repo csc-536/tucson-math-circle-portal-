@@ -5,6 +5,15 @@ from pathlib import Path
 from json import JSONEncoder
 from uuid import UUID
 from datetime import datetime
+
+# hack to add project directory to path and make modules work nicely
+import sys
+from pathlib import Path
+
+PROJECTS_DIR = Path(__file__).resolve().parents[2]
+print("Appending PROJECTS_DIR to PATH:", PROJECTS_DIR)
+sys.path.append(str(PROJECTS_DIR))
+
 from backend.main.src.app import app
 from backend.auth.main import app as auth_app
 from mongoengine import disconnect_all, connect
