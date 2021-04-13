@@ -1,41 +1,55 @@
 import React, { useState } from "react";
+import { makeStyles, createStyles, Theme } from "@material-ui/core/styles";
+import Button from "@material-ui/core/Button";
 import { uploadFile } from "../http";
 
-const S3UploadInput = () => {
-  const [selectedFile, setSelectedFile] = useState(null);
-  // console.log(selectedFile);
+const useStyles = makeStyles((theme) =>
+    createStyles({
+        root: {
+            "& > *": {
+                margin: theme.spacing(1),
+            },
+        },
+        input: {
+            display: "none",
+        },
+    })
+);
 
-  const handleFileOnChange = async (e) => {
-    setSelectedFile(e.target.files[0]);
-    // try {
-    //     await uploadFile(e.target.files[0]);
-    // } catch (error) {
-    //     console.log(error);
-    // }
-  };
+const S3UploadInput = ({ callback }) => {
+    const classes = useStyles();
+    const [selectedFile, setSelectedFile] = useState("");
 
-  async function handleUploadFile(e) {
-    e.preventDefault();
-    try {
-      await uploadFile(selectedFile);
-    } catch (error) {
-      console.log(error);
-    }
-  }
+    const handleFileOnChange = async (e) => {
+        console.log(e.target.files[0]);
+        try {
+            const objectKey = await uploadFile({
+                selectedFile: e.target.files[0],
+            });
+            setSelectedFile(e.target.files[0].name);
+            callback(objectKey);
+        } catch (error) {
+            console.log(error);
+        }
+    };
 
-  return (
-    <div>
-      <form onSubmit={handleUploadFile}>
-        <input
-          id="upload-image"
-          type="file"
-          accept="application/pdf"
-          onChange={handleFileOnChange}
-        />
-        <input id="file-upload-button" type="submit" value="Upload" />
-      </form>
-    </div>
-  );
+    return (
+        <div>
+            <input
+                accept="application/pdf"
+                className={classes.input}
+                id="upload-image"
+                type="file"
+                onChange={handleFileOnChange}
+            />
+            <label htmlFor="upload-image">
+                <Button variant="contained" component="span" disableElevation>
+                    Upload
+                </Button>
+            </label>
+            <span>{selectedFile}</span>
+        </div>
+    );
 };
 
 export default S3UploadInput;
