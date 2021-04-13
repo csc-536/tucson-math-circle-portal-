@@ -1,6 +1,7 @@
 from fastapi import Depends, APIRouter, HTTPException, status, BackgroundTasks
 from starlette.responses import JSONResponse
 from fastapi import Depends, APIRouter, HTTPException, status
+from backend.main.email_handler.email_handler import EmailSchema, email_handler
 from pydantic import UUID4
 
 # main db imports
@@ -35,7 +36,7 @@ from backend.main.db.mixins import PydanticObjectId, SessionLevel
 # auth db imports
 from backend.auth.dependencies import (
     TokenData,
-    get_student_token_data,
+    get_student_token_data, create_presigned_url,
 )
 
 router = APIRouter()
