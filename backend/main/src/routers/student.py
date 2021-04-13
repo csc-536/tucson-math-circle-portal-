@@ -1,4 +1,5 @@
-from fastapi import Depends, APIRouter, HTTPException, status
+from fastapi import Depends, APIRouter, HTTPException, status, BackgroundTasks
+from starlette.responses import JSONResponse
 
 # main db imports
 from backend.main.db.models.student_profile_model import (
@@ -27,7 +28,7 @@ from backend.main.db.docs.meeting_doc import (
     MeetingDocument,
 )
 from backend.main.db.mixins import PydanticObjectId, SessionLevel
-
+from backend.main.email_handler.email_handler import EmailSchema, email_handler
 
 # auth db imports
 from backend.auth.dependencies import (
@@ -129,6 +130,41 @@ def get_current_user_profile(token_data: TokenData = Depends(get_student_token_d
 def get_student_names(token_data: TokenData = Depends(get_student_token_data)):
     current_user = get_current_user_doc(token_data)
     return current_user["students"]
+
+
+@router.post("/send_verification_email")
+def send_verification_email(background_task: BackgroundTasks,
+                            token_data: TokenData = Depends(get_student_token_data)):
+    current_user = get_current_user_doc(token_data)
+    url = "ThisIsTheVerificationUrl"
+    body = """
+        <html>    
+            <body>
+                <p>This email was sent to verify your Tucson Math Circle account</p>
+                <p>Please click on the link below to verify your account.</p>
+        """ + f"<p>{url}</p>" + \
+        """
+            </body>
+        </html>
+        """
+    new_email = EmailSchema(receivers=[current_user.email],
+                            subject="Verify Email",
+                            body=body,
+                            attachment=None)
+    background_task.add_task(email_handler, background_task, new_email)
+    return JSONResponse(status_code=200, content={"message": "email has been sent"})
+
+
+@router.put("/verify_email")
+def verify_email(token_data: TokenData = Depends(get_student_token_data)):
+    # TODO:setup student doc for verified email
+    pass
+
+
+@router.post("/send_consent_form_email")
+def send_consent_form_email(token_data: TokenData = Depends(get_student_token_data)):
+    # TODO:setup student doc for verified email
+    pass
 
 
 # POST routes
