@@ -16,9 +16,14 @@ import { useHistory } from "react-router";
 import ProfHeader from "./profileHeader";
 import React, { useContext, useEffect, useState } from "react";
 import RegHeader from "./registrationHeader";
-import RemGuardian from "./remGuardian";
-import RemStudent from "./remStudent";
-import { addProfile, updateProfile, profile, register } from "../http";
+import {
+  addProfile,
+  updateProfile,
+  profile,
+  register,
+  updateEmail,
+  updatePassword,
+} from "../http";
 import { clone, uniqueId } from "lodash";
 import { AuthContext } from "../contexts/AuthContext";
 import { isLoggedIn, loggedInRole } from "../utils";
@@ -29,6 +34,8 @@ function Registration({ update }) {
     last_name: "",
     grade: "",
     age: "",
+    selectedFile: null,
+    verification_status: false,
   };
 
   const initialGuardian = {
@@ -45,17 +52,22 @@ function Registration({ update }) {
     newpassword: "",
     students: [initialStudent],
     guardians: [initialGuardian],
-    section: ["junior_a", "junior_b", "senior"],
+    mailing_lists: ["junior_a", "junior_b", "senior"],
   });
 
   const [checkBox, setCheckBox] = useState(false);
+
+  /*
+   * --------------------------------------------------------------------
+   * BELOW IS ALL THE HANDLE FUNCTIONS FOR REGISTRATION AND PROFILE PAGES
+   * --------------------------------------------------------------------
+   */
 
   const handleOnChange = (e, i, type) => {
     const { name, value } = e.target;
     if (type === "students") {
       const students = clone(form.students);
       students[i][name] = value;
-      // console.log(form.students);
       setForm({ ...form, students });
       return;
     } else if (type === "guardians") {
@@ -68,7 +80,6 @@ function Registration({ update }) {
     input[name] = value;
 
     setForm({ ...form, ...input });
-    // console.log(form);
   };
 
   /*
@@ -80,97 +91,85 @@ function Registration({ update }) {
    */
   const handleMailChange = (e) => {
     const { value } = e.target;
-    let section = form.section;
-    if (section.includes(value)) {
-      if (section.length === 1) {
+    let mailing_lists = form.mailing_lists;
+    if (mailing_lists.includes(value)) {
+      if (mailing_lists.length === 1) {
         return;
       }
-      const i = section.indexOf(value);
-      section.splice(i, 1);
+      const i = mailing_lists.indexOf(value);
+      mailing_lists.splice(i, 1);
     } else {
       if (value === "opt_out") {
-        section = [];
-      } else if (value !== "out_out" && section.includes("opt_out")) {
-        const i = section.indexOf("out_out");
-        section.splice(i, 1);
+        mailing_lists = [];
+      } else if (value !== "out_out") {
+        mailing_lists.push(value);
       }
-      section.push(value);
     }
-    console.log(section);
-    setForm({ ...form, section });
+    setForm({ ...form, mailing_lists });
   };
 
   const handleCheckBoxChange = (e) => {
     const { checked } = e.target;
-    console.log(checked);
     setCheckBox(checked);
   };
 
   /*
-   * 'studentList' is a list of all the students affiliated with the account.
-   * 'guardianList' is a list of all the guardians affiliated with the account.
+   * Adds a student to the list of students 'studentList'.
    */
-  const studentList = form.students.map((student, i) => {
-    return (
-      <StudentInfo
-        key={i}
-        student={student}
-        handleOnChange={(e) => handleOnChange(e, i, "students")}
-      />
-    );
-  });
-
-  const guardianList = form.guardians.map((guardian, i) => {
-    return (
-      <GuardianInfo
-        key={i}
-        guardian={guardian}
-        handleOnChange={(e) => handleOnChange(e, i, "guardians")}
-      />
-    );
-  });
+  const handleAddStudent = (e) => {
+    const newStudent = clone(initialStudent);
+    const students = [...form.students, newStudent];
+    setForm({ ...form, students });
+  };
 
   /*
-   * 'header' is the header of the page for either registration or profile page.
-   * 'isUpdate' is affiliated with the consent form. Either is a checkbox or a
-   * file upload.
-   * 'buttonVal' is the text on the button for form submission.
+   * Removes the newest student from the list of students 'studentList'.
    */
-  let header = <RegHeader />;
-  let isUpdate = <CheckBox handleCheckBoxChange={handleCheckBoxChange} />;
-  let buttonVal = "Register";
-
-  /*
-   * 'history' used to render specified pages.
-   */
-  const history = useHistory();
-
-  useEffect(() => {
-    const pro = async () => {
-      try {
-        const res = await profile();
-        const {
-          data: { student_list: students, ...rest },
-        } = res;
-        console.log(students);
-        setForm({ students, ...rest });
-
-        // console.log(form);
-      } catch (error) {
-        console.log(error.response);
-      }
-    };
-    if (update) {
-      pro();
+  const handleRemStudent = (e, i) => {
+    if (form.students.length > 1) {
+      const students = clone(form.students);
+      students.splice(i, 1);
+      setForm({ ...form, students });
     }
-  }, []);
+  };
 
-  let errStr = "";
+  /*
+   * Adds a guardian to the list of guardians 'guardianList'.
+   */
+  const handleAddGuardian = (e) => {
+    const newGuardian = clone(initialGuardian);
+    const guardians = [...form.guardians, newGuardian];
+    setForm({ ...form, guardians });
+  };
 
+  /*
+   * Removes the newest guardian from the list of guardians 'guardianList'.
+   */
+  const handleRemGuardian = (e, i) => {
+    if (form.guardians.length > 1) {
+      const guardians = clone(form.guardians);
+      guardians.splice(i, 1);
+      setForm({ ...form, guardians });
+    }
+  };
+
+  /*
+   * Pushes page path to the meetings page.
+   */
+  const handleSeeAllMeetings = () => {
+    history.push("/meetings");
+  };
+
+  /*
+   * This funciton verifies that all required input fields are filled
+   * and are of the correct types. If not, it will return a string of
+   * errors that will be displayed as an alert on the page
+   */
   const checkFeilds = (
     email,
     password,
     repassword,
+    newpassword,
     students,
     guardians,
     checkBox
@@ -186,6 +185,18 @@ function Registration({ update }) {
     if (!update && repassword !== password) {
       errStr += "Passwords do not match\n";
     }
+    if (
+      update &&
+      newpassword !== null &&
+      newpassword !== undefined &&
+      newpassword !== "" &&
+      newpassword.length < 6
+    ) {
+      errStr += "New password needs to be at least 6 characters long\n";
+    }
+    if (update && repassword != newpassword) {
+      errStr += "Passwords do not match\n";
+    }
     if (!update && checkBox !== true) {
       errStr += "Must check the box\n";
     }
@@ -196,11 +207,12 @@ function Registration({ update }) {
       if (student.last_name === "") {
         errStr += "Student " + (i + 1) + ": Last name required\n";
       }
-      if (student.grade === "" || isNaN(student.grade)) {
-        errStr += "Student " + (i + 1) + ": Grade required\n";
-      }
       if (student.age === "" || isNaN(student.age)) {
         errStr += "Student " + (i + 1) + ": Age required\n";
+      }
+      console.log(student.grade);
+      if (student.grade === "select" || student.grade === "") {
+        errStr += "Student " + (i + 1) + ": Grade required\n";
       }
     });
     guardians.map((guardian, i) => {
@@ -234,11 +246,20 @@ function Registration({ update }) {
   const handleFormSubmit = async (e) => {
     e.preventDefault();
 
-    const { email, password, repassword, students, guardians } = form;
+    const {
+      email,
+      password,
+      repassword,
+      newpassword,
+      students,
+      guardians,
+      mailing_lists,
+    } = form;
     const str = checkFeilds(
       email,
       password,
       repassword,
+      newpassword,
       students,
       guardians,
       checkBox
@@ -247,35 +268,37 @@ function Registration({ update }) {
       alert(str);
       return;
     }
-
     if (update) {
       try {
-        console.log("FORM: ");
-        console.log(form);
         await updateProfile({
           email,
           guardians,
           students,
+          mailing_lists,
+        });
+        if (
+          newpassword !== null &&
+          newpassword !== undefined &&
+          newpassword !== ""
+        ) {
+          await updatePassword({
+            password: newpassword,
+          });
+        }
+        await updateEmail({
+          email,
         });
       } catch (error) {
         console.log(error.response);
       }
     } else {
-      if (password !== repassword) {
-        return console.log("Two passwords don't match");
-      }
-
-      if (password.length < 6) {
-        return console.log("Password should be at least 6 characters");
-      }
-
-      console.log(form);
       try {
         await register({ email, password, role: "student" });
         await addProfile({
           email,
           guardians,
           students,
+          mailing_lists,
         });
         setAuth({ userLoggedIn: isLoggedIn(), role: loggedInRole() });
         history.push("/profile");
@@ -286,53 +309,77 @@ function Registration({ update }) {
   };
 
   /*
-   * Adds a student to the list of students 'studentList'.
+   * --------------------------------------------------------------------
+   * END OF HANDLE FUNCTIONS FOR REGISTRATION AND PROFILE PAGES
+   * --------------------------------------------------------------------
    */
-  const handleAddStudent = (e) => {
-    const newStudent = initialStudent;
-    const students = [...form.students, newStudent];
-    setForm({ ...form, students });
-    console.log(form);
-  };
 
   /*
-   * Removes the newest student from the list of students 'studentList'.
+   * 'studentList' is a list of all the students affiliated with the account.
    */
-  const handleRemStudent = (e) => {
-    if (form.students.length > 1) {
-      const students = clone(form.students);
-      students.pop();
-      setForm({ ...form, students });
+  const studentList = form.students.map((student, i) => {
+    return (
+      <StudentInfo
+        key={i}
+        student={student}
+        update={update}
+        handleOnChange={(e) => handleOnChange(e, i, "students")}
+        handleRemStudent={(e) => handleRemStudent(e, i)}
+      />
+    );
+  });
+
+  /*
+   * 'guardianList' is a list of all the guardians affiliated with the account.
+   */
+  const guardianList = form.guardians.map((guardian, i) => {
+    return (
+      <GuardianInfo
+        key={i}
+        guardian={guardian}
+        handleOnChange={(e) => handleOnChange(e, i, "guardians")}
+        handleRemGuardian={(e) => handleRemGuardian(e, i)}
+      />
+    );
+  });
+
+  /*
+   * 'header' is the header of the page for either registration or profile page.
+   * 'isUpdate' is affiliated with the consent form. Either is a checkbox or a
+   * file upload.
+   * 'buttonVal' is the text on the button for form submission.
+   */
+  let header = <RegHeader />;
+  let isUpdate = <CheckBox handleCheckBoxChange={handleCheckBoxChange} />;
+  let buttonVal = "Register";
+
+  /*
+   * 'history' used to render specified pages.
+   */
+  const history = useHistory();
+
+  /*
+   * If the page is a profile page, grabs the account information from the
+   * main server and displays it
+   */
+  useEffect(() => {
+    const pro = async () => {
+      try {
+        const res = await profile();
+        const {
+          data: { student_list: students, ...rest },
+        } = res;
+        setForm({ students, ...rest });
+      } catch (error) {
+        console.log(error.response);
+      }
+    };
+    if (update) {
+      pro();
     }
-  };
+  }, []);
 
-  /*
-   * Adds a guardian to the list of guardians 'guardianList'.
-   */
-  const handleAddGuardian = (e) => {
-    const newGuardian = initialGuardian;
-    const guardians = [...form.guardians, newGuardian];
-    setForm({ ...form, guardians });
-    console.log(form);
-  };
-
-  /*
-   * Removes the newest guardian from the list of guardians 'guardianList'.
-   */
-  const handleRemGuardian = (e) => {
-    if (form.guardians.length > 1) {
-      const guardians = clone(form.guardians);
-      guardians.pop();
-      setForm({ ...form, guardians });
-    }
-  };
-
-  /*
-   * Pushes page path to the meetings page.
-   */
-  const handleSeeAllMeetings = () => {
-    history.push("/meetings");
-  };
+  let errStr = "";
 
   /*
    * If the property 'update' is true, set up 'header', 'isUpdate' and
@@ -340,7 +387,11 @@ function Registration({ update }) {
    */
   if (update) {
     header = <ProfHeader handleSeeAllMeetings={handleSeeAllMeetings} />;
-    isUpdate = <ConsentUpload />;
+    isUpdate = (
+      <div>
+        <br />
+      </div>
+    );
     buttonVal = "Update";
   }
 
@@ -352,25 +403,48 @@ function Registration({ update }) {
     <form id="regForm" onSubmit={handleFormSubmit}>
       {header}
       <h3 className="formHeader">Account Information</h3>
+      <p className="regNote">
+        Fill in the required fields to set up your account
+      </p>
+      <p className="regNote">
+        NOTE: The email provided below is shared between all students associated
+        with this account and will be used to recieve Tucson Math Circle meeting
+        reminders and notifications
+      </p>
+      <p className="regNote">Password must be at least six characters long</p>
       <AccInfo update={update} handleOnChange={handleOnChange} form={form} />
       {isUpdate}
       <hr />
       <h3 className="formHeader">Student Information</h3>
+      <p className="regNote">
+        Fill in the required fields for each participating student
+      </p>
       <div id="sList">{studentList}</div>
       <AddNewStudent handleAddStudent={handleAddStudent} />
-      <RemStudent handleRemStudent={handleRemStudent} />
+      <br />
       <hr />
       <h3 className="formHeader">
         Guardian Information | <em>Emergency contact</em>
+        <br />
       </h3>
+      <p className="regNote">
+        Fill in the required guardian fields for emergency contact purposes
+      </p>
+      <p className="regNote">
+        NOTE: The first (top) guardian listed below will be the primary contact
+        for all students linked to this account
+      </p>
       <div id="gList">{guardianList}</div>
       <AddNewGuardian handleAddGuardian={handleAddGuardian} />
-      <RemGuardian handleRemGuardian={handleRemGuardian} />
+      <br />
       <hr />
-      <h3 className="formHeader">Mailing List Opt In</h3>
+      <h3 className="formHeader">Mailing List Opt In </h3>
+      <p className="regNote">
+        Select which session levels you would like to get emails about
+      </p>
       <MainOptInOptions
         handleMailChange={(e) => handleMailChange(e)}
-        section={form.section}
+        mailing_lists={form.mailing_lists}
       />
       <p>{errStr}</p>
       <input id="regButton" type="submit" value={buttonVal} />
