@@ -5,6 +5,7 @@ import Modal from "@material-ui/core/Modal";
 import Backdrop from "@material-ui/core/Backdrop";
 import MoreInfo from "./moreInfo";
 import { updateStudentVerification, getAllStudents } from "../http";
+import { clone, uniqueId } from "lodash";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -36,7 +37,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function StudentTable({ sortTable, paramStudentList, sectionList }) {
+function StudentTable({ paramStudentList, sectionList }) {
   const classes = useStyles();
 
   const [open, setOpen] = useState(false);
@@ -112,7 +113,66 @@ function StudentTable({ sortTable, paramStudentList, sectionList }) {
     );
   };
 
-  return (
+  const sortTable = (table) => {
+    var rows, switching, i, x, y, shouldSwitch;
+    // var table, rows, switching, i, x, y, shouldSwitch;
+    // let table = document.getElementById("studentTable");
+    if (table === null || table === undefined) {
+      return;
+    }
+    // console.log("TABLE");
+    // console.log(table.props.children[1].props.children[0]);
+    switching = true;
+    /* Make a loop that will continue until
+    no switching has been done: */
+    while (switching) {
+      // Start by saying: no switching is done:
+      switching = false;
+      rows = table.props.children[1].props.children[0];
+      if (rows === undefined) {
+        return "";
+      }
+      // console.log("ROWS");
+      // console.log(rows.length);
+      /* Loop through all table rows (except the
+      first, which contains table headers): */
+      for (i = 0; i < rows.length - 1; i++) {
+        // console.log("LOOP");
+        // Start by saying there should be no switching:
+        shouldSwitch = false;
+        /* Get the two elements you want to compare,
+        one from current row and one from the next: */
+        x = rows[i].props.children[0].props.children[0];
+        y = rows[i + 1].props.children[0].props.children[0];
+        // Check if the two rows should switch place:
+        // console.log(x + " <> " + y);
+        if (x.toLowerCase() > y.toLowerCase()) {
+          // If so, mark as a switch and break the loop:
+          shouldSwitch = true;
+          break;
+        }
+      }
+      if (shouldSwitch) {
+        // console.log("SWITCHING");
+        /* If a switch has been marked, make the switch
+        and mark that a switch has been done: */
+        // rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+        const temp = clone(rows[i]);
+        rows[i] = rows[i + 1];
+        rows[i + 1] = temp;
+        switching = true;
+      }
+    }
+    console.log(table.props.children[1].props.children[0]);
+    return (
+      <div>
+        {moreInfo()}
+        {table}
+      </div>
+    );
+  };
+
+  let sTable = (
     <div>
       {moreInfo()}
       <table id="studentTable" border="4">
@@ -203,6 +263,8 @@ function StudentTable({ sortTable, paramStudentList, sectionList }) {
       </table>
     </div>
   );
+
+  return sortTable(sTable.props.children[1]);
 }
 
 export default StudentTable;
