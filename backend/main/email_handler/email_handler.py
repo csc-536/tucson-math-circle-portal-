@@ -1,12 +1,14 @@
-from fastapi import BackgroundTasks, UploadFile
+from fastapi import BackgroundTasks
 from starlette.responses import JSONResponse
 from fastapi_mail import FastMail, MessageSchema, ConnectionConfig
-from pydantic import BaseModel, EmailStr,Field
+from pydantic import BaseModel, EmailStr, Field
 from typing import List
 import toml
 from pathlib import Path
 
-CONFIG_PATH = Path(__file__).resolve().parent.parent.parent.joinpath("auth/db-config.toml")
+CONFIG_PATH = (
+    Path(__file__).resolve().parent.parent.parent.joinpath("auth/db-config.toml")
+)
 print("Using CONFIG_PATH:", CONFIG_PATH)
 
 config = toml.load(str(CONFIG_PATH))
@@ -23,7 +25,7 @@ conf = ConnectionConfig(
     MAIL_PORT=587,
     MAIL_SERVER="smtp.gmail.com",
     MAIL_TLS=True,
-    MAIL_SSL=False
+    MAIL_SSL=False,
 )
 
 
@@ -33,14 +35,16 @@ class EmailSchema(BaseModel):
     body: str = Field()
 
 
-async def email_handler(background_task: BackgroundTasks, email: EmailSchema) -> JSONResponse:
+async def email_handler(
+    background_task: BackgroundTasks, email: EmailSchema
+) -> JSONResponse:
 
     message = MessageSchema(
         subject=email.subject,
         recipients=email.receivers,  # List of recipients, as many as you can pass
         body=email.body,
-        subtype="html"
-        )
+        subtype="html",
+    )
 
     fm = FastMail(conf)
 

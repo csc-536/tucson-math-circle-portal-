@@ -77,32 +77,37 @@ def send_reminder_email(token_data: TokenData = Depends(get_admin_token_data)):
 
 
 @router.post("/send_new_meeting_email")
-def send_new_meeting_email(background_task: BackgroundTasks,
-                           meeting_id: str,
-                           token_data: TokenData = Depends(get_admin_token_data)):
+def send_new_meeting_email(
+    background_task: BackgroundTasks,
+    meeting_id: str,
+    token_data: TokenData = Depends(get_admin_token_data),
+):
     meeting = MeetingDocument.objects(id=meeting_id).first()
     students = StudentProfileDocument.objects(mailing_lists__in=meeting.session_level)
     emails = []
     for student in students:
         emails.append(student.email)
-    body = """
-        <html>    
+    body = (
+        """
+        <html>
             <body>
                 <p>A new meeting has been posted to the Tucson Math Circle website</p>
-        """ + f"<p>Date: {meeting.date_and_time.date}" + \
-        f"<br>Time: {meeting.date_and_time.time}-{create_meeting.duration.time}" + \
-        f"<br>Topic: {meeting.topic}" + \
-        f"<br>Zoom Link: {meeting.zoom_link}" + \
-        f"<br>Zoom Password: {meeting.password}" + \
-        f"<br>Miro Link: {meeting.miro_link}" + \
-        f"<br>Session Level: {meeting.session_level}</p>" + \
         """
+        + f"<p>Date: {meeting.date_and_time.date}"
+        + f"<br>Time: {meeting.date_and_time.time}-{create_meeting.duration.time}"
+        + f"<br>Topic: {meeting.topic}"
+        + f"<br>Zoom Link: {meeting.zoom_link}"
+        + f"<br>Zoom Password: {meeting.password}"
+        + f"<br>Miro Link: {meeting.miro_link}"
+        + f"<br>Session Level: {meeting.session_level}</p>"
+        + """
             </body>
         </html>
         """
-    new_email = EmailSchema(receivers=emails,
-                subject="New meeting Published",
-                body=body)
+    )
+    new_email = EmailSchema(
+        receivers=emails, subject="New meeting Published", body=body
+    )
     background_task.add_task(email_handler, new_email)
     return JSONResponse(status_code=200, content={"message": "email has been sent"})
 

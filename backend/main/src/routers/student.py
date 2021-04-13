@@ -1,4 +1,4 @@
-from fastapi import Depends, APIRouter, HTTPException, status, BackgroundTasks
+from fastapi import BackgroundTasks
 from starlette.responses import JSONResponse
 from fastapi import Depends, APIRouter, HTTPException, status
 from backend.main.email_handler.email_handler import EmailSchema, email_handler
@@ -36,7 +36,8 @@ from backend.main.db.mixins import PydanticObjectId, SessionLevel
 # auth db imports
 from backend.auth.dependencies import (
     TokenData,
-    get_student_token_data, create_presigned_url,
+    get_student_token_data,
+    create_presigned_url,
 )
 
 router = APIRouter()
@@ -195,24 +196,31 @@ async def get_meeting_material_url(
 
 
 @router.post("/send_verification_email")
-def send_verification_email(background_task: BackgroundTasks,
-                            token_data: TokenData = Depends(get_student_token_data)):
+def send_verification_email(
+    background_task: BackgroundTasks,
+    token_data: TokenData = Depends(get_student_token_data),
+):
     current_user = get_current_user_doc(token_data)
     url = "ThisIsTheVerificationUrl"
-    body = """
-        <html>    
+    body = (
+        """
+        <html>
             <body>
                 <p>This email was sent to verify your Tucson Math Circle account</p>
                 <p>Please click on the link below to verify your account.</p>
-        """ + f"<p>{url}</p>" + \
         """
+        + f"<p>{url}</p>"
+        + """
             </body>
         </html>
         """
-    new_email = EmailSchema(receivers=[current_user.email],
-                            subject="Verify Email",
-                            body=body,
-                            attachment=None)
+    )
+    new_email = EmailSchema(
+        receivers=[current_user.email],
+        subject="Verify Email",
+        body=body,
+        attachment=None,
+    )
     background_task.add_task(email_handler, background_task, new_email)
     return JSONResponse(status_code=200, content={"message": "email has been sent"})
 
