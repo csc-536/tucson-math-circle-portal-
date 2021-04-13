@@ -211,9 +211,9 @@ def send_verification_email(
                 <p>Please click on the link below to verify your account.</p>
         """
         + f"<p>{verification_url}</p>"
-          f"<p>The following link is the link to "
-          f"the consent form that you have to fill out and upload to your account</p>"
-          f"<p>{consent_form_url}</p>"
+        f"<p>The following link is the link to "
+        f"the consent form that you have to fill out and upload to your account</p>"
+        f"<p>{consent_form_url}</p>"
         + """
             </body>
         </html>
