@@ -201,7 +201,8 @@ def send_verification_email(
     token_data: TokenData = Depends(get_student_token_data),
 ):
     current_user = get_current_user_doc(token_data)
-    url = "ThisIsTheVerificationUrl"
+    verification_url = "This/Is/The/Verification/Url"
+    consent_form_url = "This/Is/The/Consent/Form/Url"
     body = (
         """
         <html>
@@ -209,7 +210,10 @@ def send_verification_email(
                 <p>This email was sent to verify your Tucson Math Circle account</p>
                 <p>Please click on the link below to verify your account.</p>
         """
-        + f"<p>{url}</p>"
+        + f"<p>{verification_url}</p>"
+          f"<p>The following link is the link to "
+          f"the consent form that you have to fill out and upload to your account</p>"
+          f"<p>{consent_form_url}</p>"
         + """
             </body>
         </html>
@@ -227,12 +231,6 @@ def send_verification_email(
 
 @router.put("/verify_email")
 def verify_email(token_data: TokenData = Depends(get_student_token_data)):
-    # TODO:setup student doc for verified email
-    pass
-
-
-@router.post("/send_consent_form_email")
-def send_consent_form_email(token_data: TokenData = Depends(get_student_token_data)):
     # TODO:setup student doc for verified email
     pass
 
