@@ -63,6 +63,16 @@ function StudentTable({ paramStudentList, sectionList }) {
     students();
   }, []);
 
+  const getStudents = async () => {
+    try {
+      const res = await getAllStudents();
+      console.log(res.data);
+      setCurrStudentList(res.data);
+    } catch (error) {
+      console.log(error.response);
+    }
+  };
+
   const handleOpen = () => {
     setOpen(true);
   };
@@ -217,6 +227,7 @@ function StudentTable({ paramStudentList, sectionList }) {
                       student["id"],
                       student["verification_status"]
                     );
+                    getStudents();
                   }}
                 />
               </td>

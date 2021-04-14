@@ -6,6 +6,20 @@
 
 // import ConsentUpload from "./consentUpload";
 import React, { useEffect } from "react";
+import { Button, makeStyles } from "@material-ui/core";
+import DeleteButton from "../components/DeleteButton";
+
+const useStyles = makeStyles((theme) => ({
+  button: {
+    marginTop: "10px",
+    marginLeft: "115px",
+    width: "200px",
+    fontSize: "12pt",
+    backgroundColor: "#990000",
+    borderRadius: "20px",
+    color: "white",
+  },
+}));
 
 function StudentInfo({
   student: {
@@ -20,6 +34,8 @@ function StudentInfo({
   handleOnChange,
   handleRemStudent,
 }) {
+  const classes = useStyles();
+
   let verifStyle = {};
   let statusText = "";
 
@@ -121,7 +137,10 @@ function StudentInfo({
       </label>
       {consentMaterial_1}
       {consentMaterial_2}
-      {remStudentButton_1}
+      <DeleteButton
+        deleteAction={handleRemStudent}
+        className={classes.button}
+      />
     </div>
   );
 }

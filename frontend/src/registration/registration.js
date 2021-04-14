@@ -27,6 +27,7 @@ import {
 import { clone, uniqueId } from "lodash";
 import { AuthContext } from "../contexts/AuthContext";
 import { isLoggedIn, loggedInRole } from "../utils";
+import { makeStyles } from "@material-ui/core";
 
 function Registration({ update }) {
   const initialStudent = {
@@ -56,6 +57,14 @@ function Registration({ update }) {
   });
 
   const [checkBox, setCheckBox] = useState(false);
+
+  const useStyles = makeStyles((theme) => ({
+    button: {
+      marginTop: theme.spacing(3),
+      marginLeft: theme.spacing(3),
+      float: "right",
+    },
+  }));
 
   /*
    * --------------------------------------------------------------------
