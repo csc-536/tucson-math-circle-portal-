@@ -8,6 +8,7 @@ from mongoengine import (
     QuerySet,
     UUIDField,
     BooleanField,
+    IntField,
 )
 
 
@@ -25,7 +26,7 @@ class MeetingDocument(Document):
 
     uuid = UUIDField(required=True)
     date_and_time = DateTimeField(required=True)
-    duration = DateTimeField(required=True)
+    duration = IntField(required=True)
     zoom_link = StringField(required=True)
     topic = StringField(required=True)
     session_level = StringField(required=True)

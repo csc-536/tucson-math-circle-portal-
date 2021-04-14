@@ -68,7 +68,7 @@ JSONEncoder.default = JSONEncoder_newdefault
 
 test_meeting_model = CreateMeetingModel(
     date_and_time=datetime.utcnow(),
-    duration=datetime.utcnow(),
+    duration=60,
     zoom_link="zoomlink",
     session_level=SessionLevel("junior_a"),
     topic="test_topic",
@@ -78,7 +78,7 @@ test_meeting_model = CreateMeetingModel(
 meeting1 = MeetingModel(
     **CreateMeetingModel(
         date_and_time="2021-03-20T18:00:00.860+00:00",
-        duration="2021-03-20T18:00:00.860+00:00",
+        duration=60,
         zoom_link="test_zoom_link",
         session_level=SessionLevel("junior_a"),
         topic="test_topic",
