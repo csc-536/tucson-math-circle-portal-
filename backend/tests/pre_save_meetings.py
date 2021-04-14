@@ -7,7 +7,7 @@ from backend.main.db.models.student_profile_model import SessionLevel
 meeting1 = MeetingModel(
     **CreateMeetingModel(
         date_and_time="2021-03-20T18:00:00.860+00:00",
-        duration="2021-03-20T18:00:00.860+00:00",
+        duration=60,
         zoom_link="zoomlink",
         session_level=SessionLevel("junior_a"),
         topic="topic",
@@ -20,7 +20,7 @@ meeting1 = MeetingModel(
 meeting2 = MeetingModel(
     **CreateMeetingModel(
         date_and_time="2021-03-20T18:00:00.860+00:00",
-        duration="2021-03-20T18:00:00.860+00:00",
+        duration=60,
         zoom_link="zoomlink2",
         session_level=SessionLevel("junior_a"),
         topic="topic2",
@@ -33,7 +33,7 @@ meeting2 = MeetingModel(
 meeting3 = MeetingModel(
     **CreateMeetingModel(
         date_and_time="2021-03-20T18:00:00.860+00:00",
-        duration="2021-03-20T18:00:00.860+00:00",
+        duration=120,
         zoom_link="zoomlink3",
         session_level=SessionLevel("junior_b"),
         topic="topic3",
