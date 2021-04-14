@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import { makeStyles, createStyles, Theme } from "@material-ui/core/styles";
+import { makeStyles, createStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import { uploadFile } from "../http";
+import { v4 as uuidv4 } from "uuid";
 
 const useStyles = makeStyles((theme) =>
     createStyles({
@@ -16,9 +17,9 @@ const useStyles = makeStyles((theme) =>
     })
 );
 
-const S3UploadInput = ({ callback }) => {
+const S3UploadInput = ({ callback, uploadedFileName = "" }) => {
     const classes = useStyles();
-    const [selectedFile, setSelectedFile] = useState("");
+    const [selectedFile, setSelectedFile] = useState(uploadedFileName);
 
     const handleFileOnChange = async (e) => {
         console.log(e.target.files[0]);
@@ -26,23 +27,26 @@ const S3UploadInput = ({ callback }) => {
             const objectKey = await uploadFile({
                 selectedFile: e.target.files[0],
             });
-            setSelectedFile(e.target.files[0].name);
             callback(objectKey);
+            setSelectedFile(objectKey);
         } catch (error) {
             console.log(error);
         }
     };
 
+    const id = uuidv4();
+    console.log(id);
+    console.log(uploadedFileName);
     return (
         <div>
             <input
                 accept="application/pdf"
                 className={classes.input}
-                id="upload-image"
+                id={id}
                 type="file"
                 onChange={handleFileOnChange}
             />
-            <label htmlFor="upload-image">
+            <label htmlFor={id}>
                 <Button variant="contained" component="span" disableElevation>
                     Upload
                 </Button>

@@ -46,9 +46,11 @@ const MeetingCard = ({ meeting, past }) => {
         miro_link,
         materials_link,
         student_notes,
+        coordinator_notes,
         password,
         students,
         materials_uploaded,
+        materials_object_name,
     } = meeting;
 
     const [registrations, setRegistrations] = useState(meeting.registrations);
@@ -79,8 +81,9 @@ const MeetingCard = ({ meeting, past }) => {
                     sessionLevel: session_level,
                     zoom_link,
                     miro_link,
-                    materials_link,
+                    materials_object_name,
                     student_notes,
+                    coordinator_notes,
                     zoomPassword: password,
                     topic,
                     duration,

@@ -19,6 +19,7 @@ function AccInfo({ update, handleOnChange, form }) {
           name="password"
           onChange={handleOnChange}
           value={form["password"]}
+          className="formInput"
         />
       </label>
       <label id="re-password" className="col2">
@@ -28,6 +29,7 @@ function AccInfo({ update, handleOnChange, form }) {
           name="repassword"
           onChange={handleOnChange}
           value={form["repassword"]}
+          className="formInput"
         />
       </label>
     </div>
@@ -44,9 +46,20 @@ function AccInfo({ update, handleOnChange, form }) {
           New Password:
           <input
             type="password"
-            name="password"
+            name="newpassword"
+            onChange={handleOnChange}
+            value={form["newpassword"]}
+            className="formInput"
+          />
+        </label>
+        <label id="re-password" className="col2">
+          Enter Password Again:
+          <input
+            type="password"
+            name="repassword"
             onChange={handleOnChange}
             value={form["repassword"]}
+            className="formInput"
           />
         </label>
       </div>
@@ -65,6 +78,7 @@ function AccInfo({ update, handleOnChange, form }) {
           name="email"
           onChange={handleOnChange}
           value={form["email"]}
+          className="formInput"
         />
       </label>
       {passwords}

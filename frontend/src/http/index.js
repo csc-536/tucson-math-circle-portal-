@@ -89,8 +89,47 @@ export async function addProfile(data) {
 export async function updateProfile(data) {
     const accessToken = sessionStorage.getItem("accessToken");
     console.log(accessToken);
-
+    console.log(data);
     const res = await main.put("/student/update_profile", data, {
+        headers: {
+            Authorization: `Bearer ${accessToken}`,
+        },
+    });
+    console.log(res);
+    return res;
+}
+
+export async function updateEmail(data) {
+    const accessToken = sessionStorage.getItem("accessToken");
+    console.log(accessToken);
+
+    const res = await auth.put("/student/update_email", data, {
+        headers: {
+            Authorization: `Bearer ${accessToken}`,
+        },
+    });
+    console.log(res);
+    return res;
+}
+
+export async function updatePassword(data) {
+    const accessToken = sessionStorage.getItem("accessToken");
+    console.log(accessToken);
+
+    const res = await auth.put("/student/update_password", data, {
+        headers: {
+            Authorization: `Bearer ${accessToken}`,
+        },
+    });
+    console.log(res);
+    return res;
+}
+
+export async function updateStudentVerification(data) {
+    const accessToken = sessionStorage.getItem("accessToken");
+    console.log(accessToken);
+
+    const res = await main.put("/admin/update_student_verification", data, {
         headers: {
             Authorization: `Bearer ${accessToken}`,
         },

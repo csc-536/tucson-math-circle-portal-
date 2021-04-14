@@ -142,7 +142,10 @@ const MeetingFields = ({ form, setForm, disabled }) => {
 
             <h3>Materials</h3>
             <div>
-                <S3UploadInput callback={handleUploadFileCallback} />
+                <S3UploadInput
+                    callback={handleUploadFileCallback}
+                    // uploadedFileName={}
+                />
             </div>
 
             <h3>How to Join</h3>
@@ -195,8 +198,8 @@ const MeetingFields = ({ form, setForm, disabled }) => {
                     label="For Students"
                     multiline
                     rows={5}
-                    name="notes-students"
-                    value={form["studentNotes"]}
+                    name="student_notes"
+                    value={form["student_notes"]}
                     onChange={handleOnChange}
                     variant="outlined"
                     InputLabelProps={{
@@ -211,8 +214,8 @@ const MeetingFields = ({ form, setForm, disabled }) => {
                     label="For Coordinators"
                     multiline
                     rows={5}
-                    name="notes=coordinator"
-                    value={form["coordinatorNotes"]}
+                    name="coordinator_notes"
+                    value={form["coordinator_notes"]}
                     onChange={handleOnChange}
                     variant="outlined"
                     InputLabelProps={{

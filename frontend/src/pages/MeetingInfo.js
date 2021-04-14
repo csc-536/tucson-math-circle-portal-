@@ -35,11 +35,13 @@ const MeetingInfo = () => {
         duration: "",
         topic: "",
         sessionLevel: "",
-        material: "",
+        materials_object_name: "",
+        materials_uploaded: false,
         zoomLink: "",
         zoomPassword: "",
         miroLink: "",
-        notes: "",
+        student_notes: "",
+        coordinator_notes: "",
         students: [],
     });
 
@@ -56,6 +58,10 @@ const MeetingInfo = () => {
                     duration,
                     students,
                     uuid,
+                    materials_object_name,
+                    materials_uploaded,
+                    student_notes,
+                    coordinator_notes,
                 },
                 past,
             },
@@ -69,10 +75,14 @@ const MeetingInfo = () => {
                 sessionLevel,
                 zoomLink: zoom_link,
                 miroLink: miro_link,
+                materials_object_name,
+                materials_uploaded,
                 zoomPassword,
                 duration: getTimeDifferences(duration, date),
                 uuid,
                 students,
+                student_notes,
+                coordinator_notes,
             },
         });
         setDisabled(past);
@@ -107,6 +117,8 @@ const MeetingInfo = () => {
             sessionLevel: session_level,
             materials_object_name,
             materials_uploaded,
+            student_notes,
+            coordinator_notes,
             zoomLink: zoom_link,
             duration,
             topic,
@@ -125,12 +137,13 @@ const MeetingInfo = () => {
                 session_level,
                 topic,
                 miro_link,
-                coordinator_notes: "ddd",
-                student_notes: "ddddddd",
                 materials_object_name,
                 materials_uploaded,
                 meeting_id,
+                student_notes,
+                coordinator_notes,
             });
+            history.push("/meetings");
         } catch (error) {
             console.log(error.response);
         }
