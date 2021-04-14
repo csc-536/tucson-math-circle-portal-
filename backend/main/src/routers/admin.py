@@ -1,5 +1,8 @@
-from fastapi import Depends, APIRouter, HTTPException, status
+from fastapi import Depends, APIRouter, HTTPException, status, BackgroundTasks
 from pydantic import UUID4
+from starlette.responses import JSONResponse
+
+from backend.main.email_handler.email_handler import EmailSchema, email_handler
 
 from backend.main.src.routers.student import (
     student_meeting_index,
@@ -65,6 +68,48 @@ def get_student_profiles(token_data: TokenData = Depends(get_admin_token_data)):
     for profile in StudentProfileDocument.objects():
         all_profiles.append(profile.dict())
     return all_profiles
+
+
+@router.post("/send_reminder_email")
+def send_reminder_email(token_data: TokenData = Depends(get_admin_token_data)):
+    # TODO:setup student doc for verified email
+    pass
+
+
+@router.post("/send_new_meeting_email")
+def send_new_meeting_email(
+    background_task: BackgroundTasks,
+    meeting_id: str,
+    token_data: TokenData = Depends(get_admin_token_data),
+):
+    meeting = MeetingDocument.objects(id=meeting_id).first()
+    students = StudentProfileDocument.objects(mailing_lists__in=meeting.session_level)
+    emails = []
+    for student in students:
+        emails.append(student.email)
+    body = (
+        """
+        <html>
+            <body>
+                <p>A new meeting has been posted to the Tucson Math Circle website</p>
+        """
+        + f"<p>Date: {meeting.date_and_time.date}"
+        + f"<br>Time: {meeting.date_and_time.time}-{create_meeting.duration.time}"
+        + f"<br>Topic: {meeting.topic}"
+        + f"<br>Zoom Link: {meeting.zoom_link}"
+        + f"<br>Zoom Password: {meeting.password}"
+        + f"<br>Miro Link: {meeting.miro_link}"
+        + f"<br>Session Level: {meeting.session_level}</p>"
+        + """
+            </body>
+        </html>
+        """
+    )
+    new_email = EmailSchema(
+        receivers=emails, subject="New meeting Published", body=body
+    )
+    background_task.add_task(email_handler, new_email)
+    return JSONResponse(status_code=200, content={"message": "email has been sent"})
 
 
 @router.get("/get_student_profile")
