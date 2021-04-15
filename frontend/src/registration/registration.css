@@ -53,7 +53,7 @@
   display: flex;
 }
 #regButton {
-  clear: both;
+  /* clear: both;*/
   margin-bottom: 50px;
 }
 #regForm {

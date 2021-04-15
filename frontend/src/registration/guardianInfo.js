@@ -26,6 +26,8 @@ function GuardianInfo({
 }) {
   const classes = useStyles();
 
+  let delObject = "GUARDIAN " + first_name + " " + last_name;
+
   let remGuardianButton_1 = (
     <div id="studentRemoveDiv">
       <button type="button" id="remGuardian" onClick={handleRemGuardian}>
@@ -82,6 +84,7 @@ function GuardianInfo({
       <DeleteButton
         deleteAction={handleRemGuardian}
         className={classes.button}
+        delObject={delObject}
       />
     </div>
   );

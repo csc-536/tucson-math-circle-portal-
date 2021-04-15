@@ -42,6 +42,8 @@ function StudentInfo({
   let consentMaterial_1 = "";
   let consentMaterial_2 = "";
 
+  let delObject = "STUDENT " + first_name + " " + last_name;
+
   let remStudentButton_1 = (
     <div id="studentRemoveDiv">
       <button type="button" id="remStudent" onClick={handleRemStudent}>
@@ -140,6 +142,7 @@ function StudentInfo({
       <DeleteButton
         deleteAction={handleRemStudent}
         className={classes.button}
+        delObject={delObject}
       />
     </div>
   );
