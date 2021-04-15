@@ -31,7 +31,7 @@ from backend.auth.db.main import (
     get_user_by_email,
     update_email_by_id,
     update_password_by_id,
-    # update_disabled_by_id,
+    update_disabled_by_id,
 )
 from backend.auth.db.models.users import User, UserInDB, UserUpdate
 
@@ -166,21 +166,19 @@ async def update_password(
     return await update_password_by_id(current_user.id, hashed_password)
 
 
-# This is commented out so that student cannot accidentally be disabled
-# @app.put("/student/update_disabled", response_model=User)
-# """
-# Disables a student account, this cannot be undone by the student.
-# """
-# async def update_disabled(
-#     current_user: User = Depends(get_current_student), updates: UserUpdate = Body(...)
-# ):
-#     if not updates.disabled:
-#         raise HTTPException(
-#             status_code=status.HTTP_400_BAD_REQUEST,
-#             detail="Disabled is required",
-#         )
+# NOTE: Disabling cannot currently be undone by the student
+@app.put("/student/update_disabled", response_model=User)
+async def update_disabled(
+    current_user: User = Depends(get_current_student), updates: UserUpdate = Body(...)
+):
+    if not updates.disabled:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Disabled is required",
+        )
 
-#     return await update_disabled_by_id(current_user.id, updates.disabled)
+    return await update_disabled_by_id(current_user.id, updates.disabled)
+
 
 # Admin GET endpoints
 @app.get("/admin/me", response_model=User)

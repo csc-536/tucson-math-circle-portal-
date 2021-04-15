@@ -30,7 +30,7 @@ class StudentMeetingInfo(BaseModel):
 
 class CreateMeetingModel(BaseModel):
     date_and_time: datetime = Field()
-    duration: datetime = Field()
+    duration: int = Field()
     zoom_link: str = Field()
     session_level: SessionLevel = Field()
     topic: Optional[str] = Field()
