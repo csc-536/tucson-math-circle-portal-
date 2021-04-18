@@ -47,10 +47,16 @@ const S3UploadInput = ({ callback, uploadedFileName = "" }) => {
                 onChange={handleFileOnChange}
             />
             <label htmlFor={id}>
-                <Button variant="contained" component="span" disableElevation>
+                <Button
+                    size="small"
+                    variant="contained"
+                    component="span"
+                    disableElevation
+                >
                     Upload
                 </Button>
             </label>
+            <br />
             <span>{selectedFile}</span>
         </div>
     );

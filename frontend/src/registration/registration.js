@@ -35,7 +35,7 @@ function Registration({ update }) {
         last_name: "",
         grade: "",
         age: "",
-        selectedFile: null,
+        consent_form_object_name: null,
         verification_status: false,
     };
 
@@ -155,13 +155,16 @@ function Registration({ update }) {
     };
 
     const handleAddConsentForm = (objectKey, i) => {
-        // console.log(objectKey);
+        console.log(objectKey);
         // console.log(i);
-        if (form.students.length > 1) {
+        console.log(form.students.length);
+        if (form.students.length > 0) {
             const students = clone(form.students);
-            students[i].consent_form_object_name = objectKey;
+            students[i]["consent_form_object_name"] = objectKey;
+            console.log(students);
             setForm({ ...form, students });
         }
+        console.log(form);
     };
     console.log(form);
     /*

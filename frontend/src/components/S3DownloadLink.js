@@ -16,6 +16,7 @@ const S3DownloadLink = ({ fileType, id, text }) => {
         };
         download();
     }, []);
+    console.log(url);
     return (
         <div>
             <a href={url}>{text}</a>

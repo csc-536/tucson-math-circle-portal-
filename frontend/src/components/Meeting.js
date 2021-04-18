@@ -23,8 +23,11 @@ const Meeting = forwardRef(
                 setRegistrations,
                 handleClose,
                 materials_uploaded,
+                past,
+                duration,
+                // zoom_password,
             },
-            past,
+            // past,
         },
         ref
     ) => {
@@ -61,34 +64,39 @@ const Meeting = forwardRef(
             }
             handleClose();
         };
-
+        console.log(materials_uploaded);
         console.log(past);
         return (
             <div ref={ref}>
                 <h2 id="meeting-title">Meeting</h2>
                 <h3 id="transition-modal-title">When is the meeting?</h3>
                 <p id="transition-modal-description">{date}</p>
+                <h3>How long is the meeting?</h3>
+                <p>{duration} Minutes</p>
                 <h3>What is the meeting level?</h3>
                 <p>{sessionLevel}</p>
                 <h3>What are the topics?</h3>
                 <p>{topic}</p>
+                <h3>How can I join?</h3>
+                <p>
+                    Join us on <a href={zoom_link}>Zoom</a> and{" "}
+                    <a href={miro_link}>Miro</a>
+                </p>
                 {materials_uploaded ? (
                     <>
-                        <h3>How can I join?</h3>
+                        <h3>Need meeting materials?</h3>
                         <p>
-                            Join us on <a href={zoom_link}>Zoom</a> and{" "}
-                            <a href={miro_link}>Miro</a>
+                            Download meeting materials{" "}
+                            <S3DownloadLink
+                                fileType="material"
+                                id={uuid}
+                                text="here"
+                            />
                         </p>
                     </>
                 ) : (
                     ""
                 )}
-
-                <h3>Need meeting materials?</h3>
-                <p>
-                    Download meeting materials{" "}
-                    <S3DownloadLink fileType="material" id={uuid} text="here" />
-                </p>
 
                 {student_notes !== null ? (
                     <>

@@ -121,6 +121,9 @@ const MeetingCard = ({ meeting, past }) => {
                             materials_link,
                             student_notes,
                             registrations,
+                            materials_uploaded,
+                            duration,
+                            past,
                             setRegistrations,
                             handleClose,
                         }}

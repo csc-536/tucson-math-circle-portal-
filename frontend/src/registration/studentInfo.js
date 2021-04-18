@@ -14,7 +14,6 @@ function StudentInfo({
         last_name,
         grade,
         age,
-        selectedFile,
         verification_status,
         consent_form_object_name,
     },
@@ -130,8 +129,11 @@ function StudentInfo({
                     className="formInput"
                 />
             </label>
-            {consentMaterial_1}
-            {consentMaterial_2}
+            <div className="consent-form">
+                {consentMaterial_1}
+                {consentMaterial_2}
+            </div>
+
             {remStudentButton_1}
         </div>
     );

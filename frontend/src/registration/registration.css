@@ -5,123 +5,129 @@
  *          the registration and profile pages.
  */
 .col1 {
-  float: left;
-  margin-right: 10px;
-  max-width: 175px;
+    float: left;
+    margin-right: 10px;
+    max-width: 175px;
 }
 .col2 {
-  float: right;
-  margin-right: 10px;
-  max-width: 175px;
+    float: right;
+    margin-right: 10px;
+    max-width: 175px;
 }
 .formInput {
-  max-width: 175px;
+    max-width: 175px;
 }
 .formHeader {
-  color: #154cc5;
-  clear: both;
+    color: #154cc5;
+    clear: both;
 }
 .mailRadio {
-  margin: 20px;
-  display: flex;
+    margin: 20px;
+    display: flex;
 }
 .regNote {
-  font-size: 12pt;
-  font-weight: normal;
-  color: #154cc5;
+    font-size: 12pt;
+    font-weight: normal;
+    color: #154cc5;
 }
 #allMeetings {
-  margin-top: 30px;
+    margin-top: 30px;
 }
 #consentStatus {
-  margin: 0 auto;
-  margin-top: 10px;
-  width: 175px;
-  height: 20px;
-  border-radius: 10px;
-  text-align: center;
+    margin: 0 auto;
+    margin-top: 10px;
+    width: 175px;
+    height: 20px;
+    border-radius: 10px;
+    text-align: center;
 }
 #consentUpload {
-  padding-top: 20px;
+    padding-top: 20px;
 }
 #profileHeader {
-  float: left;
+    float: left;
 }
 #checkbox {
-  clear: both;
-  font-weight: bold;
-  display: flex;
+    clear: both;
+    font-weight: bold;
+    display: flex;
 }
 #regButton {
-  clear: both;
-  margin-bottom: 50px;
+    clear: both;
+    margin-bottom: 50px;
 }
 #regForm {
-  margin: 0 auto;
-  max-width: 450px;
+    margin: 0 auto;
+    max-width: 450px;
 }
 #regButton,
 #allMeetings {
-  float: right;
-  color: white;
-  background-color: #008ae6;
-  cursor: pointer;
-  padding: 10px;
+    float: right;
+    color: white;
+    background-color: #008ae6;
+    cursor: pointer;
+    padding: 10px;
 }
 #mailOptDiv {
-  margin: 0 auto;
-  width: 450px;
-  display: flex;
+    margin: 0 auto;
+    width: 450px;
+    display: flex;
 }
 
 #myCheckBox {
-  margin-top: 30px;
-  width: 50px;
+    margin-top: 30px;
+    width: 50px;
 }
 #gradeDropDown {
-  padding: 5px;
-  width: 175px;
-  margin-top: 10px;
+    padding: 5px;
+    width: 175px;
+    margin-top: 10px;
 }
 #addStudent,
 #addGuardian,
 #remStudent,
 #remGuardian {
-  font-size: 20pt;
-  border-radius: 20px;
-  background-color: white;
-  width: 450px;
-  padding: 10px;
-  cursor: pointer;
+    font-size: 20pt;
+    border-radius: 20px;
+    background-color: white;
+    width: 450px;
+    padding: 10px;
+    cursor: pointer;
 }
 #studentRemoveDiv {
-  clear: both;
-  width: 100%;
+    clear: both;
+    width: 100%;
 }
 #addStudent,
 #addGuardian {
-  margin-top: 20px;
+    margin-top: 20px;
 }
 #remStudent,
 #remGuardian {
-  margin-top: 10px;
-  margin-left: 115px;
-  width: 200px;
-  font-size: 12pt;
-  background-color: #990000;
-  color: white;
+    margin-top: 10px;
+    margin-left: 115px;
+    width: 200px;
+    font-size: 12pt;
+    background-color: #990000;
+    color: white;
 }
 #studentInformation,
 #GuardianInformation,
 #accountInfo {
-  border: 1px solid black;
-  display: inline-block;
-  padding: 10px;
-  border-radius: 20px;
-  width: 425px;
+    border: 1px solid black;
+    display: inline-block;
+    padding: 10px;
+    border-radius: 20px;
+    width: 425px;
 }
 select {
-  margin-top: 10px;
-  padding-right: 100px;
-  padding-bottom: 10px;
+    margin-top: 10px;
+    padding-right: 100px;
+    padding-bottom: 10px;
+}
+
+.consent-form {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 150px;
 }

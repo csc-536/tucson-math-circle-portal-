@@ -6,11 +6,6 @@ function MoreInfo({ sInfoTag, sInfo, student, account }) {
     return (
         <div>
             <h1>Student Info</h1>
-            <S3DownloadLink
-                fileType="consent"
-                id={student["id"]}
-                text="Download"
-            />
             <h4 className={sInfoTag}>First Name:</h4>
             <p className={sInfo}>{student["first_name"]}</p>
             <h4 className={sInfoTag}>Last Name:</h4>
@@ -19,6 +14,14 @@ function MoreInfo({ sInfoTag, sInfo, student, account }) {
             <p className={sInfo}>{student["grade"]}</p>
             <h4 className={sInfoTag}>Age:</h4>
             <p className={sInfo}>{student["age"]}</p>
+            <h4 className={sInfoTag}>Consent Form</h4>
+            <p className={sInfo}>
+                <S3DownloadLink
+                    fileType="consent"
+                    id={student["id"]}
+                    text="Download"
+                />
+            </p>
             <hr />
             <h1>Guardian Info</h1>
             {account["guardians"].map((guardian, i) => {

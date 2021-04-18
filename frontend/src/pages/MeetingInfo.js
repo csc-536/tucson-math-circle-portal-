@@ -78,7 +78,7 @@ const MeetingInfo = () => {
                 materials_object_name,
                 materials_uploaded,
                 zoomPassword,
-                duration: getTimeDifferences(duration, date),
+                duration,
                 uuid,
                 students,
                 student_notes,
@@ -204,10 +204,10 @@ const MeetingInfo = () => {
     );
 };
 
-function getTimeDifferences(d1, d2) {
-    const diff = new Date(d1).getTime() - new Date(d2).getTime();
-    return diff / 1000 / 60;
-}
+// function getTimeDifferences(d1, d2) {
+//     const diff = new Date(d1).getTime() - new Date(d2).getTime();
+//     return diff / 1000 / 60;
+// }
 
 function getTime(d) {
     const date = new Date(d);
