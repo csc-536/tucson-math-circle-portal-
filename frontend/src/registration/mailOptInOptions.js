@@ -19,6 +19,7 @@ function MailOptInOptions({ handleMailChange, mailing_lists }) {
           name="junior_a"
           checked={mailing_lists.includes("junior_a")}
           onClick={handleMailChange}
+          onChange={() => {}}
         />
       </label>
 
@@ -30,6 +31,7 @@ function MailOptInOptions({ handleMailChange, mailing_lists }) {
           name="junior_b"
           checked={mailing_lists.includes("junior_b")}
           onClick={handleMailChange}
+          onChange={() => {}}
         />
       </label>
 
@@ -41,6 +43,7 @@ function MailOptInOptions({ handleMailChange, mailing_lists }) {
           name="senior"
           checked={mailing_lists.includes("senior")}
           onClick={handleMailChange}
+          onChange={() => {}}
         />
       </label>
 
@@ -52,6 +55,7 @@ function MailOptInOptions({ handleMailChange, mailing_lists }) {
           name="opt_out"
           checked={mailing_lists.length == 0}
           onClick={handleMailChange}
+          onChange={() => {}}
         />
       </label>
     </div>
