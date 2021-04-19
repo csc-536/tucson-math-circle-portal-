@@ -47,6 +47,20 @@ export async function register({ email, password, role }) {
   }
 }
 
+export async function disable(data) {
+  const accessToken = sessionStorage.getItem("accessToken");
+  try {
+    const res = await auth.put("/student/update_disabled", data, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+    console.log(res);
+  } catch (error) {
+    console.log(error.response);
+  }
+}
+
 export async function login({ username, password }) {
   const querystring = require("querystring");
   const res = await auth.post(

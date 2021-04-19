@@ -6,7 +6,21 @@
 
 // import ConsentUpload from "./consentUpload";
 import React, { useEffect, useState } from "react";
+import { Button, makeStyles } from "@material-ui/core";
+import DeleteButton from "../components/DeleteButton";
 import S3UploadInput from "../components/S3UploadInput";
+
+const useStyles = makeStyles((theme) => ({
+  button: {
+    marginTop: "10px",
+    marginLeft: "115px",
+    width: "200px",
+    fontSize: "12pt",
+    backgroundColor: "#990000",
+    borderRadius: "20px",
+    color: "white",
+  },
+}));
 
 function StudentInfo({
   student: {
@@ -22,11 +36,15 @@ function StudentInfo({
   handleRemStudent,
   handleAddConsentForm,
 }) {
+  const classes = useStyles();
+
   let verifStyle = {};
   let statusText = "";
 
   let consentMaterial_1 = "";
   let consentMaterial_2 = "";
+
+  let delObject = "STUDENT " + first_name + " " + last_name;
 
   let remStudentButton_1 = (
     <div id="studentRemoveDiv">
@@ -129,12 +147,13 @@ function StudentInfo({
           className="formInput"
         />
       </label>
-      <div className="consent-form">
-        {consentMaterial_1}
-        {consentMaterial_2}
-      </div>
-
-      {remStudentButton_1}
+      {consentMaterial_1}
+      {consentMaterial_2}
+      <DeleteButton
+        deleteAction={handleRemStudent}
+        className={classes.button}
+        delObject={delObject}
+      />
     </div>
   );
 }

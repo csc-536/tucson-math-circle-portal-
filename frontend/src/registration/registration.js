@@ -21,15 +21,30 @@ import {
   updateProfile,
   profile,
   register,
+  disable,
   updateEmail,
   updatePassword,
 } from "../http";
 import { clone, uniqueId } from "lodash";
 import { AuthContext } from "../contexts/AuthContext";
 import { isLoggedIn, loggedInRole } from "../utils";
+import { makeStyles } from "@material-ui/core";
+import DeleteButton from "../components/DeleteButton";
 import { v4 as uuidv4 } from "uuid";
 
 function Registration({ update }) {
+  const useStyles = makeStyles((theme) => ({
+    button: {
+      marginTop: "10px",
+      float: "left",
+      width: "100px",
+      fontSize: "12pt",
+      backgroundColor: "#990000",
+      color: "white",
+    },
+  }));
+  const classes = useStyles();
+
   const initialStudent = {
     first_name: "",
     last_name: "",
@@ -57,6 +72,14 @@ function Registration({ update }) {
   });
 
   const [checkBox, setCheckBox] = useState(false);
+
+  // const useStyles = makeStyles((theme) => ({
+  //   button: {
+  //     marginTop: theme.spacing(3),
+  //     marginLeft: theme.spacing(3),
+  //     float: "right",
+  //   },
+  // }));
 
   /*
    * --------------------------------------------------------------------
@@ -172,6 +195,17 @@ function Registration({ update }) {
    */
   const handleSeeAllMeetings = () => {
     history.push("/meetings");
+  };
+
+  const handleDissableAccount = async (e) => {
+    try {
+      await disable({
+        disabled: true,
+      });
+      history.push("/");
+    } catch (error) {
+      console.log(error.response);
+    }
   };
 
   /*
@@ -373,6 +407,7 @@ function Registration({ update }) {
   let header = <RegHeader />;
   let isUpdate = <CheckBox handleCheckBoxChange={handleCheckBoxChange} />;
   let buttonVal = "Register";
+  let accountDelButton = "";
 
   /*
    * 'history' used to render specified pages.
@@ -402,6 +437,8 @@ function Registration({ update }) {
 
   let errStr = "";
 
+  let delObject = "this ACCOUNT";
+
   /*
    * If the property 'update' is true, set up 'header', 'isUpdate' and
    * 'buttonVal' to their profile page counterparts.
@@ -414,6 +451,13 @@ function Registration({ update }) {
       </div>
     );
     buttonVal = "Update";
+    accountDelButton = (
+      <DeleteButton
+        deleteAction={handleDissableAccount}
+        className={classes.button}
+        delObject={delObject}
+      />
+    );
   }
 
   /*
@@ -468,6 +512,7 @@ function Registration({ update }) {
         mailing_lists={form.mailing_lists}
       />
       <p>{errStr}</p>
+      {accountDelButton}
       <input id="regButton" type="submit" value={buttonVal} />
     </form>
   );

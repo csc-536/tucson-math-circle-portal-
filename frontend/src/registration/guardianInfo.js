@@ -3,11 +3,31 @@
  * Author: Athan Walker
  * Purpose: Provide a div for inputting guardian information
  */
+
+import { Button, makeStyles } from "@material-ui/core";
+import DeleteButton from "../components/DeleteButton";
+
+const useStyles = makeStyles((theme) => ({
+  button: {
+    marginTop: "10px",
+    marginLeft: "115px",
+    width: "200px",
+    fontSize: "12pt",
+    backgroundColor: "#990000",
+    borderRadius: "20px",
+    color: "white",
+  },
+}));
+
 function GuardianInfo({
   guardian: { first_name, last_name, email, phone_number },
   handleOnChange,
   handleRemGuardian,
 }) {
+  const classes = useStyles();
+
+  let delObject = "GUARDIAN " + first_name + " " + last_name;
+
   let remGuardianButton_1 = (
     <div id="studentRemoveDiv">
       <button type="button" id="remGuardian" onClick={handleRemGuardian}>
@@ -61,7 +81,11 @@ function GuardianInfo({
           className="formInput"
         />
       </label>
-      {remGuardianButton_1}
+      <DeleteButton
+        deleteAction={handleRemGuardian}
+        className={classes.button}
+        delObject={delObject}
+      />
     </div>
   );
 }
