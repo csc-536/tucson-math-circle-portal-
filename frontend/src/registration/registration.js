@@ -150,7 +150,7 @@ function Registration({ update }) {
    * Removes the newest student from the list of students 'studentList'.
    */
   const handleRemStudent = (e, i) => {
-    if (form.students.length > 1) {
+    if (form.students.length > 0) {
       const students = clone(form.students);
       students.splice(i, 1);
       setForm({ ...form, students });
@@ -170,7 +170,7 @@ function Registration({ update }) {
    * Removes the newest guardian from the list of guardians 'guardianList'.
    */
   const handleRemGuardian = (e, i) => {
-    if (form.guardians.length > 1) {
+    if (form.guardians.length > 0) {
       const guardians = clone(form.guardians);
       guardians.splice(i, 1);
       setForm({ ...form, guardians });
@@ -368,7 +368,7 @@ function Registration({ update }) {
   const studentList = form.students.map((student, i) => {
     return (
       <StudentInfo
-        key={uuidv4()}
+        key={i}
         student={student}
         update={update}
         handleOnChange={(e) => {
@@ -390,7 +390,7 @@ function Registration({ update }) {
   const guardianList = form.guardians.map((guardian, i) => {
     return (
       <GuardianInfo
-        key={uuidv4()}
+        key={i}
         guardian={guardian}
         handleOnChange={(e) => handleOnChange(e, i, "guardians")}
         handleRemGuardian={(e) => handleRemGuardian(e, i)}
