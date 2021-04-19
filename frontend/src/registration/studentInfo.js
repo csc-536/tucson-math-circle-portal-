@@ -5,7 +5,8 @@
  */
 
 // import ConsentUpload from "./consentUpload";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import S3UploadInput from "../components/S3UploadInput";
 
 function StudentInfo({
   student: {
@@ -13,12 +14,13 @@ function StudentInfo({
     last_name,
     grade,
     age,
-    selectedFile,
     verification_status,
+    consent_form_object_name,
   },
   update,
   handleOnChange,
   handleRemStudent,
+  handleAddConsentForm,
 }) {
   let verifStyle = {};
   let statusText = "";
@@ -43,14 +45,22 @@ function StudentInfo({
     verifStyle = { background: "red" };
     statusText = "Unverified";
   }
+
+  // const [objectKey, setObjectKey] = useState(null);
+  // console.log(objectKey);
   if (update) {
+    let uploadedFileName = "";
+    if (consent_form_object_name) {
+      uploadedFileName = consent_form_object_name.split("_");
+      uploadedFileName.pop();
+      uploadedFileName = `${uploadedFileName.join("_")}.pdf`;
+    }
+
     consentMaterial_1 = (
-      <label className="col1">
-        <div id="consentUpload">
-          Upload your <em>signed</em> consent form (PDF):
-          <input type="file" name="file" onChange={handleOnChange} />
-        </div>
-      </label>
+      <S3UploadInput
+        callback={handleAddConsentForm}
+        uploadedFileName={uploadedFileName}
+      />
     );
     consentMaterial_2 = (
       <label className="col2">
@@ -119,8 +129,11 @@ function StudentInfo({
           className="formInput"
         />
       </label>
-      {consentMaterial_1}
-      {consentMaterial_2}
+      <div className="consent-form">
+        {consentMaterial_1}
+        {consentMaterial_2}
+      </div>
+
       {remStudentButton_1}
     </div>
   );

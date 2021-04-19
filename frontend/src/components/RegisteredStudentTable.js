@@ -45,46 +45,29 @@ const RegisteredStudentTable = ({ students, handleCheckAttended }) => {
           <TableHead className={classes.head}>
             <TableRow className={classes.head}>
               <StyledTableCell>Student Name</StyledTableCell>
-              <StyledTableCell align="right">Parent Name</StyledTableCell>
-              <StyledTableCell align="right">Contact Phone</StyledTableCell>
-              <StyledTableCell align="right">
-                Additional Contacts
-              </StyledTableCell>
-              <StyledTableCell align="right">Attended</StyledTableCell>
+              <StyledTableCell>Contact Email</StyledTableCell>
+              <StyledTableCell>Attended</StyledTableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {students.map(
-              (
-                {
-                  studentName,
-                  parentName,
-                  contactPhone,
-                  additionalContacts,
-                  attended,
-                },
-                i
-              ) => (
-                <TableRow key={uniqueId()}>
-                  <TableCell component="th" scope="row">
-                    {studentName}
-                  </TableCell>
-                  <TableCell align="right">{parentName}</TableCell>
-                  <TableCell align="right">{contactPhone}</TableCell>
-                  <TableCell align="right">{additionalContacts}</TableCell>
-                  <TableCell align="right">
-                    <Checkbox
-                      checked={attended}
-                      onChange={(e) => handleCheckAttended(e, i)}
-                      color="primary"
-                      inputProps={{
-                        "aria-label": "secondary checkbox",
-                      }}
-                    />
-                  </TableCell>
-                </TableRow>
-              )
-            )}
+            {students.map(({ first_name, last_name, email, attended }, i) => (
+              <TableRow key={uniqueId()}>
+                <TableCell component="th" scope="row">
+                  {`${first_name} ${last_name}`}
+                </TableCell>
+                <TableCell>{email}</TableCell>
+                <TableCell>
+                  <Checkbox
+                    checked={attended}
+                    onChange={(e) => handleCheckAttended(e, i)}
+                    color="primary"
+                    inputProps={{
+                      "aria-label": "secondary checkbox",
+                    }}
+                  />
+                </TableCell>
+              </TableRow>
+            ))}
           </TableBody>
         </Table>
       </TableContainer>

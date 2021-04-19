@@ -125,3 +125,9 @@ select {
   padding-right: 100px;
   padding-bottom: 10px;
 }
+
+.consent-form {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 150px;
+}

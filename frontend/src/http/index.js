@@ -1,4 +1,5 @@
 import axios from "axios";
+import { v4 as uuidv4 } from "uuid";
 
 export const auth = axios.create({
   baseURL: "http://127.0.0.1:8000",
@@ -224,28 +225,66 @@ export async function registerMeeting(data) {
   return res;
 }
 
-export async function getS3UploadURL() {
-  const res = await auth.post("//...");
+export async function attendMeeting(data) {
+  const res = await main.put("/admin/update_student_attendance", data);
+  console.log(res);
+  return res;
 }
 
-export async function uploadFile(file) {
-  const url = "";
-  console.log({
-    params: {
-      Key: file.name,
-      ContentType: file.type,
-    },
-    headers: {
-      "Content-Type": file.type,
-    },
-  });
-  // await axios.put(url, file, {
-  //     params: {
-  //         Key: file.name,
-  //         ContentType: file.type,
-  //     },
-  //     headers: {
-  //         "Content-Type": file.type,
-  //     },
-  // });
+export async function uploadFile({ selectedFile }) {
+  // console.log(selectedFile);
+  try {
+    // get presigned url for post s3
+    const name = selectedFile.name.split(".");
+    const ext = name.pop();
+    const { data } = await main.post("/presigned_url_for_upload", {
+      object_name: `${name.join("_")}_${uuidv4()}.${ext}`,
+    });
+    const {
+      url,
+      fields: { key, AWSAccessKeyId, policy, signature },
+    } = data;
+
+    // send the file to s3
+    const formData = new FormData();
+    formData.append("key", key);
+    formData.append("AWSAccessKeyId", AWSAccessKeyId);
+    formData.append("policy", policy);
+    formData.append("signature", signature);
+    formData.append("file", selectedFile);
+
+    const res = await axios.post(url, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    console.log(res);
+    return key;
+  } catch (error) {
+    // console.log(error.response.data);
+    console.log(error);
+  }
+}
+
+export async function downloadFile({ fileType, id }) {
+  try {
+    if (!["material", "consent"].includes(fileType)) {
+      throw new Error(`Invalid type ${fileType}`);
+    }
+    const url =
+      fileType === "material"
+        ? "/student/get_meeting_material_url"
+        : "/admin/get_student_consent_form_url";
+    const params =
+      fileType === "material" ? { meeting_uuid: id } : { student_id: id };
+
+    const { data } = await main.get(url, {
+      params,
+    });
+
+    // console.log(data);
+    return data;
+  } catch (error) {
+    console.log(error.response);
+  }
 }
