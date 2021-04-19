@@ -6,7 +6,12 @@ import SaveIcon from "@material-ui/icons/Save";
 import { cloneDeep } from "lodash";
 import DeleteButton from "../components/DeleteButton";
 import { useHistory, useLocation } from "react-router";
-import { deleteMeeting, updateMeeting } from "../http";
+import {
+  attendMeeting,
+  deleteMeeting,
+  registerMeeting,
+  updateMeeting,
+} from "../http";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -30,11 +35,13 @@ const MeetingInfo = () => {
     duration: "",
     topic: "",
     sessionLevel: "",
-    material: "",
+    materials_object_name: "",
+    materials_uploaded: false,
     zoomLink: "",
     zoomPassword: "",
     miroLink: "",
-    notes: "",
+    student_notes: "",
+    coordinator_notes: "",
     students: [],
   });
 
@@ -51,6 +58,10 @@ const MeetingInfo = () => {
           duration,
           students,
           uuid,
+          materials_object_name,
+          materials_uploaded,
+          student_notes,
+          coordinator_notes,
         },
         past,
       },
@@ -64,22 +75,37 @@ const MeetingInfo = () => {
         sessionLevel,
         zoomLink: zoom_link,
         miroLink: miro_link,
+        materials_object_name,
+        materials_uploaded,
         zoomPassword,
-        duration: getTimeDifferences(duration, date),
+        duration,
         uuid,
         students,
+        student_notes,
+        coordinator_notes,
       },
     });
     setDisabled(past);
   }, [location]);
 
-  const handleCheckAttended = (e, i) => {
+  const handleCheckAttended = async (e, i) => {
     const students = cloneDeep(form["students"]);
-    students[i].attended = e.target.checked;
-    setForm({
-      ...form,
-      ...{ students },
-    });
+    const attended = e.target.checked;
+    const { student_id } = students[i];
+    try {
+      await attendMeeting({
+        meeting_id: form["uuid"],
+        student_id,
+        attended,
+      });
+      students[i].attended = attended;
+      setForm({
+        ...form,
+        ...{ students },
+      });
+    } catch (error) {
+      console.log(error.response);
+    }
   };
 
   const handleSaveMeeting = async (e) => {
@@ -89,7 +115,10 @@ const MeetingInfo = () => {
       date: date_and_time,
       miroLink: miro_link,
       sessionLevel: session_level,
-      material: materials_link,
+      materials_object_name,
+      materials_uploaded,
+      student_notes,
+      coordinator_notes,
       zoomLink: zoom_link,
       duration,
       topic,
@@ -108,12 +137,13 @@ const MeetingInfo = () => {
         session_level,
         topic,
         miro_link,
-        coordinator_notes: "ddd",
-        student_notes: "ddddddd",
-        materials_link: "https://test.com",
+        materials_object_name,
+        materials_uploaded,
         meeting_id,
-        students,
+        student_notes,
+        coordinator_notes,
       });
+      history.push("/meetings");
     } catch (error) {
       console.log(error.response);
     }
@@ -140,30 +170,40 @@ const MeetingInfo = () => {
         onSubmit={handleSaveMeeting}
       >
         <MeetingFields form={form} setForm={setForm} disabled={disabled} />
+        {disabled ? (
+          ""
+        ) : (
+          <div style={{ marginBottom: "60px" }}>
+            <Button
+              variant="contained"
+              color="primary"
+              className={classes.button}
+              startIcon={<SaveIcon />}
+              type="submit"
+              disableElevation
+            >
+              Save
+            </Button>
+            <DeleteButton
+              deleteAction={handleDelete}
+              className={classes.button}
+            />
+          </div>
+        )}
+
         <RegisteredStudentTable
           students={form["students"]}
           handleCheckAttended={handleCheckAttended}
         />
-        <Button
-          variant="contained"
-          color="primary"
-          className={classes.button}
-          startIcon={<SaveIcon />}
-          type="submit"
-          disableElevation
-        >
-          Save
-        </Button>
       </form>
-      <DeleteButton deleteAction={handleDelete} className={classes.button} />
     </div>
   );
 };
 
-function getTimeDifferences(d1, d2) {
-  const diff = new Date(d1).getTime() - new Date(d2).getTime();
-  return diff / 1000 / 60;
-}
+// function getTimeDifferences(d1, d2) {
+//     const diff = new Date(d1).getTime() - new Date(d2).getTime();
+//     return diff / 1000 / 60;
+// }
 
 function getTime(d) {
   const date = new Date(d);

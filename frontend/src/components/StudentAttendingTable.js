@@ -17,7 +17,7 @@ const useStyles = makeStyles({
   },
 });
 
-const StudentAttendingTable = ({ students, setStudents }) => {
+const StudentAttendingTable = ({ students, setStudents, disabled }) => {
   const classes = useStyles();
 
   const handleChange = (e, i) => {
@@ -25,7 +25,7 @@ const StudentAttendingTable = ({ students, setStudents }) => {
     s[i].attending = e.target.checked;
     setStudents(s);
   };
-
+  console.log(disabled);
   return (
     <TableContainer>
       <Table className={classes.table} aria-label="student-attending-table">
@@ -53,6 +53,7 @@ const StudentAttendingTable = ({ students, setStudents }) => {
                   inputProps={{
                     "aria-label": "secondary checkbox",
                   }}
+                  disabled={disabled}
                 />
               </TableCell>
             </TableRow>

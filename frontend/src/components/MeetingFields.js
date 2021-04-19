@@ -16,6 +16,7 @@ import {
 } from "@material-ui/pickers";
 import MomentUtils from "@date-io/moment";
 import { toNumber } from "lodash";
+import S3UploadInput from "./S3UploadInput";
 
 const useStyles = makeStyles((theme) => ({
   textField: {
@@ -56,6 +57,13 @@ const MeetingFields = ({ form, setForm, disabled }) => {
     input[name] = v;
     setForm({ ...form, ...input });
   };
+  console.log("asdfghjk", form);
+  const handleUploadFileCallback = (objectKey) => {
+    setForm({
+      ...form,
+      ...{ materials_object_name: objectKey, materials_uploaded: true },
+    });
+  };
 
   return (
     <>
@@ -72,6 +80,7 @@ const MeetingFields = ({ form, setForm, disabled }) => {
               shrink: true,
             }}
             onChange={handleDateChange}
+            disabled={disabled}
           />
         </MuiPickersUtilsProvider>
 
@@ -129,17 +138,9 @@ const MeetingFields = ({ form, setForm, disabled }) => {
 
       <h3>Materials</h3>
       <div>
-        <TextField
-          disabled={disabled}
-          id="new-meeting-zoom-link"
-          label="Meeting Material"
-          name="material"
-          value={form["material"]}
-          onChange={handleOnChange}
-          InputLabelProps={{
-            shrink: true,
-          }}
-          className={classes.textField}
+        <S3UploadInput
+          callback={handleUploadFileCallback}
+          // uploadedFileName={}
         />
       </div>
 
@@ -185,16 +186,32 @@ const MeetingFields = ({ form, setForm, disabled }) => {
           className={classes.textField}
         />
       </div>
-      <h3>Others</h3>
+      <h3>Notes</h3>
       <div>
         <TextField
           disabled={disabled}
-          id="new-meeting-notes"
-          label="Notes"
+          id="new-meeting-notes-students"
+          label="For Students"
           multiline
           rows={5}
-          name="notes"
-          value={form["notes"]}
+          name="student_notes"
+          value={form["student_notes"]}
+          onChange={handleOnChange}
+          variant="outlined"
+          InputLabelProps={{
+            shrink: true,
+          }}
+          fullWidth
+          style={{ marginBottom: "35px" }}
+        />
+        <TextField
+          disabled={disabled}
+          id="new-meeting-notes-coordinators"
+          label="For Coordinators"
+          multiline
+          rows={5}
+          name="coordinator_notes"
+          value={form["coordinator_notes"]}
           onChange={handleOnChange}
           variant="outlined"
           InputLabelProps={{

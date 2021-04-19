@@ -90,6 +90,8 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
     # OAuth2PasswordRequestForm does not have an email field, only username
     user = await get_user_by_email(form_data.username)
     if user:
+        if user.disabled:
+            raise HTTPException(status_code=400, detail="Account is disabled")
         user = authenticate_user(user, form_data.password)
 
     else:
