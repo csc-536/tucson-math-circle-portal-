@@ -30,6 +30,7 @@ import { AuthContext } from "../contexts/AuthContext";
 import { isLoggedIn, loggedInRole } from "../utils";
 import { makeStyles } from "@material-ui/core";
 import DeleteButton from "../components/DeleteButton";
+import { v4 as uuidv4 } from "uuid";
 
 function Registration({ update }) {
   const useStyles = makeStyles((theme) => ({
@@ -49,7 +50,7 @@ function Registration({ update }) {
     last_name: "",
     grade: "",
     age: "",
-    selectedFile: null,
+    consent_form_object_name: null,
     verification_status: false,
   };
 
@@ -176,6 +177,19 @@ function Registration({ update }) {
     }
   };
 
+  const handleAddConsentForm = (objectKey, i) => {
+    console.log(objectKey);
+    // console.log(i);
+    console.log(form.students.length);
+    if (form.students.length > 0) {
+      const students = clone(form.students);
+      students[i]["consent_form_object_name"] = objectKey;
+      console.log(students);
+      setForm({ ...form, students });
+    }
+    console.log(form);
+  };
+  console.log(form);
   /*
    * Pushes page path to the meetings page.
    */
@@ -354,11 +368,18 @@ function Registration({ update }) {
   const studentList = form.students.map((student, i) => {
     return (
       <StudentInfo
-        key={i}
+        key={uuidv4()}
         student={student}
         update={update}
-        handleOnChange={(e) => handleOnChange(e, i, "students")}
+        handleOnChange={(e) => {
+          console.log(i);
+          handleOnChange(e, i, "students");
+        }}
         handleRemStudent={(e) => handleRemStudent(e, i)}
+        handleAddConsentForm={(objectKey) => {
+          console.log(i);
+          handleAddConsentForm(objectKey, i);
+        }}
       />
     );
   });
@@ -369,7 +390,7 @@ function Registration({ update }) {
   const guardianList = form.guardians.map((guardian, i) => {
     return (
       <GuardianInfo
-        key={i}
+        key={uuidv4()}
         guardian={guardian}
         handleOnChange={(e) => handleOnChange(e, i, "guardians")}
         handleRemGuardian={(e) => handleRemGuardian(e, i)}
