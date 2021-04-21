@@ -96,15 +96,12 @@ function StudentInfo({
 
   const currYear = new Date().getFullYear();
 
-  console.log(currYear);
-
   const yearOptions = [];
 
   const generateYears = () => {
     yearOptions.push(<option value={0}>Select</option>);
     for (let i = 0; i < 100; i++) {
       const year = currYear - i;
-      console.log(year);
       yearOptions.push(<option value={year}>{year}</option>);
     }
   };

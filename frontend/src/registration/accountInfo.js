@@ -81,7 +81,6 @@ function AccInfo({ update, handleOnChange, form }) {
           className="formInput"
         />
       </label>
-      <p className="regNote">Password must be at least six characters long</p>
       {passwords}
     </div>
   );

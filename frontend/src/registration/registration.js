@@ -473,8 +473,9 @@ function Registration({ update }) {
     <form id="regForm" onSubmit={handleFormSubmit}>
       {header}
       <h3 className="formHeader">Account Information</h3>
+      <p className="regNote">Fill in all fields to set up your account</p>
       <p className="regNote">
-        Fill in the required fields to set up your account
+        <b>Password</b> must be at least six characters long
       </p>
       <p className="regNote">
         NOTE: The email provided below is shared between all students associated
@@ -486,7 +487,7 @@ function Registration({ update }) {
       <hr />
       <h3 className="formHeader">Student Information</h3>
       <p className="regNote">
-        Fill in the required fields for each participating student
+        Fill in all fields for each participating student
       </p>
       <div id="sList">{studentList}</div>
       <AddNewStudent handleAddStudent={handleAddStudent} />
@@ -497,11 +498,15 @@ function Registration({ update }) {
         <br />
       </h3>
       <p className="regNote">
-        Fill in the required guardian fields for emergency contact purposes
+        Fill in all guardian fields for emergency contact purposes
       </p>
       <p className="regNote">
-        NOTE: The first (top) guardian listed below will be the primary contact
-        for all students linked to this account
+        NOTE: <b>Phone numbers</b> for guardians must be at least 10 digits long
+        including area code
+      </p>
+      <p className="regNote">
+        NOTE: The <b>first (top) guardian</b> listed below will be the primary
+        contact for all students linked to this account
       </p>
       <div id="gList">{guardianList}</div>
       <AddNewGuardian handleAddGuardian={handleAddGuardian} />
