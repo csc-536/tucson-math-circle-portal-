@@ -49,7 +49,8 @@ function Registration({ update }) {
     first_name: "",
     last_name: "",
     grade: "",
-    age: "",
+    birth_month: undefined,
+    birth_Year: undefined,
     consent_form_object_name: null,
     verification_status: false,
   };
@@ -150,7 +151,7 @@ function Registration({ update }) {
    * Removes the newest student from the list of students 'studentList'.
    */
   const handleRemStudent = (e, i) => {
-    if (form.students.length > 0) {
+    if (form.students.length > 1) {
       const students = clone(form.students);
       students.splice(i, 1);
       setForm({ ...form, students });
@@ -170,7 +171,7 @@ function Registration({ update }) {
    * Removes the newest guardian from the list of guardians 'guardianList'.
    */
   const handleRemGuardian = (e, i) => {
-    if (form.guardians.length > 0) {
+    if (form.guardians.length > 1) {
       const guardians = clone(form.guardians);
       guardians.splice(i, 1);
       setForm({ ...form, guardians });
@@ -224,6 +225,7 @@ function Registration({ update }) {
   ) => {
     errStr = "";
     var mailformat = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+    var birthFormat = /^([1-9]|1[0-2])\/[0-9]+$/;
     if (!email.match(mailformat)) {
       errStr += "Account email required\n";
     }
@@ -255,10 +257,13 @@ function Registration({ update }) {
       if (student.last_name === "") {
         errStr += "Student " + (i + 1) + ": Last name required\n";
       }
-      if (student.age === "" || isNaN(student.age)) {
-        errStr += "Student " + (i + 1) + ": Age required\n";
+      console.log(student.age.toString());
+      if (student.age === "" || !student.age.toString().match(birthFormat)) {
+        errStr +=
+          "Student " +
+          (i + 1) +
+          ": Birth date required in format 'month/year'\n";
       }
-      console.log(student.grade);
       if (student.grade === "select" || student.grade === "") {
         errStr += "Student " + (i + 1) + ": Grade required\n";
       }
@@ -476,7 +481,6 @@ function Registration({ update }) {
         with this account and will be used to recieve Tucson Math Circle meeting
         reminders and notifications
       </p>
-      <p className="regNote">Password must be at least six characters long</p>
       <AccInfo update={update} handleOnChange={handleOnChange} form={form} />
       {isUpdate}
       <hr />

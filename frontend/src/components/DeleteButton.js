@@ -64,8 +64,8 @@ const DeleteButton = ({ deleteAction, className, delObject }) => {
         <DialogTitle id="form-dialog-title">Whoa, there!</DialogTitle>
         <DialogContent>
           <DialogContentText className={classes.dialogContentText}>
-            Once you delete {delObject}, there's no getting it back. <br /> Are
-            you sure you want to do this?
+            Once you delete {delObject}, there is no going back. <br /> Are you
+            sure you want to do this?
           </DialogContentText>
 
           <TextField
