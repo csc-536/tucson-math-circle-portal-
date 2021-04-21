@@ -31,7 +31,8 @@ class StudentDocument(Document):
     first_name = StringField(required=True)
     last_name = StringField(required=True)
     grade = StringField(required=True)
-    age = IntField(required=True)
+    birth_month = IntField(required=False)
+    birth_year = IntField(required=False)
     # dictionary of the form (meeting uuid, attended (True/False))
     meetings_registered = DictField()
     meeting_counts = DictField(required=True)
@@ -49,7 +50,8 @@ class StudentDocument(Document):
             "first_name": self.first_name,
             "last_name": self.last_name,
             "grade": self.grade,
-            "age": self.age,
+            "birth_month": self.birth_month,
+            "birth_year": self.birth_year,
             "meetings_registered": self.meetings_registered,
             "meeting_counts": self.meeting_counts,
             "verification_status": self.verification_status,
