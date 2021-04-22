@@ -53,10 +53,11 @@ const RegisterButton = ({
   };
 
   const handleValidate = () => {
-    if (input === "0000") {
-      regAction();
-      handleClose();
-    }
+    // if (input === "0000") {
+    console.log(input);
+    regAction(input);
+    handleClose();
+    // }
   };
 
   // const preReg = async () => {

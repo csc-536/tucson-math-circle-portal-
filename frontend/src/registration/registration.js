@@ -79,6 +79,7 @@ function Registration({ update }) {
     newpassword: "",
     students: [initialStudent],
     guardians: [initialGuardian],
+
     mailing_lists: ["junior_a", "junior_b", "senior"],
   });
 
@@ -332,10 +333,11 @@ function Registration({ update }) {
    * Handles the event of the form submission. Prevents the page from refreshing.
    * If property 'update' is true, return to the login page.
    */
-  const handleFormSubmit = async (e) => {
+  const handleFormSubmit = async (verification_code) => {
     //e.preventDefault();
 
     console.log("SUBMIT");
+    console.log(verification_code);
     const {
       email,
       password,
@@ -383,7 +385,7 @@ function Registration({ update }) {
       }
     } else {
       try {
-        await register({ email, password, role: "student" });
+        await register({ email, password, role: "student", verification_code });
         await addProfile({
           email,
           guardians,

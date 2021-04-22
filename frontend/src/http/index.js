@@ -44,12 +44,13 @@ export async function preRegister({ email }) {
   }
 }
 
-export async function register({ email, password, role }) {
+export async function register({ email, password, role, verification_code }) {
   try {
     const res = await auth.post("/student/register", {
       email,
       password,
       role,
+      verification_code,
     });
     console.log(res);
     await login({ username: email, password });
