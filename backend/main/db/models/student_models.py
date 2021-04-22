@@ -44,7 +44,8 @@ class StudentCreateModel(BaseModel):
     first_name: str = Field()
     last_name: str = Field()
     grade: StudentGrade = Field()
-    age: int = Field()
+    birth_month: Optional[int] = None
+    birth_year: Optional[int] = None
     verification_status: bool = False
     consent_form_object_name: Optional[str] = None
 
