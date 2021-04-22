@@ -41,7 +41,7 @@ def test_admin_login():
 
 def test_student_login():
     response = client.post(
-        "/token", data={"username": "student@email.com", "password": "password"}
+        "/token", data={"username": "student2@email.com", "password": "password"}
     )
     assert response.status_code == 200
     json = response.json()
@@ -52,12 +52,12 @@ def test_student_login():
 # check that duplicate emails cannot be registered
 def test_student_register_already_exists():
     response = client.post(
-        "/student/register",
-        json={"email": "student@email.com", "role": "student", "password": "password"},
+        "/student/pre_register",
+        json={"email": "student2@email.com", "role": "student", "password": "password"},
     )
     assert response.status_code == 400
     json = response.json()
-    assert json["detail"] == "User already exists"
+    assert json["detail"] == "Email is already taken"
 
 
 def test_student_update_email():

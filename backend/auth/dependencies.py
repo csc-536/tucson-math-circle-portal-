@@ -155,14 +155,6 @@ async def create_student(user: UserCreate) -> User:
     Accepts a UserCreate model which has role set as student and returns a User
     """
 
-    existing_user = await get_user_by_email(user.email)
-
-    if existing_user:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="User already exists",
-        )
-
     if user.role != UserRole.student:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
