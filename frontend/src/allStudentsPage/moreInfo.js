@@ -2,7 +2,17 @@ import Modal from "@material-ui/core/Modal";
 import S3DownloadLink from "../components/S3DownloadLink";
 
 function MoreInfo({ sInfoTag, sInfo, student, account }) {
-  console.log(student);
+  const currYear = new Date().getFullYear();
+  const currMonth = new Date().getMonth() + 1;
+
+  const calcAge = () => {
+    let age = currYear - student["birth_year"];
+    if (currMonth < student["birth_month"]) {
+      age--;
+    }
+    return age;
+  };
+
   return (
     <div>
       <h1>Student Info</h1>
@@ -12,8 +22,12 @@ function MoreInfo({ sInfoTag, sInfo, student, account }) {
       <p className={sInfo}>{student["last_name"]}</p>
       <h4 className={sInfoTag}>Grade:</h4>
       <p className={sInfo}>{student["grade"]}</p>
-      <h4 className={sInfoTag}>Age:</h4>
-      <p className={sInfo}>{student["age"]}</p>
+      <h4 className={sInfoTag}>Birth Month/Year:</h4>
+      <p className={sInfo}>
+        {student["birth_month"]}/{student["birth_year"]}
+      </p>
+      <h4 className={sInfoTag}>Age Estimate:</h4>
+      <p className={sInfo}>{calcAge()}</p>
       <h4 className={sInfoTag}>Consent Form</h4>
       <p className={sInfo}>
         <S3DownloadLink fileType="consent" id={student["id"]} text="Download" />

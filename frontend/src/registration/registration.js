@@ -452,6 +452,16 @@ function Registration({ update }) {
   let isUpdate = <CheckBox handleCheckBoxChange={handleCheckBoxChange} />;
   let buttonVal = "Register";
   let accountDelButton = "";
+  let showRegButton = (
+    <RegisterButton
+      check={checkInputs}
+      email={clone(form.email)}
+      preRegister={preRegister}
+      regAction={handleFormSubmit}
+      className={classes.regButton}
+    />
+  );
+  let showUpdateButton = "";
 
   /*
    * 'history' used to render specified pages.
@@ -502,6 +512,8 @@ function Registration({ update }) {
         delObject={delObject}
       />
     );
+    showRegButton = "";
+    showUpdateButton = <input id="regButton" type="submit" value={buttonVal} />;
   }
 
   /*
@@ -561,14 +573,8 @@ function Registration({ update }) {
       />
       <p>{errStr}</p>
       {accountDelButton}
-      <RegisterButton
-        check={checkInputs}
-        email={clone(form.email)}
-        preRegister={preRegister}
-        regAction={handleFormSubmit}
-        className={classes.regButton}
-      />
-      // <input id="regButton" type="submit" value={buttonVal} />
+      {showRegButton}
+      {showUpdateButton}
     </form>
   );
 }
