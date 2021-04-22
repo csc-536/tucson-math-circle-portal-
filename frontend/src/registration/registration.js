@@ -20,6 +20,7 @@ import {
   addProfile,
   updateProfile,
   profile,
+  preRegister,
   register,
   disable,
   updateEmail,
@@ -30,6 +31,7 @@ import { AuthContext } from "../contexts/AuthContext";
 import { isLoggedIn, loggedInRole } from "../utils";
 import { makeStyles } from "@material-ui/core";
 import DeleteButton from "../components/DeleteButton";
+import RegisterButton from "./registerButton";
 import { v4 as uuidv4 } from "uuid";
 
 function Registration({ update }) {
@@ -40,6 +42,14 @@ function Registration({ update }) {
       width: "100px",
       fontSize: "12pt",
       backgroundColor: "#990000",
+      color: "white",
+    },
+    regButton: {
+      marginTop: "10px",
+      float: "right",
+      width: "150px",
+      fontSize: "12pt",
+      backgroundColor: "#154cc5",
       color: "white",
     },
   }));
@@ -225,7 +235,6 @@ function Registration({ update }) {
   ) => {
     errStr = "";
     var mailformat = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
-    var birthFormat = /^([1-9]|1[0-2])\/[0-9]+$/;
     if (!email.match(mailformat)) {
       errStr += "Account email required\n";
     }
@@ -257,15 +266,14 @@ function Registration({ update }) {
       if (student.last_name === "") {
         errStr += "Student " + (i + 1) + ": Last name required\n";
       }
-      console.log(student.age.toString());
-      if (student.age === "" || !student.age.toString().match(birthFormat)) {
-        errStr +=
-          "Student " +
-          (i + 1) +
-          ": Birth date required in format 'month/year'\n";
-      }
       if (student.grade === "select" || student.grade === "") {
         errStr += "Student " + (i + 1) + ": Grade required\n";
+      }
+      if (student.birth_year === 0) {
+        errStr += "Student " + (i + 1) + ": Birth year required\n";
+      }
+      if (student.birth_month === 0) {
+        errStr += "Student " + (i + 1) + ": Birth month required\n";
       }
     });
     guardians.map((guardian, i) => {
@@ -292,13 +300,42 @@ function Registration({ update }) {
 
   const { setAuth } = useContext(AuthContext);
 
+  const checkInputs = () => {
+    console.log("Checking");
+    const {
+      email,
+      password,
+      repassword,
+      newpassword,
+      students,
+      guardians,
+      mailing_lists,
+    } = form;
+    const str = checkFeilds(
+      email,
+      password,
+      repassword,
+      newpassword,
+      students,
+      guardians,
+      checkBox
+    );
+    if (str !== "") {
+      alert(str);
+      return -1;
+    }
+
+    return 0;
+  };
+
   /*
    * Handles the event of the form submission. Prevents the page from refreshing.
    * If property 'update' is true, return to the login page.
    */
   const handleFormSubmit = async (e) => {
-    e.preventDefault();
+    //e.preventDefault();
 
+    console.log("SUBMIT");
     const {
       email,
       password,
@@ -522,7 +559,14 @@ function Registration({ update }) {
       />
       <p>{errStr}</p>
       {accountDelButton}
-      <input id="regButton" type="submit" value={buttonVal} />
+      <RegisterButton
+        check={checkInputs}
+        email={clone(form.email)}
+        preRegister={preRegister}
+        regAction={handleFormSubmit}
+        className={classes.regButton}
+      />
+      // <input id="regButton" type="submit" value={buttonVal} />
     </form>
   );
 }

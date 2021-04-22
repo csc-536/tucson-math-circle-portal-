@@ -33,6 +33,17 @@ auth.interceptors.response.use(
   }
 );
 
+export async function preRegister({ email }) {
+  try {
+    const res = await auth.post("/student/pre_register", {
+      email,
+    });
+    console.log(res);
+  } catch (error) {
+    console.log(error.response);
+  }
+}
+
 export async function register({ email, password, role }) {
   try {
     const res = await auth.post("/student/register", {
