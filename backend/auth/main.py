@@ -143,7 +143,14 @@ async def register(user: UserCreate):
     # otherwise create student
     del preregister_map[user.email]
     student = await create_student(user)
-    return student
+
+    # return access_token on registration
+    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MIN)
+    access_token = create_access_token(
+        data={"sub": str(student.id), "role": student.role},
+        expires_delta=access_token_expires,
+    )
+    return {"access_token": access_token, "token_type": "bearer"}
 
 
 @app.post("/student/pre_register")
@@ -155,6 +162,10 @@ async def preregister(pre_register: PreRegister, background_task: BackgroundTask
     verification_code = ""
     for _ in range(4):
         verification_code += str(random.randint(0, 9))
+
+    print("**********************************************")
+    print(f"YOUR VERIFICATION CODE IS: {verification_code}")
+    print("**********************************************")
 
     global preregister_map
     preregister_map[pre_register.email] = verification_code
