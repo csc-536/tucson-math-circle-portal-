@@ -1,7 +1,7 @@
 ## Backend hosting
 - Main server located at `https://tucson-math-circle-main.herokuapp.com`
 - Auth server located at `https://tucson-math-circle-auth.herokuapp.com`
-* Go to `/docs` if you would like to see FastAPI docs 
+- Go to `/docs` if you would like to see FastAPI docs 
 
 #### Initial backend setup for Heroku
 - Use Multi-Procfile [buildpack](https://elements.heroku.com/buildpacks/heroku/heroku-buildpack-multi-procfile)
