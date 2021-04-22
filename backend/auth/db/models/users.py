@@ -18,7 +18,12 @@ class User(BaseModel):
     disabled: Optional[bool] = None
 
 
+class PreRegister(BaseModel):
+    email: EmailStr
+
+
 class UserCreate(User):
+    verification_code: str
     password: str
 
     @validator("password")

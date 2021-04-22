@@ -1,5 +1,8 @@
+from typing import Dict
+
 # hack to add project directory to path and make modules work nicely
 import sys
+import random
 from pathlib import Path
 
 PROJECTS_DIR = Path(__file__).resolve().parents[2]
@@ -9,9 +12,10 @@ sys.path.append(str(PROJECTS_DIR))
 from datetime import timedelta
 
 import toml
-from fastapi import FastAPI, Depends, HTTPException, status, Body
+from fastapi import FastAPI, Depends, HTTPException, status, Body, BackgroundTasks
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.middleware.cors import CORSMiddleware
+from starlette.responses import JSONResponse
 import uvicorn
 
 from backend.auth.dependencies import (
@@ -33,13 +37,23 @@ from backend.auth.db.main import (
     update_password_by_id,
     update_disabled_by_id,
 )
-from backend.auth.db.models.users import User, UserInDB, UserUpdate
+from backend.auth.db.models.users import (
+    User,
+    UserInDB,
+    UserUpdate,
+    PreRegister,
+    UserCreate,
+)
+
+from backend.main.email_handler.email_handler import EmailSchema, email_handler
 
 # get the config file path
 CONFIG_PATH = Path(__file__).resolve().parent.joinpath("db-config.toml")
 print("Using CONFIG_PATH:", CONFIG_PATH)
 
 config = toml.load(str(CONFIG_PATH))
+
+preregister_map: Dict[str, str] = {}
 
 
 app = FastAPI()
@@ -121,8 +135,52 @@ async def read_own_items(current_user: User = Depends(get_current_student)):
 
 # Student POST endpoints
 @app.post("/student/register")
-async def register(user: User = Depends(create_student)):
-    return user
+async def register(user: UserCreate):
+    global preregister_map
+    if user.verification_code != preregister_map[user.email]:
+        raise HTTPException(status_code=400, detail="Verification code does not match")
+
+    # otherwise create student
+    del preregister_map[user.email]
+    student = await create_student(user)
+    return student
+
+
+@app.post("/student/pre_register")
+async def preregister(pre_register: PreRegister, background_task: BackgroundTasks):
+    existing_user = await get_user_by_email(pre_register.email)
+    if existing_user:
+        raise HTTPException(status_code=400, detail="Email is already taken")
+
+    verification_code = ""
+    for _ in range(4):
+        verification_code += str(random.randint(0, 9))
+
+    global preregister_map
+    preregister_map[pre_register.email] = verification_code
+
+    # send email with verification_code
+    body = (
+        """
+        <html>
+            <body>
+            <h3>Welcome to the Tucson Math Circle!</h3>
+        """
+        + """ <p>Please enter the below verification code to verify your account.  You will also need to upload a signed consent form for your student(s) before they can register for any meetings.  The consent form can be downloaded on your account profile page.</p>
+        """
+        + f"<p><b>Verification Code</b>: {verification_code}</p>"
+        + """
+            </body>
+        </html>
+        """
+    )
+    new_email = EmailSchema(
+        receivers=[pre_register.email],
+        subject="Verify your Tucson Math Circle account",
+        body=body,
+    )
+    background_task.add_task(email_handler, background_task, new_email)
+    return JSONResponse(status_code=200, content={"message": "Verification email sent"})
 
 
 # Student PUT endpoints
