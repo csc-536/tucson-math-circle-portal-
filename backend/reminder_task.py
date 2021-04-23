@@ -7,6 +7,7 @@ from backend.main.db.docs.meeting_doc import MeetingDocument
 from typing import List
 import datetime
 
+
 db_username = "dbtesting"
 db_password = "9bsvzutjWZfjgaxE"
 db_uri = "mongodb+srv://{username}:{password}@cluster0.wjvcq.mongodb.net/{database}?retryWrites=true&w=majority"
