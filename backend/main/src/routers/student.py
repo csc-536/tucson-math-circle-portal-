@@ -119,7 +119,9 @@ def update_student_document(student_doc: StudentDocument, updates: StudentUpdate
     student_doc.first_name = updates.first_name
     student_doc.last_name = updates.last_name
     student_doc.grade = updates.grade
-    student_doc.age = updates.age
+    student_doc.birth_month = updates.birth_month
+    student_doc.birth_year = updates.birth_year
+    student_doc.consent_form_object_name = updates.consent_form_object_name
     student_doc.save()
 
 

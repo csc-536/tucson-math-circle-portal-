@@ -25,7 +25,8 @@ const NewMeeting = () => {
     duration: "",
     topic: "",
     sessionLevel: "",
-    material: "",
+    materials_object_name: "",
+    materials_uploaded: false,
     zoomLink: "",
     miroLink: "",
     notes: "",
@@ -38,7 +39,8 @@ const NewMeeting = () => {
       zoomLink,
       sessionLevel,
       topic,
-      material,
+      materials_object_name,
+      materials_uploaded,
       miroLink,
       date,
       duration,
@@ -49,12 +51,14 @@ const NewMeeting = () => {
     try {
       const res = await addMeeting({
         date_and_time: date,
-        duration: new Date(date.getTime() + toNumber(duration) * 60000),
+        duration,
         zoom_link: zoomLink,
         session_level: sessionLevel,
         topic,
         miro_link: miroLink,
         meeting_password: "string",
+        materials_object_name,
+        materials_uploaded,
       });
       console.log(res.data);
       history.push("/meetings");

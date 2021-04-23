@@ -6,6 +6,7 @@ import { Button } from "@material-ui/core";
 import SaveIcon from "@material-ui/icons/Save";
 import { registerMeeting } from "../http";
 import { clone } from "lodash";
+import S3DownloadLink from "./S3DownloadLink";
 
 const Meeting = forwardRef(
   (
@@ -17,15 +18,20 @@ const Meeting = forwardRef(
         topic,
         zoom_link,
         miro_link,
-        materials_link,
         registrations,
         student_notes,
         setRegistrations,
         handleClose,
+        materials_uploaded,
+        past,
+        duration,
+        // zoom_password,
       },
+      // past,
     },
     ref
   ) => {
+    // console.log(ref);
     const initalStudents = registrations.map(
       ({ first_name, last_name, registered, id }) => {
         return {
@@ -58,12 +64,15 @@ const Meeting = forwardRef(
       }
       handleClose();
     };
-
+    console.log(materials_uploaded);
+    console.log(past);
     return (
       <div ref={ref}>
         <h2 id="meeting-title">Meeting</h2>
         <h3 id="transition-modal-title">When is the meeting?</h3>
         <p id="transition-modal-description">{date}</p>
+        <h3>How long is the meeting?</h3>
+        <p>{duration} Minutes</p>
         <h3>What is the meeting level?</h3>
         <p>{sessionLevel}</p>
         <h3>What are the topics?</h3>
@@ -73,13 +82,17 @@ const Meeting = forwardRef(
           Join us on <a href={zoom_link}>Zoom</a> and{" "}
           <a href={miro_link}>Miro</a>
         </p>
-        <h3>Need meeting materials?</h3>
-        <p>
-          Download meeting materials{" "}
-          <a href={materials_link}>
-            <b>here</b>
-          </a>
-        </p>
+        {materials_uploaded ? (
+          <>
+            <h3>Need meeting materials?</h3>
+            <p>
+              Download meeting materials{" "}
+              <S3DownloadLink fileType="material" id={uuid} text="here" />
+            </p>
+          </>
+        ) : (
+          ""
+        )}
 
         {student_notes !== null ? (
           <>
@@ -101,6 +114,7 @@ const Meeting = forwardRef(
               <StudentAttendingTable
                 students={students}
                 setStudents={setStudents}
+                disabled={past}
               />
             </FormGroup>
             <Button
