@@ -130,7 +130,7 @@ def randomly_generate_four_digit_code():
     val2 = random.randint(0, 9)
     val3 = random.randint(0, 9)
     val4 = random.randint(0, 9)
-    return val1 + 10*val2 + 100*val3 + 1000*val4
+    return val1 + 10 * val2 + 100 * val3 + 1000 * val4
 
 
 # GET routes
