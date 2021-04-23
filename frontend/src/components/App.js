@@ -12,53 +12,70 @@ import { isLoggedIn, loggedInRole } from "../utils";
 import MeetingInfo from "../pages/MeetingInfo";
 import { makeStyles } from "@material-ui/core";
 import Logout from "../pages/Logout";
+import { meetingContext } from "../contexts/meetingContext";
 
 const useStyles = makeStyles((theme) => ({
-  container: {
-    marginBottom: theme.spacing(3),
-  },
+    container: {
+        marginBottom: theme.spacing(3),
+    },
 }));
 
 function App() {
-  const classes = useStyles();
-  const [auth, setAuth] = useState({
-    userLoggedIn: isLoggedIn(),
-    role: loggedInRole(),
-  });
-  const providerUser = useMemo(() => ({ auth, setAuth }));
-  return (
-    <AuthContext.Provider value={providerUser}>
-      <Router>
-        <NavBar />
-        <br />
-        <br />
-        <br />
-        <br />
-        <Container fixed className={classes.container}>
-          <Route exact path="/" component={Login} />
-          <Route
-            exact
-            path="/signup"
-            render={() => <Registration update={false} />}
-          />
-          <Route
-            exact
-            path="/profile"
-            render={() => <Registration update={true} />}
-          />
-          <Route exact path="/logout" component={Logout} />
-          <Route exact path="/new-meeting" component={NewMeeting} />
-          <Route exact path="/meetings" component={Meetings} />
-          <Route exact path="/meeting" component={MeetingInfo} />
-          <Route exact path="/allStudents" component={AllStudents} />
-        </Container>
-        <br />
-        <br />
-        <br />
-        <br />
-      </Router>
-    </AuthContext.Provider>
-  );
+    const classes = useStyles();
+    const [auth, setAuth] = useState({
+        userLoggedIn: isLoggedIn(),
+        role: loggedInRole(),
+    });
+
+    const [filter, setFilter] = useState({
+        dates: [],
+        session_levels: ["junior_a", "junior_b", "senior"],
+    });
+    const providerUser = useMemo(() => ({ auth, setAuth }));
+    const providerFiler = useMemo(() => ({ filter, setFilter }));
+    return (
+        <AuthContext.Provider value={providerUser}>
+            <meetingContext.Provider value={providerFiler}>
+                <Router>
+                    <NavBar />
+                    <br />
+                    <br />
+                    <br />
+                    <br />
+                    <Container fixed className={classes.container}>
+                        <Route exact path="/" component={Login} />
+                        <Route
+                            exact
+                            path="/signup"
+                            render={() => <Registration update={false} />}
+                        />
+                        <Route
+                            exact
+                            path="/profile"
+                            render={() => <Registration update={true} />}
+                        />
+                        <Route exact path="/logout" component={Logout} />
+                        <Route
+                            exact
+                            path="/new-meeting"
+                            component={NewMeeting}
+                        />
+                        <Route exact path="/meetings" component={Meetings} />
+                        <Route exact path="/meeting" component={MeetingInfo} />
+                        <Route
+                            exact
+                            path="/allStudents"
+                            component={AllStudents}
+                        />
+                    </Container>
+                    <br />
+                    <br />
+                    <br />
+                    <br />
+                </Router>
+            </meetingContext.Provider>
+        </AuthContext.Provider>
+    );
 }
 
 export default App;
