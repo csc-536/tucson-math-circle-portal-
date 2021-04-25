@@ -1,5 +1,4 @@
 from mongoengine import connect
-from fastapi import BackgroundTasks
 from starlette.responses import JSONResponse
 from fastapi_mail import FastMail, MessageSchema, ConnectionConfig
 from pydantic import BaseModel, EmailStr, Field
@@ -48,7 +47,7 @@ class EmailSchema(BaseModel):
     body: str = Field()
 
 
-async def send_reminders(background_task: BackgroundTasks):
+def send_reminders():
     meetings = MeetingDocument.objects()
     curr_time = datetime.datetime.now()
     day_later = curr_time + datetime.timedelta(days=1)
@@ -73,11 +72,11 @@ async def send_reminders(background_task: BackgroundTasks):
                     </html>
                     """
             )
-            background_task.add_task(reminder_email, background_task, meeting, body)
+            reminder_email(meeting, body)
 
 
-async def reminder_email(
-    background_task: BackgroundTasks, meeting: MeetingDocument, body: str
+def reminder_email(
+    meeting: MeetingDocument, body: str
 ) -> JSONResponse:
     receivers = []
     for student in meeting.students:
@@ -94,6 +93,6 @@ async def reminder_email(
 
     fm = FastMail(conf)
 
-    background_task.add_task(fm.send_message, message)
+    fm.send_message(message)
 
     return JSONResponse(status_code=200, content={"message": "email has been sent"})
