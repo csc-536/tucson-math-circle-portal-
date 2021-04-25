@@ -96,3 +96,7 @@ def reminder_email(
     fm.send_message(message)
 
     return JSONResponse(status_code=200, content={"message": "email has been sent"})
+
+
+if __name__ == "__main__":
+    send_reminders()
