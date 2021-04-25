@@ -1,5 +1,16 @@
-from mongoengine import connect
+# hack to add project directory to path and make modules work nicely
+import sys
+from pathlib import Path
+
+PROJECTS_DIR = Path(__file__).resolve().parents[1]
+print("Appending PROJECTS_DIR to PATH:", PROJECTS_DIR)
+sys.path.append(str(PROJECTS_DIR))
+# end hack
+
+import toml
+
 from fastapi import BackgroundTasks
+from mongoengine import connect
 from starlette.responses import JSONResponse
 from fastapi_mail import FastMail, MessageSchema, ConnectionConfig
 from pydantic import BaseModel, EmailStr, Field
@@ -7,12 +18,17 @@ from backend.main.db.docs.meeting_doc import MeetingDocument
 from typing import List
 import datetime
 
+# get the config file path
+CONFIG_PATH = Path(__file__).resolve().parent.joinpath("auth/db-config.toml")
+print("Using CONFIG_PATH:", CONFIG_PATH)
 
-db_username = "dbtesting"
-db_password = "9bsvzutjWZfjgaxE"
-db_uri = "mongodb+srv://{username}:{password}@cluster0.wjvcq.mongodb.net/{database}?retryWrites=true&w=majority"
-student_db = "student_db"
-meeting_db = "meeting_db"
+config = toml.load(str(CONFIG_PATH))
+
+db_username = config["atlas-username"]
+db_password = config["atlas-password"]
+db_uri = config["connection-uri"]
+meeting_db = config["meeting-db"]
+student_db = config["student-db"]
 
 connect(
     alias="student-db",
@@ -27,9 +43,9 @@ connect(
     uuidRepresentation="standard",
 )
 
-email_username = "admin@gmail.com"
-email_password = "password"
-admin_email = "admin@gmail.com"
+email_username = config["email-username"]
+email_password = config["email-password"]
+admin_email = config["admin-email"]
 
 conf = ConnectionConfig(
     MAIL_USERNAME=email_username,
