@@ -8,10 +8,9 @@ sys.path.append(str(PROJECTS_DIR))
 # end hack
 
 import toml
+import asyncio
 
-from fastapi import BackgroundTasks
 from mongoengine import connect
-from starlette.responses import JSONResponse
 from fastapi_mail import FastMail, MessageSchema, ConnectionConfig
 from pydantic import BaseModel, EmailStr, Field
 from backend.main.db.docs.meeting_doc import MeetingDocument
@@ -64,21 +63,28 @@ class EmailSchema(BaseModel):
     body: str = Field()
 
 
-async def send_reminders(background_task: BackgroundTasks):
+async def send_reminders():
+    print("Running")
     meetings = MeetingDocument.objects()
-    curr_time = datetime.datetime.now()
-    day_later = curr_time + datetime.timedelta(days=1)
+    curr_date = datetime.datetime.now().date()
+    day_later = curr_date + datetime.timedelta(days=1)
     for meeting in meetings:
-        if curr_time < meeting.date_and_time < day_later:
+        if meeting.date_and_time.date() == day_later:
+            meeting_time = meeting.date_and_time.strftime("%I:%M")
+            meeting_date = meeting.date_and_time.date()
+            meeting_end = meeting.date_and_time + datetime.timedelta(
+                minutes=meeting.duration
+            )
+            meeting_end = meeting_end.strftime("%I:%M")
             body = (
                 """
                     <html>
                         <body>
-                            <p>This is a reminder that there is a meeting today that you are RSVP to.
-                            <br>The following meeting information is provided below.</p>
+                        <h3>Please join us for the Tucson Math Circle meeting tomorrow!</h3>
+                            <p>Please see below for the meeting information.</p>
                     """
-                + f"<p>Date: {meeting.date_and_time.date}"
-                + f"<br>Time: {meeting.date_and_time.time}-{meeting.duration.time}"
+                + f"<p>Date: {meeting_date}"
+                + f"<br>Time: {meeting_time} -- {meeting_end}"
                 + f"<br>Topic: {meeting.topic}"
                 + f"<br>Zoom Link: {meeting.zoom_link}"
                 + f"<br>Zoom Password: {meeting.password}"
@@ -89,17 +95,17 @@ async def send_reminders(background_task: BackgroundTasks):
                     </html>
                     """
             )
-            background_task.add_task(reminder_email, background_task, meeting, body)
+            await reminder_email(meeting, body)
 
 
-async def reminder_email(
-    background_task: BackgroundTasks, meeting: MeetingDocument, body: str
-) -> JSONResponse:
+async def reminder_email(meeting: MeetingDocument, body: str):
     receivers = []
     for student in meeting.students:
-        receivers.append(student.email)
+        receivers.append(student["email"])
 
-    email = EmailSchema(receivers=receivers, subject="Meeting Reminder", body=body)
+    email = EmailSchema(
+        receivers=receivers, subject="Tucson Math Circle Meeting Reminder", body=body
+    )
 
     message = MessageSchema(
         subject=email.subject,
@@ -110,6 +116,10 @@ async def reminder_email(
 
     fm = FastMail(conf)
 
-    background_task.add_task(fm.send_message, message)
+    await fm.send_message(message)
 
-    return JSONResponse(status_code=200, content={"message": "email has been sent"})
+    # return JSONResponse(status_code=200, content={"message": "email has been sent"})
+
+
+if __name__ == "__main__":
+    asyncio.run(send_reminders())
