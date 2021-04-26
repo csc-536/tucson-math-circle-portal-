@@ -190,18 +190,18 @@ function Registration({ update }) {
   };
 
   const handleAddConsentForm = (objectKey, i) => {
-    console.log(objectKey);
+    // console.log(objectKey);
     // console.log(i);
-    console.log(form.students.length);
+    // console.log(form.students.length);
     if (form.students.length > 0) {
       const students = clone(form.students);
       students[i]["consent_form_object_name"] = objectKey;
       console.log(students);
       setForm({ ...form, students });
     }
-    console.log(form);
+    // console.log(form);
   };
-  console.log(form);
+  // console.log(form);
   /*
    * Pushes page path to the meetings page.
    */
@@ -270,10 +270,11 @@ function Registration({ update }) {
       if (student.grade === "select" || student.grade === "") {
         errStr += "Student " + (i + 1) + ": Grade required\n";
       }
-      if (student.birth_year === 0) {
+      if (student.birth_year === undefined || student.birth_year == 0) {
         errStr += "Student " + (i + 1) + ": Birth year required\n";
       }
-      if (student.birth_month === 0) {
+      console.log(student.birth_month);
+      if (student.birth_month === undefined || student.birth_month == 0) {
         errStr += "Student " + (i + 1) + ": Birth month required\n";
       }
     });
@@ -396,8 +397,10 @@ function Registration({ update }) {
         history.push("/profile");
       } catch (error) {
         console.log(error.response);
+        return -1;
       }
     }
+    return 0;
   };
 
   /*
@@ -412,7 +415,7 @@ function Registration({ update }) {
   const studentList = form.students.map((student, i) => {
     return (
       <StudentInfo
-        key={i}
+        key={"student" + i}
         student={student}
         update={update}
         handleOnChange={(e) => {
@@ -434,7 +437,7 @@ function Registration({ update }) {
   const guardianList = form.guardians.map((guardian, i) => {
     return (
       <GuardianInfo
-        key={i}
+        key={"guardian" + i}
         guardian={guardian}
         handleOnChange={(e) => handleOnChange(e, i, "guardians")}
         handleRemGuardian={(e) => handleRemGuardian(e, i)}

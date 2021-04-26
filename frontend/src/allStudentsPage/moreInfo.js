@@ -36,7 +36,7 @@ function MoreInfo({ sInfoTag, sInfo, student, account }) {
       <h1>Guardian Info</h1>
       {account["guardians"].map((guardian, i) => {
         return (
-          <div>
+          <div key={"guardian" + i}>
             <h2>Guardian {i}</h2>
             <h4 className={sInfoTag}>First Name:</h4>
             <p className={sInfo}>{guardian["first_name"]}</p>

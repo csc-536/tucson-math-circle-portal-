@@ -53,24 +53,18 @@ const RegisterButton = ({
   };
 
   const handleValidate = () => {
-    // if (input === "0000") {
     console.log(input);
-    regAction(input);
-    handleClose();
-    // }
+    regAction(input).then((result) => {
+      if (result == -1) {
+        alert(
+          "Either your account email is already taken or the four digit code was incorrect"
+        );
+        return;
+      } else {
+        handleClose();
+      }
+    });
   };
-
-  // const preReg = async () => {
-  //   console.log(email);
-  //   try {
-  //     await preRegister({ email });
-  //     console.log("EMAIL SENT");
-  //   } catch (error) {
-  //     console.log(error.response);
-  //   }
-  // }
-
-  // preReg();
 
   return (
     <div>
@@ -89,7 +83,7 @@ const RegisterButton = ({
         onClose={handleClose}
         aria-labelledby="form-dialog-title"
       >
-        <DialogTitle id="form-dialog-title">Whoa, there!</DialogTitle>
+        <DialogTitle id="form-dialog-title">Email Verification</DialogTitle>
         <DialogContent>
           <DialogContentText className={classes.dialogContentText}>
             A verification email has been sent to you account email address.

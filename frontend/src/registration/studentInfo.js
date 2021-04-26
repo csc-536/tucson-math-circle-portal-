@@ -99,10 +99,18 @@ function StudentInfo({
   const yearOptions = [];
 
   const generateYears = () => {
-    yearOptions.push(<option value={0}>Select</option>);
+    yearOptions.push(
+      <option key="yearSelect-1" value={0}>
+        Select
+      </option>
+    );
     for (let i = 0; i < 100; i++) {
       const year = currYear - i;
-      yearOptions.push(<option value={year}>{year}</option>);
+      yearOptions.push(
+        <option key={"yearSelect" + i} value={year}>
+          {year}
+        </option>
+      );
     }
   };
 
