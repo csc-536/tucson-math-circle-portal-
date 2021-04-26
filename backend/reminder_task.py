@@ -65,7 +65,7 @@ class EmailSchema(BaseModel):
 
 async def send_reminders():
     session_level_names = {}
-    session_level_names['junior_a'] = "Junior (A)"
+    session_level_names["junior_a"] = "Junior (A)"
     session_level_names["junior_b"] = "Junior (B)"
     session_level_names["senior"] = "Senior"
 
