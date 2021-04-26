@@ -64,12 +64,15 @@ class EmailSchema(BaseModel):
 
 
 async def send_reminders():
-    print("Running")
+    session_level_names = {}
+    session_level_names['junior_a'] = "Junior (A)"
+    session_level_names["junior_b"] = "Junior (B)"
+    session_level_names["senior"] = "Senior"
+
     meetings = MeetingDocument.objects()
     curr_date = datetime.datetime.now().date()
-    day_later = curr_date + datetime.timedelta(days=1)
     for meeting in meetings:
-        if meeting.date_and_time.date() == day_later:
+        if meeting.date_and_time.date() == curr_date:
             meeting_time = meeting.date_and_time.strftime("%I:%M")
             meeting_date = meeting.date_and_time.date()
             meeting_end = meeting.date_and_time + datetime.timedelta(
@@ -77,10 +80,10 @@ async def send_reminders():
             )
             meeting_end = meeting_end.strftime("%I:%M")
             body = (
-                """
+                f"""
                     <html>
                         <body>
-                        <h3>Please join us for the Tucson Math Circle meeting tomorrow!</h3>
+                        <h3>Join us for the {session_level_names[meeting.session_level]} Math Circle meeting today!</h3>
                             <p>Please see below for the meeting information.</p>
                     """
                 + f"<p>Date: {meeting_date}"
@@ -89,7 +92,6 @@ async def send_reminders():
                 + f"<br>Zoom Link: {meeting.zoom_link}"
                 + f"<br>Zoom Password: {meeting.password}"
                 + f"<br>Miro Link: {meeting.miro_link}"
-                + f"<br>Session Level: {meeting.session_level}</p>"
                 + """
                         </body>
                     </html>
