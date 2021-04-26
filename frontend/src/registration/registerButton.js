@@ -39,13 +39,18 @@ const RegisterButton = ({
 
     console.log(email);
     try {
-      await preRegister({ email });
+      await preRegister({ email }).then((result) => {
+        if (result == -1) {
+          alert("Account email already taken");
+          setOpen(false);
+        } else {
+          setOpen(true);
+        }
+      });
       console.log("EMAIL SENT");
     } catch (error) {
       console.log(error.response);
     }
-
-    setOpen(true);
   };
 
   const handleClose = () => {
@@ -56,9 +61,7 @@ const RegisterButton = ({
     console.log(input);
     regAction(input).then((result) => {
       if (result == -1) {
-        alert(
-          "Either your account email is already taken or the four digit code was incorrect"
-        );
+        alert("Incorrect four digit code");
         return;
       } else {
         handleClose();

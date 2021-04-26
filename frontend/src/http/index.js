@@ -39,8 +39,10 @@ export async function preRegister({ email }) {
       email,
     });
     console.log(res);
+    return 0;
   } catch (error) {
     console.log(error.response);
+    return -1;
   }
 }
 

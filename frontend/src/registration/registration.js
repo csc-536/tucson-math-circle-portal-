@@ -270,12 +270,11 @@ function Registration({ update }) {
       if (student.grade === "select" || student.grade === "") {
         errStr += "Student " + (i + 1) + ": Grade required\n";
       }
-      if (student.birth_year === undefined || student.birth_year == 0) {
-        errStr += "Student " + (i + 1) + ": Birth year required\n";
-      }
-      console.log(student.birth_month);
       if (student.birth_month === undefined || student.birth_month == 0) {
         errStr += "Student " + (i + 1) + ": Birth month required\n";
+      }
+      if (student.birth_year === undefined || student.birth_year == 0) {
+        errStr += "Student " + (i + 1) + ": Birth year required\n";
       }
     });
     guardians.map((guardian, i) => {
