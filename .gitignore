@@ -1,4 +1,5 @@
 .idea
+.vim
 Pipfile
 Pipfile.lock
 backend/.coverage

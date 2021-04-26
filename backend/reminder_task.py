@@ -1,17 +1,33 @@
+# hack to add project directory to path and make modules work nicely
+import sys
+from pathlib import Path
+
+PROJECTS_DIR = Path(__file__).resolve().parents[1]
+print("Appending PROJECTS_DIR to PATH:", PROJECTS_DIR)
+sys.path.append(str(PROJECTS_DIR))
+# end hack
+
+import toml
+import asyncio
+
 from mongoengine import connect
-from starlette.responses import JSONResponse
 from fastapi_mail import FastMail, MessageSchema, ConnectionConfig
 from pydantic import BaseModel, EmailStr, Field
 from backend.main.db.docs.meeting_doc import MeetingDocument
 from typing import List
 import datetime
 
+# get the config file path
+CONFIG_PATH = Path(__file__).resolve().parent.joinpath("auth/db-config.toml")
+print("Using CONFIG_PATH:", CONFIG_PATH)
 
-db_username = "dbtesting"
-db_password = "9bsvzutjWZfjgaxE"
-db_uri = "mongodb+srv://{username}:{password}@cluster0.wjvcq.mongodb.net/{database}?retryWrites=true&w=majority"
-student_db = "student_db"
-meeting_db = "meeting_db"
+config = toml.load(str(CONFIG_PATH))
+
+db_username = config["atlas-username"]
+db_password = config["atlas-password"]
+db_uri = config["connection-uri"]
+meeting_db = config["meeting-db"]
+student_db = config["student-db"]
 
 connect(
     alias="student-db",
@@ -26,9 +42,9 @@ connect(
     uuidRepresentation="standard",
 )
 
-email_username = "admin@gmail.com"
-email_password = "password"
-admin_email = "admin@gmail.com"
+email_username = config["email-username"]
+email_password = config["email-password"]
+admin_email = config["admin-email"]
 
 conf = ConnectionConfig(
     MAIL_USERNAME=email_username,
@@ -47,42 +63,51 @@ class EmailSchema(BaseModel):
     body: str = Field()
 
 
-def send_reminders():
+async def send_reminders():
+    session_level_names = {}
+    session_level_names["junior_a"] = "Junior (A)"
+    session_level_names["junior_b"] = "Junior (B)"
+    session_level_names["senior"] = "Senior"
+
     meetings = MeetingDocument.objects()
-    curr_time = datetime.datetime.now()
-    day_later = curr_time + datetime.timedelta(days=1)
+    curr_date = datetime.datetime.now().date()
     for meeting in meetings:
-        if curr_time < meeting.date_and_time < day_later:
+        if meeting.date_and_time.date() == curr_date:
+            meeting_time = meeting.date_and_time.strftime("%I:%M")
+            meeting_date = meeting.date_and_time.date()
+            meeting_end = meeting.date_and_time + datetime.timedelta(
+                minutes=meeting.duration
+            )
+            meeting_end = meeting_end.strftime("%I:%M")
             body = (
-                """
+                f"""
                     <html>
                         <body>
-                            <p>This is a reminder that there is a meeting today that you are RSVP to.
-                            <br>The following meeting information is provided below.</p>
+                        <h3>Join us for the {session_level_names[meeting.session_level]} Math Circle meeting today!</h3>
+                            <p>Please see below for the meeting information.</p>
                     """
-                + f"<p>Date: {meeting.date_and_time.date}"
-                + f"<br>Time: {meeting.date_and_time.time}-{meeting.duration.time}"
+                + f"<p>Date: {meeting_date}"
+                + f"<br>Time: {meeting_time} -- {meeting_end}"
                 + f"<br>Topic: {meeting.topic}"
                 + f"<br>Zoom Link: {meeting.zoom_link}"
                 + f"<br>Zoom Password: {meeting.password}"
                 + f"<br>Miro Link: {meeting.miro_link}"
-                + f"<br>Session Level: {meeting.session_level}</p>"
                 + """
                         </body>
                     </html>
                     """
             )
-            reminder_email(meeting, body)
+            await reminder_email(meeting, body)
 
 
-def reminder_email(
-    meeting: MeetingDocument, body: str
-) -> JSONResponse:
+async def reminder_email(meeting: MeetingDocument, body: str):
     receivers = []
     for student in meeting.students:
-        receivers.append(student.email)
+        receivers.append(student["email"])
 
-    email = EmailSchema(receivers=receivers, subject="Meeting Reminder", body=body)
+    email = EmailSchema(
+        receivers=receivers, subject="Tucson Math Circle Meeting Reminder", body=body
+    )
 
     message = MessageSchema(
         subject=email.subject,
@@ -93,10 +118,10 @@ def reminder_email(
 
     fm = FastMail(conf)
 
-    fm.send_message(message)
+    await fm.send_message(message)
 
-    return JSONResponse(status_code=200, content={"message": "email has been sent"})
+    # return JSONResponse(status_code=200, content={"message": "email has been sent"})
 
 
 if __name__ == "__main__":
-    send_reminders()
+    asyncio.run(send_reminders())
