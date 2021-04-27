@@ -3,6 +3,7 @@ from starlette.responses import JSONResponse
 from fastapi import Depends, APIRouter, HTTPException, status
 from backend.main.email_handler.email_handler import EmailSchema, email_handler
 from pydantic import UUID4
+import random
 
 # main db imports
 from backend.main.db.models.student_profile_model import (
@@ -124,6 +125,14 @@ def update_student_document(student_doc: StudentDocument, updates: StudentUpdate
     student_doc.save()
 
 
+def randomly_generate_four_digit_code():
+    val1 = random.randint(0, 9)
+    val2 = random.randint(0, 9)
+    val3 = random.randint(0, 9)
+    val4 = random.randint(0, 9)
+    return val1 + 10 * val2 + 100 * val3 + 1000 * val4
+
+
 # GET routes
 @router.get("/get_my_profile")
 def get_current_user_profile(token_data: TokenData = Depends(get_student_token_data)):
@@ -203,16 +212,16 @@ def send_verification_email(
     token_data: TokenData = Depends(get_student_token_data),
 ):
     current_user = get_current_user_doc(token_data)
-    verification_url = "This/Is/The/Verification/Url"
+    verification_code = randomly_generate_four_digit_code()
     consent_form_url = "This/Is/The/Consent/Form/Url"
     body = (
         """
         <html>
             <body>
                 <p>This email was sent to verify your Tucson Math Circle account</p>
-                <p>Please click on the link below to verify your account.</p>
+                <p>Below is the 4 digit code that you need to enter to verify your account.</p>
         """
-        + f"<p>{verification_url}</p>"
+        + f"<p>{verification_code}</p>"
         f"<p>The following link is the link to "
         f"the consent form that you have to fill out and upload to your account</p>"
         f"<p>{consent_form_url}</p>"

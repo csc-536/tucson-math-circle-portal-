@@ -34,12 +34,26 @@ auth.interceptors.response.use(
     }
 );
 
-export async function register({ email, password, role }) {
+export async function preRegister({ email }) {
+    try {
+        const res = await auth.post("/student/pre_register", {
+            email,
+        });
+        console.log(res);
+        return 0;
+    } catch (error) {
+        console.log(error.response);
+        return -1;
+    }
+}
+
+export async function register({ email, password, role, verification_code }) {
     try {
         const res = await auth.post("/student/register", {
             email,
             password,
             role,
+            verification_code,
         });
         console.log(res);
         await login({ username: email, password });
@@ -169,7 +183,7 @@ export async function allMeetings({ role, body }) {
 export async function addMeeting(data) {
     const accessToken = sessionStorage.getItem("accessToken");
     console.log(accessToken);
-
+    console.log(data);
     const res = await main.post("/admin/create_meeting", data, {
         headers: {
             Authorization: `Bearer ${accessToken}`,

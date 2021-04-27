@@ -7,16 +7,22 @@ import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import { makeStyles } from "@material-ui/core";
-import { DeleteForever } from "@material-ui/icons";
+import { ArrowForward } from "@material-ui/icons";
 
 const useStyles = makeStyles({
   dialogContentText: {
     textAlign: "center",
-    color: "red",
+    color: "blue",
   },
 });
 
-const DeleteButton = ({ deleteAction, className, delObject }) => {
+const RegisterButton = ({
+  check,
+  email,
+  preRegister,
+  regAction,
+  className,
+}) => {
   const classes = useStyles();
   const [open, setOpen] = useState(false);
   const [input, setInput] = useState("");
@@ -25,24 +31,43 @@ const DeleteButton = ({ deleteAction, className, delObject }) => {
     setInput(e.target.value);
   };
 
-  const handleClickOpen = () => {
-    setOpen(true);
+  const handleClickOpen = async () => {
+    if (check() === -1) {
+      handleClose();
+      return;
+    }
+
+    console.log(email);
+    try {
+      await preRegister({ email }).then((result) => {
+        if (result == -1) {
+          alert("Account email already taken");
+          setOpen(false);
+        } else {
+          setOpen(true);
+        }
+      });
+      console.log("EMAIL SENT");
+    } catch (error) {
+      console.log(error.response);
+    }
   };
 
   const handleClose = () => {
     setOpen(false);
   };
 
-  const handleDelete = () => {
-    if (input === "DELETE") {
-      deleteAction();
-      handleClose();
-    }
+  const handleValidate = () => {
+    console.log(input);
+    regAction(input).then((result) => {
+      if (result == -1) {
+        alert("Incorrect four digit code");
+        return;
+      } else {
+        handleClose();
+      }
+    });
   };
-
-  if (delObject === null || delObject === undefined) {
-    delObject = "this";
-  }
 
   return (
     <div>
@@ -50,22 +75,22 @@ const DeleteButton = ({ deleteAction, className, delObject }) => {
         variant="contained"
         color="secondary"
         className={className}
-        startIcon={<DeleteForever />}
+        startIcon={<ArrowForward />}
         onClick={handleClickOpen}
         disableElevation
       >
-        Delete
+        REGISTER
       </Button>
       <Dialog
         open={open}
         onClose={handleClose}
         aria-labelledby="form-dialog-title"
       >
-        <DialogTitle id="form-dialog-title">Whoa, there!</DialogTitle>
+        <DialogTitle id="form-dialog-title">Email Verification</DialogTitle>
         <DialogContent>
           <DialogContentText className={classes.dialogContentText}>
-            Once you delete {delObject}, there is no going back. <br /> Are you
-            sure you want to do this?
+            A verification email has been sent to you account email address.
+            Enter the four digit code to finish logging in:
           </DialogContentText>
 
           <TextField
@@ -74,7 +99,7 @@ const DeleteButton = ({ deleteAction, className, delObject }) => {
             value={input}
             onChange={handleInputOnChange}
             id="name"
-            placeholder="Confirm by typing DELETE"
+            placeholder="Four digit code"
             type="text"
             fullWidth
           />
@@ -83,8 +108,8 @@ const DeleteButton = ({ deleteAction, className, delObject }) => {
           <Button onClick={handleClose} color="primary">
             Cancel
           </Button>
-          <Button onClick={handleDelete} color="secondary">
-            Delete
+          <Button id="regButton" onClick={handleValidate}>
+            VERIFY
           </Button>
         </DialogActions>
       </Dialog>
@@ -92,4 +117,4 @@ const DeleteButton = ({ deleteAction, className, delObject }) => {
   );
 };
 
-export default DeleteButton;
+export default RegisterButton;

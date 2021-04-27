@@ -37,7 +37,8 @@ const MeetingFields = ({ form, setForm, disabled, errors }) => {
     const classes = useStyles();
 
     const handleDateChange = (e) => {
-        setForm({ ...form, ...{ date: new Date(e) } });
+        console.log(new Date(e.toJSON()));
+        setForm({ ...form, ...{ date: new Date(e.toJSON()) } });
     };
 
     const handleOnChange = (e) => {

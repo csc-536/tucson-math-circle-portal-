@@ -10,6 +10,9 @@ function RegHeader(props) {
   return (
     <div>
       <h1>Account Registration Form</h1>
+      <p className="regNote">
+        NOTE: MUST <b>FILL IN ALL FIELDS BELOW</b> TO REGISTER
+      </p>
     </div>
   );
 }

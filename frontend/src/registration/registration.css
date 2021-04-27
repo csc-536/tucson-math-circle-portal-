@@ -14,12 +14,31 @@
   margin-right: 10px;
   max-width: 175px;
 }
-.formInput {
+/*.col1 > input, .col2 > input{
+  max-width: 150px;
+}*/
+.col2 {
+  float: right;
+  margin-right: 10px;
   max-width: 175px;
+}
+.birthInfo {
+  max-width: 100px;
+}
+.birthInfo > select {
+  max-width: 80px;
+}
+.formInput {
+  max-width: 150px;
 }
 .formHeader {
   color: #154cc5;
   clear: both;
+}
+.gradeDropDown {
+  padding: 5px;
+  width: 150px;
+  margin-top: 10px;
 }
 .mailRadio {
   margin: 20px;
@@ -54,7 +73,7 @@
 }
 #regButton {
   /* clear: both;*/
-  margin-bottom: 50px;
+  margin-bottom: 10px;
 }
 #regForm {
   margin: 0 auto;
@@ -77,11 +96,6 @@
 #myCheckBox {
   margin-top: 30px;
   width: 50px;
-}
-#gradeDropDown {
-  padding: 5px;
-  width: 175px;
-  margin-top: 10px;
 }
 #addStudent,
 #addGuardian,
@@ -120,12 +134,28 @@
   border-radius: 20px;
   width: 425px;
 }
-select {
-  margin-top: 10px;
-  padding-right: 100px;
-  padding-bottom: 10px;
+#fileUpload {
+  float: left;
+  margin-top: 20px;
 }
-
+#grade {
+  float: left;
+}
+#month {
+  float: right;
+  margin-right: 55px;
+}
+#year {
+  float: right;
+}
+#studentNumInfo {
+  clear: both;
+  max-width: 450px;
+  height: 75px;
+}
+#verification {
+  margin-top: 20px;
+}
 .consent-form {
   display: flex;
   justify-content: space-between;

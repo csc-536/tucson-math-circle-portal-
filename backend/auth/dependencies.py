@@ -1,4 +1,5 @@
 from pathlib import Path
+import os
 
 from datetime import datetime, timedelta
 from typing import Optional
@@ -29,6 +30,12 @@ if AWS_CONFIG_PATH.exists():
     AWS_ACCESS_KEY_ID = aws_config["aws-access-key-id"]
     AWS_SECRET_ACCESS_KEY = aws_config["aws-secret-access-key"]
     AWS_BUCKET_NAME = aws_config["aws-bucket-name"]
+# otherwise load it from environment
+else:
+    AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
+    AWS_SECRET_ACCESS_KEY = os.getenv("AWS_BUCKET_NAME")
+    AWS_BUCKET_NAME = os.getenv("AWS_BUCKET_NAME")
+
 
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MIN = 240

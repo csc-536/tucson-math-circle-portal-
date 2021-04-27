@@ -74,7 +74,7 @@ function AccInfo({ update, handleOnChange, form }) {
       <label>
         Email (for account, recieve meeting information):
         <input
-          type="text"
+          type="email"
           name="email"
           onChange={handleOnChange}
           value={form["email"]}

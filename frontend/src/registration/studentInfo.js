@@ -12,7 +12,7 @@ import S3UploadInput from "../components/S3UploadInput";
 
 const useStyles = makeStyles((theme) => ({
   button: {
-    marginTop: "10px",
+    marginTop: "40px",
     marginLeft: "115px",
     width: "200px",
     fontSize: "12pt",
@@ -27,7 +27,8 @@ function StudentInfo({
     first_name,
     last_name,
     grade,
-    age,
+    birth_month,
+    birth_year,
     verification_status,
     consent_form_object_name,
   },
@@ -75,13 +76,16 @@ function StudentInfo({
     }
 
     consentMaterial_1 = (
-      <S3UploadInput
-        callback={handleAddConsentForm}
-        uploadedFileName={uploadedFileName}
-      />
+      <div id="fileUpload">
+        <b>Upload consent form:</b>
+        <S3UploadInput
+          callback={handleAddConsentForm}
+          uploadedFileName={uploadedFileName}
+        />
+      </div>
     );
     consentMaterial_2 = (
-      <label className="col2">
+      <label className="col2" id="verification">
         Consent form verification status:
         <div style={verifStyle} id="consentStatus">
           {statusText}
@@ -89,6 +93,39 @@ function StudentInfo({
       </label>
     );
   }
+
+  const currYear = new Date().getFullYear();
+
+  const yearOptions = [];
+
+  const generateYears = () => {
+    yearOptions.push(
+      <option key="yearSelect-1" value={0}>
+        Select
+      </option>
+    );
+    for (let i = 0; i < 100; i++) {
+      const year = currYear - i;
+      yearOptions.push(
+        <option key={"yearSelect" + i} value={year}>
+          {year}
+        </option>
+      );
+    }
+  };
+
+  generateYears();
+
+  let birthYearOptions = (
+    <select
+      className="gradeDropDown"
+      name="birth_year"
+      value={birth_year}
+      onChange={handleOnChange}
+    >
+      {yearOptions}
+    </select>
+  );
 
   /*
    * Return a div for inputting first and last name, grade and age.
@@ -115,41 +152,60 @@ function StudentInfo({
           className="formInput"
         />
       </label>
-      <label className="col1">
-        Grade:
-        <select
-          id="gradeDropDown"
-          name="grade"
-          value={grade}
-          onChange={handleOnChange}
-        >
-          <option value="select">Select</option>
-          <option value="PreK">Pre-K</option>
-          <option value="K">K</option>
-          <option value="1">1</option>
-          <option value="2">2</option>
-          <option value="3">3</option>
-          <option value="4">4</option>
-          <option value="5">5</option>
-          <option value="6">6</option>
-          <option value="7">7</option>
-          <option value="8">8</option>
-          <option value="9">9</option>
-          <option value="10">10</option>
-          <option value="11">11</option>
-          <option value="12">12</option>
-        </select>
-      </label>
-      <label className="col2">
-        Age:
-        <input
-          type="text"
-          name="age"
-          value={age}
-          onChange={handleOnChange}
-          className="formInput"
-        />
-      </label>
+      <div id="studentNumInfo">
+        <label className="birthInfo" id="grade">
+          Grade:
+          <select
+            className="gradeDropDown"
+            name="grade"
+            value={grade}
+            onChange={handleOnChange}
+          >
+            <option value="select">Select</option>
+            <option value="PreK">Pre-K</option>
+            <option value="K">K</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+            <option value="7">7</option>
+            <option value="8">8</option>
+            <option value="9">9</option>
+            <option value="10">10</option>
+            <option value="11">11</option>
+            <option value="12">12</option>
+          </select>
+        </label>
+        <label className="birthInfo" id="year">
+          Birth Year:
+          {birthYearOptions}
+        </label>
+        <label className="birthInfo" id="month">
+          Birth Month:
+          <select
+            className="gradeDropDown"
+            name="birth_month"
+            value={birth_month}
+            onChange={handleOnChange}
+          >
+            <option value={0}>Select</option>
+            <option value={1}>1</option>
+            <option value={2}>2</option>
+            <option value={3}>3</option>
+            <option value={4}>4</option>
+            <option value={5}>5</option>
+            <option value={6}>6</option>
+            <option value={7}>7</option>
+            <option value={8}>8</option>
+            <option value={9}>9</option>
+            <option value={10}>10</option>
+            <option value={11}>11</option>
+            <option value={12}>12</option>
+          </select>
+        </label>
+      </div>
       {consentMaterial_1}
       {consentMaterial_2}
       <DeleteButton

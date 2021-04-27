@@ -13,8 +13,8 @@ function CheckBox({ handleCheckBoxChange }) {
     <div id="checkbox">
       <input type="checkbox" id="myCheckBox" onClick={handleCheckBoxChange} />
       <p>
-        I understand that guardians need to sign a consent form for each student
-        after registration
+        I understand that guardians need to sign and upload a consent form for
+        each student after registration
       </p>
     </div>
   );
