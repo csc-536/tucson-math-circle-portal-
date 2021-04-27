@@ -4,3 +4,4 @@ Pipfile.lock
 backend/.coverage
 backend/auth/aws-config.toml
 frontend/coverage
+.env
