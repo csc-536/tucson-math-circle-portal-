@@ -62,6 +62,7 @@ app.add_middleware(
 async def startup():
     if TESTING:
         connect_to_auth_db()
+    connect_to_mongodb()
 
 
 @app.post("/token", response_model=Token)
@@ -98,5 +99,4 @@ async def generate_presigned_post_url(
 
 
 if __name__ == "__main__":
-    connect_to_mongodb()
     uvicorn.run(app, host="127.0.0.1", port=9000)
