@@ -3,11 +3,11 @@ import { v4 as uuidv4 } from "uuid";
 import { loggedInRole } from "../utils";
 
 export const auth = axios.create({
-    baseURL: "http://127.0.0.1:8000",
+    baseURL: process.env.REACT_APP_AUTH_URL,
 });
 
 export const main = axios.create({
-    baseURL: "http://127.0.0.1:9000",
+    baseURL: process.env.REACT_APP_MAIN_URL,
 });
 
 // request interceptor for constructing the authentication header

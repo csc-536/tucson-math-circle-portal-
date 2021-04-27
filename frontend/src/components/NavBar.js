@@ -4,7 +4,7 @@ import AppBar from "@material-ui/core/AppBar";
 import Typography from "@material-ui/core/Typography";
 import { Toolbar } from "@material-ui/core";
 import { AccountCircle, AddBox, Home, People } from "@material-ui/icons";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import TooltipItem from "./TooltipItem";
 import SectionMenu from "./SectionMenu";
 import { AuthContext } from "../contexts/AuthContext";
@@ -28,6 +28,10 @@ const NavBar = () => {
     } = useContext(AuthContext);
 
     const links = [];
+
+    const location = useLocation();
+
+    const showFilterMenu = location.pathname !== "/allStudents";
 
     if (userLoggedIn) {
         switch (role) {
@@ -70,7 +74,7 @@ const NavBar = () => {
                     <Typography variant="h5" className={classes.title}>
                         Tucson Math Circle
                     </Typography>
-                    {userLoggedIn ? <SectionMenu /> : ""}
+                    {userLoggedIn ? showFilterMenu ? <SectionMenu /> : "" : ""}
                     {links.map(({ title, item, path }, i) => (
                         <Link to={path} key={uniqueId()}>
                             <TooltipItem
