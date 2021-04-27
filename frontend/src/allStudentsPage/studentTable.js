@@ -192,9 +192,8 @@ function StudentTable({ paramStudentList, sectionList }) {
       });
       if (filteredIn) {
         account["student_list"].map((student) => {
-          console.log(student["last_name"]);
           rowList.push(
-            <tr>
+            <tr key={uniqueId()}>
               <td>
                 {student["last_name"]}, {student["first_name"]}
               </td>

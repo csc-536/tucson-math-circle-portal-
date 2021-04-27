@@ -20,6 +20,7 @@ import {
   addProfile,
   updateProfile,
   profile,
+  preRegister,
   register,
   disable,
   updateEmail,
@@ -30,6 +31,7 @@ import { AuthContext } from "../contexts/AuthContext";
 import { isLoggedIn, loggedInRole } from "../utils";
 import { makeStyles } from "@material-ui/core";
 import DeleteButton from "../components/DeleteButton";
+import RegisterButton from "./registerButton";
 import { v4 as uuidv4 } from "uuid";
 
 function Registration({ update }) {
@@ -42,6 +44,14 @@ function Registration({ update }) {
       backgroundColor: "#990000",
       color: "white",
     },
+    regButton: {
+      marginTop: "10px",
+      float: "right",
+      width: "150px",
+      fontSize: "12pt",
+      backgroundColor: "#154cc5",
+      color: "white",
+    },
   }));
   const classes = useStyles();
 
@@ -49,7 +59,8 @@ function Registration({ update }) {
     first_name: "",
     last_name: "",
     grade: "",
-    age: "",
+    birth_month: undefined,
+    birth_Year: undefined,
     consent_form_object_name: null,
     verification_status: false,
   };
@@ -68,6 +79,7 @@ function Registration({ update }) {
     newpassword: "",
     students: [initialStudent],
     guardians: [initialGuardian],
+
     mailing_lists: ["junior_a", "junior_b", "senior"],
   });
 
@@ -150,7 +162,7 @@ function Registration({ update }) {
    * Removes the newest student from the list of students 'studentList'.
    */
   const handleRemStudent = (e, i) => {
-    if (form.students.length > 0) {
+    if (form.students.length > 1) {
       const students = clone(form.students);
       students.splice(i, 1);
       setForm({ ...form, students });
@@ -170,7 +182,7 @@ function Registration({ update }) {
    * Removes the newest guardian from the list of guardians 'guardianList'.
    */
   const handleRemGuardian = (e, i) => {
-    if (form.guardians.length > 0) {
+    if (form.guardians.length > 1) {
       const guardians = clone(form.guardians);
       guardians.splice(i, 1);
       setForm({ ...form, guardians });
@@ -178,18 +190,18 @@ function Registration({ update }) {
   };
 
   const handleAddConsentForm = (objectKey, i) => {
-    console.log(objectKey);
+    // console.log(objectKey);
     // console.log(i);
-    console.log(form.students.length);
+    // console.log(form.students.length);
     if (form.students.length > 0) {
       const students = clone(form.students);
       students[i]["consent_form_object_name"] = objectKey;
       console.log(students);
       setForm({ ...form, students });
     }
-    console.log(form);
+    // console.log(form);
   };
-  console.log(form);
+  // console.log(form);
   /*
    * Pushes page path to the meetings page.
    */
@@ -255,12 +267,14 @@ function Registration({ update }) {
       if (student.last_name === "") {
         errStr += "Student " + (i + 1) + ": Last name required\n";
       }
-      if (student.age === "" || isNaN(student.age)) {
-        errStr += "Student " + (i + 1) + ": Age required\n";
-      }
-      console.log(student.grade);
       if (student.grade === "select" || student.grade === "") {
         errStr += "Student " + (i + 1) + ": Grade required\n";
+      }
+      if (student.birth_month === undefined || student.birth_month == 0) {
+        errStr += "Student " + (i + 1) + ": Birth month required\n";
+      }
+      if (student.birth_year === undefined || student.birth_year == 0) {
+        errStr += "Student " + (i + 1) + ": Birth year required\n";
       }
     });
     guardians.map((guardian, i) => {
@@ -287,13 +301,43 @@ function Registration({ update }) {
 
   const { setAuth } = useContext(AuthContext);
 
+  const checkInputs = () => {
+    console.log("Checking");
+    const {
+      email,
+      password,
+      repassword,
+      newpassword,
+      students,
+      guardians,
+      mailing_lists,
+    } = form;
+    const str = checkFeilds(
+      email,
+      password,
+      repassword,
+      newpassword,
+      students,
+      guardians,
+      checkBox
+    );
+    if (str !== "") {
+      alert(str);
+      return -1;
+    }
+
+    return 0;
+  };
+
   /*
    * Handles the event of the form submission. Prevents the page from refreshing.
    * If property 'update' is true, return to the login page.
    */
-  const handleFormSubmit = async (e) => {
-    e.preventDefault();
+  const handleFormSubmit = async (verification_code) => {
+    //e.preventDefault();
 
+    console.log("SUBMIT");
+    console.log(verification_code);
     const {
       email,
       password,
@@ -341,7 +385,7 @@ function Registration({ update }) {
       }
     } else {
       try {
-        await register({ email, password, role: "student" });
+        await register({ email, password, role: "student", verification_code });
         await addProfile({
           email,
           guardians,
@@ -352,8 +396,10 @@ function Registration({ update }) {
         history.push("/profile");
       } catch (error) {
         console.log(error.response);
+        return -1;
       }
     }
+    return 0;
   };
 
   /*
@@ -368,7 +414,7 @@ function Registration({ update }) {
   const studentList = form.students.map((student, i) => {
     return (
       <StudentInfo
-        key={i}
+        key={"student" + i}
         student={student}
         update={update}
         handleOnChange={(e) => {
@@ -390,7 +436,7 @@ function Registration({ update }) {
   const guardianList = form.guardians.map((guardian, i) => {
     return (
       <GuardianInfo
-        key={i}
+        key={"guardian" + i}
         guardian={guardian}
         handleOnChange={(e) => handleOnChange(e, i, "guardians")}
         handleRemGuardian={(e) => handleRemGuardian(e, i)}
@@ -408,6 +454,16 @@ function Registration({ update }) {
   let isUpdate = <CheckBox handleCheckBoxChange={handleCheckBoxChange} />;
   let buttonVal = "Register";
   let accountDelButton = "";
+  let showRegButton = (
+    <RegisterButton
+      check={checkInputs}
+      email={clone(form.email)}
+      preRegister={preRegister}
+      regAction={handleFormSubmit}
+      className={classes.regButton}
+    />
+  );
+  let showUpdateButton = "";
 
   /*
    * 'history' used to render specified pages.
@@ -458,6 +514,8 @@ function Registration({ update }) {
         delObject={delObject}
       />
     );
+    showRegButton = "";
+    showUpdateButton = <input id="regButton" type="submit" value={buttonVal} />;
   }
 
   /*
@@ -468,21 +526,21 @@ function Registration({ update }) {
     <form id="regForm" onSubmit={handleFormSubmit}>
       {header}
       <h3 className="formHeader">Account Information</h3>
+      <p className="regNote">Fill in all fields to set up your account</p>
       <p className="regNote">
-        Fill in the required fields to set up your account
+        <b>Password</b> must be at least six characters long
       </p>
       <p className="regNote">
         NOTE: The email provided below is shared between all students associated
         with this account and will be used to recieve Tucson Math Circle meeting
         reminders and notifications
       </p>
-      <p className="regNote">Password must be at least six characters long</p>
       <AccInfo update={update} handleOnChange={handleOnChange} form={form} />
       {isUpdate}
       <hr />
       <h3 className="formHeader">Student Information</h3>
       <p className="regNote">
-        Fill in the required fields for each participating student
+        Fill in all fields for each participating student
       </p>
       <div id="sList">{studentList}</div>
       <AddNewStudent handleAddStudent={handleAddStudent} />
@@ -493,11 +551,15 @@ function Registration({ update }) {
         <br />
       </h3>
       <p className="regNote">
-        Fill in the required guardian fields for emergency contact purposes
+        Fill in all guardian fields for emergency contact purposes
       </p>
       <p className="regNote">
-        NOTE: The first (top) guardian listed below will be the primary contact
-        for all students linked to this account
+        NOTE: <b>Phone numbers</b> for guardians must be at least 10 digits long
+        including area code
+      </p>
+      <p className="regNote">
+        NOTE: The <b>first (top) guardian</b> listed below will be the primary
+        contact for all students linked to this account
       </p>
       <div id="gList">{guardianList}</div>
       <AddNewGuardian handleAddGuardian={handleAddGuardian} />
@@ -513,7 +575,8 @@ function Registration({ update }) {
       />
       <p>{errStr}</p>
       {accountDelButton}
-      <input id="regButton" type="submit" value={buttonVal} />
+      {showRegButton}
+      {showUpdateButton}
     </form>
   );
 }
