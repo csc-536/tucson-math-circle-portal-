@@ -18,11 +18,16 @@ export async function checkVerified() {
   const unverifiedStudents = [];
   if (data) {
     const { student_list } = data;
-    student_list.forEach(({ verification_status, first_name, last_name }) => {
-      if (verification_status === false) {
-        unverifiedStudents.push(`${first_name} ${last_name}`);
+    student_list.forEach(
+      ({ verification_status, first_name, last_name, id }) => {
+        if (verification_status === false) {
+          unverifiedStudents.push({
+            name: `${first_name} ${last_name}`,
+            id,
+          });
+        }
       }
-    });
+    );
   }
   return unverifiedStudents;
 }

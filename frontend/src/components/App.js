@@ -31,6 +31,7 @@ function App() {
     dates: [],
     session_levels: ["junior_a", "junior_b", "senior"],
   });
+
   const providerUser = useMemo(() => ({ auth, setAuth }));
   const providerFiler = useMemo(() => ({ filter, setFilter }));
   return (

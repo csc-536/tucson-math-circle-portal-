@@ -31,7 +31,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const MeetingCard = ({ meeting, past }) => {
+const MeetingCard = ({ meeting, past, unverifiedStudents }) => {
   const classes = useStyles();
   const [open, setOpen] = useState(false);
   const {
@@ -125,6 +125,7 @@ const MeetingCard = ({ meeting, past }) => {
               setRegistrations,
               handleClose,
             }}
+            unverifiedStudents={unverifiedStudents}
           />
         </div>
       </Modal>

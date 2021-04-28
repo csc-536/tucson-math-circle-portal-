@@ -5,4 +5,5 @@ export const meetingContext = createContext({
     dates: [],
     session_levels: ["junior_a", "junior_b", "senior"],
   },
+  unverifiedStudents: [],
 });
