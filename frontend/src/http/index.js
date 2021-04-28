@@ -285,6 +285,6 @@ export async function sendReminderEmail(id) {
   const res = await main.post("/admin/send_new_meeting_email", null, {
     params: { meeting_id: id },
   });
-
+  console.log(res);
   return res;
 }
