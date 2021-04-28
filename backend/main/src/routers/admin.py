@@ -107,7 +107,9 @@ def send_new_meeting_email(
         """
     )
     new_email = EmailSchema(
-        receivers=emails, subject="New meeting Published", body=body
+        receivers=emails,
+        subject=f"Upcoming {session_level_names[meeting.session_level]} Math Circle Meeting",
+        body=body,
     )
     background_task.add_task(email_handler, background_task, new_email)
     return JSONResponse(status_code=200, content={"message": "email has been sent"})
