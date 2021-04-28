@@ -1,7 +1,7 @@
 from fastapi import Depends, APIRouter, HTTPException, status, BackgroundTasks
 from pydantic import UUID4
 from starlette.responses import JSONResponse
-
+import datetime
 from backend.main.email_handler.email_handler import EmailSchema, email_handler
 
 from backend.main.src.routers.student import (
@@ -70,45 +70,48 @@ def get_student_profiles(token_data: TokenData = Depends(get_admin_token_data)):
     return all_profiles
 
 
-@router.post("/send_reminder_email")
-def send_reminder_email(token_data: TokenData = Depends(get_admin_token_data)):
-    # TODO:setup student doc for verified email
-    pass
-
-
 @router.post("/send_new_meeting_email")
 def send_new_meeting_email(
     background_task: BackgroundTasks,
     meeting_id: str,
     token_data: TokenData = Depends(get_admin_token_data),
 ):
-    meeting = MeetingDocument.objects(id=meeting_id).first()
-    students = StudentProfileDocument.objects(mailing_lists__in=meeting.session_level)
+    session_level_names = {}
+    session_level_names["junior_a"] = "Junior (A)"
+    session_level_names["junior_b"] = "Junior (B)"
+    session_level_names["senior"] = "Senior"
+    meeting = MeetingDocument.objects(uuid=meeting_id).first()
+    students = StudentProfileDocument.objects(mailing_lists=meeting.session_level)
     emails = []
     for student in students:
         emails.append(student.email)
+    meeting_time = meeting.date_and_time.strftime("%I:%M")
+    meeting_date = meeting.date_and_time.date()
+    meeting_end = meeting.date_and_time + datetime.timedelta(minutes=meeting.duration)
+    meeting_end = meeting_end.strftime("%I:%M")
     body = (
-        """
+        f"""
         <html>
             <body>
-                <p>A new meeting has been posted to the Tucson Math Circle website</p>
+            <h3>Join us for the {session_level_names[meeting.session_level]} Math Circle meeting!</h3>
+                <p>To RSVP for the meeting go to the Meetings page of the website and check in for this meeting.</p>
         """
-        + f"<p>Date: {meeting.date_and_time.date}"
-        + f"<br>Time: {meeting.date_and_time.time}-{create_meeting.duration.time}"
+        + f"<p>Date: {meeting_date}"
+        + f"<br>Time: {meeting_time} -- {meeting_end}"
         + f"<br>Topic: {meeting.topic}"
         + f"<br>Zoom Link: {meeting.zoom_link}"
-        + f"<br>Zoom Password: {meeting.password}"
         + f"<br>Miro Link: {meeting.miro_link}"
-        + f"<br>Session Level: {meeting.session_level}</p>"
         + """
             </body>
         </html>
         """
     )
     new_email = EmailSchema(
-        receivers=emails, subject="New meeting Published", body=body
+        receivers=emails,
+        subject=f"Upcoming {session_level_names[meeting.session_level]} Math Circle Meeting",
+        body=body,
     )
-    background_task.add_task(email_handler, new_email)
+    background_task.add_task(email_handler, background_task, new_email)
     return JSONResponse(status_code=200, content={"message": "email has been sent"})
 
 
