@@ -31,7 +31,6 @@ const Meeting = forwardRef(
     },
     ref
   ) => {
-    // console.log(ref);
     const initalStudents = registrations.map(
       ({ first_name, last_name, registered, id }) => {
         return {
@@ -41,6 +40,7 @@ const Meeting = forwardRef(
         };
       }
     );
+
     const [students, setStudents] = useState(initalStudents);
 
     const handleSubmit = async (e) => {
@@ -64,8 +64,6 @@ const Meeting = forwardRef(
       }
       handleClose();
     };
-    console.log(materials_uploaded);
-    console.log(past);
     return (
       <div ref={ref}>
         <h2 id="meeting-title">Meeting</h2>

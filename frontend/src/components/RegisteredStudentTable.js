@@ -32,7 +32,6 @@ const StyledTableCell = withStyles((theme) => ({
 
 const RegisteredStudentTable = ({ students, handleCheckAttended }) => {
   const classes = useStyles();
-  console.log(students);
   return (
     <>
       <h3>Registered Students</h3>
