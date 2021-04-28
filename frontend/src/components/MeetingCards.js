@@ -10,7 +10,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const MeetingCards = ({ past, meetings }) => {
+const MeetingCards = ({ past, meetings, unverifiedStudents }) => {
   const classes = useStyles();
   const numItemPerRow = 4;
 
@@ -20,7 +20,11 @@ const MeetingCards = ({ past, meetings }) => {
     <Grid container item md={12} spacing={3} key={uniqueId()}>
       {c.map((cc) => (
         <Grid item md={12 / numItemPerRow} key={uniqueId()}>
-          <MeetingCard meeting={cc} past={past} />
+          <MeetingCard
+            meeting={cc}
+            past={past}
+            unverifiedStudents={unverifiedStudents}
+          />
         </Grid>
       ))}
     </Grid>

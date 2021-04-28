@@ -3,15 +3,18 @@ import { Button, makeStyles } from "@material-ui/core";
 import MeetingFields from "../components/MeetingFields";
 import RegisteredStudentTable from "../components/RegisteredStudentTable";
 import SaveIcon from "@material-ui/icons/Save";
-import { cloneDeep } from "lodash";
+import EventIcon from "@material-ui/icons/Event";
+import { cloneDeep, some } from "lodash";
 import DeleteButton from "../components/DeleteButton";
 import { useHistory, useLocation } from "react-router";
 import {
   attendMeeting,
   deleteMeeting,
   registerMeeting,
+  sendReminderEmail,
   updateMeeting,
 } from "../http";
+import ReminderButton from "../components/ReminderButton";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -44,6 +47,7 @@ const MeetingInfo = () => {
     coordinator_notes: "",
     students: [],
   });
+  const [errors, setErrors] = useState({});
 
   useEffect(() => {
     const {
@@ -124,11 +128,30 @@ const MeetingInfo = () => {
       topic,
       uuid: meeting_id,
     } = form;
-    console.log(form);
 
+    const err = {};
     // TODO: Validate inputs
+    if (duration === "") {
+      err["duration"] = "Duration is required!";
+    }
+    if (topic === "") {
+      err["topic"] = "Topic is required!";
+    }
+    if (session_level === "") {
+      err["sessionLevel"] = "Session level is required!";
+    }
+    if (zoom_link === "") {
+      err["zoomLink"] = "Zoom link is required!";
+    }
+    if (miro_link === "") {
+      err["miroLink"] = "Miro link is required!";
+    }
 
-    // TODO: submit form
+    if (Object.keys(err).length !== 0) {
+      setErrors(err);
+      return;
+    }
+
     try {
       await updateMeeting({
         date_and_time,
@@ -151,12 +174,18 @@ const MeetingInfo = () => {
 
   const handleDelete = async () => {
     try {
-      console.log(form["uuid"]);
       await deleteMeeting(form["uuid"]);
       history.push("/meetings");
-      console.log("delete");
     } catch (error) {
       console.log(error);
+    }
+  };
+
+  const handleSendReminder = async () => {
+    try {
+      const res = await sendReminderEmail(form["uuid"]);
+    } catch (error) {
+      console.log(error.response);
     }
   };
 
@@ -169,7 +198,12 @@ const MeetingInfo = () => {
         id="new-meeting-form"
         onSubmit={handleSaveMeeting}
       >
-        <MeetingFields form={form} setForm={setForm} disabled={disabled} />
+        <MeetingFields
+          form={form}
+          errors={errors}
+          setForm={setForm}
+          disabled={disabled}
+        />
         {disabled ? (
           ""
         ) : (
@@ -188,6 +222,10 @@ const MeetingInfo = () => {
               deleteAction={handleDelete}
               className={classes.button}
             />
+            <ReminderButton
+              onClick={handleSendReminder}
+              className={classes.button}
+            />
           </div>
         )}
 
@@ -199,11 +237,6 @@ const MeetingInfo = () => {
     </div>
   );
 };
-
-// function getTimeDifferences(d1, d2) {
-//     const diff = new Date(d1).getTime() - new Date(d2).getTime();
-//     return diff / 1000 / 60;
-// }
 
 function getTime(d) {
   const date = new Date(d);

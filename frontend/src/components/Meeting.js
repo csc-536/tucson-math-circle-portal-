@@ -5,7 +5,7 @@ import StudentAttendingTable from "./StudentAttendingTable";
 import { Button } from "@material-ui/core";
 import SaveIcon from "@material-ui/icons/Save";
 import { registerMeeting } from "../http";
-import { clone } from "lodash";
+import { clone, some } from "lodash";
 import S3DownloadLink from "./S3DownloadLink";
 
 const Meeting = forwardRef(
@@ -25,22 +25,24 @@ const Meeting = forwardRef(
         materials_uploaded,
         past,
         duration,
-        // zoom_password,
       },
-      // past,
+      unverifiedStudents,
     },
     ref
   ) => {
-    // console.log(ref);
-    const initalStudents = registrations.map(
-      ({ first_name, last_name, registered, id }) => {
+    const initalStudents = registrations
+      .map(({ first_name, last_name, registered, id }) => {
         return {
           name: `${first_name} ${last_name}`,
           attending: registered,
           id,
         };
-      }
-    );
+      })
+      .filter(
+        ({ id: sid }) =>
+          !some(unverifiedStudents, ({ id: uvsid }) => sid === uvsid)
+      );
+
     const [students, setStudents] = useState(initalStudents);
 
     const handleSubmit = async (e) => {
@@ -64,8 +66,6 @@ const Meeting = forwardRef(
       }
       handleClose();
     };
-    console.log(materials_uploaded);
-    console.log(past);
     return (
       <div ref={ref}>
         <h2 id="meeting-title">Meeting</h2>
@@ -102,32 +102,35 @@ const Meeting = forwardRef(
         ) : (
           ""
         )}
-
-        <form
-          noValidate
-          autoComplete="off"
-          id="student-attending-meeting-form"
-          onSubmit={handleSubmit}
-        >
-          <FormControl component="fieldset">
-            <FormGroup>
-              <StudentAttendingTable
-                students={students}
-                setStudents={setStudents}
-                disabled={past}
-              />
-            </FormGroup>
-            <Button
-              variant="contained"
-              color="primary"
-              startIcon={<SaveIcon />}
-              type="submit"
-              disableElevation
-            >
-              Submit
-            </Button>
-          </FormControl>
-        </form>
+        {students.length > 0 ? (
+          <form
+            noValidate
+            autoComplete="off"
+            id="student-attending-meeting-form"
+            onSubmit={handleSubmit}
+          >
+            <FormControl component="fieldset">
+              <FormGroup>
+                <StudentAttendingTable
+                  students={students}
+                  setStudents={setStudents}
+                  disabled={past}
+                />
+              </FormGroup>
+              <Button
+                variant="contained"
+                color="primary"
+                startIcon={<SaveIcon />}
+                type="submit"
+                disableElevation
+              >
+                Submit
+              </Button>
+            </FormControl>
+          </form>
+        ) : (
+          ""
+        )}
       </div>
     );
   }

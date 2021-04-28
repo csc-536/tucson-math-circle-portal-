@@ -25,7 +25,6 @@ const StudentAttendingTable = ({ students, setStudents, disabled }) => {
     s[i].attending = e.target.checked;
     setStudents(s);
   };
-  console.log(disabled);
   return (
     <TableContainer>
       <Table className={classes.table} aria-label="student-attending-table">
