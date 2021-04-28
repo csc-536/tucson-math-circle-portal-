@@ -87,9 +87,7 @@ def send_new_meeting_email(
         emails.append(student.email)
     meeting_time = meeting.date_and_time.strftime("%I:%M")
     meeting_date = meeting.date_and_time.date()
-    meeting_end = meeting.date_and_time + datetime.timedelta(
-        minutes=meeting.duration
-    )
+    meeting_end = meeting.date_and_time + datetime.timedelta(minutes=meeting.duration)
     meeting_end = meeting_end.strftime("%I:%M")
     body = (
         f"""
