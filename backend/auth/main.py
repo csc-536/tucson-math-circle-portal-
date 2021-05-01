@@ -155,6 +155,9 @@ async def register(user: UserCreate):
 
 @app.post("/student/pre_register")
 async def preregister(pre_register: PreRegister, background_task: BackgroundTasks):
+    # to get consent form path
+    global PROJECTS_DIR
+
     existing_user = await get_user_by_email(pre_register.email)
     if existing_user:
         raise HTTPException(status_code=400, detail="Email is already taken")
@@ -177,7 +180,9 @@ async def preregister(pre_register: PreRegister, background_task: BackgroundTask
             <body>
             <h3>Welcome to the Tucson Math Circle!</h3>
         """
-        + """ <p>Please enter the below verification code to verify your account.  You will also need to upload a signed consent form for your student(s) before they can register for any meetings.  The consent form can be downloaded on your account profile page.</p>
+        + """ <p>Please enter the below verification code to verify your account.
+          You will also need to upload a signed consent form for your student(s) before they can register for any meetings.
+          The consent form is provided as an attachment to this email.</p>
         """
         + f"<p><b>Verification Code</b>: {verification_code}</p>"
         + """
@@ -185,10 +190,14 @@ async def preregister(pre_register: PreRegister, background_task: BackgroundTask
         </html>
         """
     )
+    consent_form_path = (
+        str(PROJECTS_DIR) + "/backend/auth/Combined Waivers_Virtual Programs.pdf"
+    )
     new_email = EmailSchema(
         receivers=[pre_register.email],
         subject="Verify your Tucson Math Circle account",
         body=body,
+        attachments=[consent_form_path],
     )
     background_task.add_task(email_handler, background_task, new_email)
     return JSONResponse(status_code=200, content={"message": "Verification email sent"})
