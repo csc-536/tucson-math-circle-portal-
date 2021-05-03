@@ -33,6 +33,7 @@ class EmailSchema(BaseModel):
     receivers: List[EmailStr] = Field()
     subject: str = Field()
     body: str = Field()
+    attachments: List[str] = []
 
 
 async def email_handler(
@@ -44,6 +45,7 @@ async def email_handler(
         recipients=email.receivers,  # List of recipients, as many as you can pass
         body=email.body,
         subtype="html",
+        attachments=email.attachments,
     )
 
     fm = FastMail(conf)

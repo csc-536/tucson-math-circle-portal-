@@ -6,3 +6,5 @@ backend/.coverage
 backend/auth/aws-config.toml
 frontend/coverage
 .env
+frontend/yarn.lock
+__pycache__
