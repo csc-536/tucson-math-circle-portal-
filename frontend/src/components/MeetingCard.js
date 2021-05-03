@@ -31,11 +31,9 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const MeetingCard = ({ meeting, past }) => {
+const MeetingCard = ({ meeting, past, unverifiedStudents }) => {
   const classes = useStyles();
   const [open, setOpen] = useState(false);
-  console.log(meeting);
-
   const {
     uuid,
     topic,
@@ -77,7 +75,7 @@ const MeetingCard = ({ meeting, past }) => {
       state: {
         meeting: {
           uuid,
-          date: date_and_time,
+          date: toLocalTime(date_and_time),
           sessionLevel: session_level,
           zoom_link,
           miro_link,
@@ -127,6 +125,7 @@ const MeetingCard = ({ meeting, past }) => {
               setRegistrations,
               handleClose,
             }}
+            unverifiedStudents={unverifiedStudents}
           />
         </div>
       </Modal>
@@ -170,7 +169,13 @@ function getSessionLevel(str) {
 }
 
 function getDate(date) {
-  const d = new Date(date).toLocaleString();
+  return toLocalTime(date).toLocaleString();
+}
+
+function toLocalTime(date) {
+  const timezoneOffset = new Date().getTimezoneOffset();
+  const d = new Date(date);
+  d.setHours(d.getHours() - timezoneOffset / 60);
   return d;
 }
 

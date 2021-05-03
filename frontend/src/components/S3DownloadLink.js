@@ -3,6 +3,7 @@ import { downloadFile } from "../http";
 
 const S3DownloadLink = ({ fileType, id, text }) => {
   const [url, setUrl] = useState("#");
+  const [hasMaterial, setHasMaterial] = useState(false);
   useEffect(() => {
     const download = async () => {
       try {
@@ -11,17 +12,16 @@ const S3DownloadLink = ({ fileType, id, text }) => {
           id,
         });
         setUrl(urll);
-        // console.log(urll);
-      } catch (error) {}
+        setHasMaterial(true);
+      } catch (error) {
+        console.log(error.response);
+      }
     };
-    download();
-  }, []);
-  console.log(url);
-  return (
-    <div>
-      <a href={url}>{text}</a>
-    </div>
-  );
+    if (id) {
+      download();
+    }
+  }, [id]);
+  return <div>{hasMaterial ? <a href={url}>{text}</a> : ""}</div>;
 };
 
 export default S3DownloadLink;

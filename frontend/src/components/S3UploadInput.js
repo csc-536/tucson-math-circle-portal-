@@ -17,12 +17,15 @@ const useStyles = makeStyles((theme) =>
   })
 );
 
-const S3UploadInput = ({ callback, uploadedFileName = "" }) => {
+const S3UploadInput = ({
+  callback,
+  uploadedFileName = "",
+  disabled = false,
+}) => {
   const classes = useStyles();
   const [selectedFile, setSelectedFile] = useState(uploadedFileName);
 
   const handleFileOnChange = async (e) => {
-    console.log(e.target.files[0]);
     try {
       const objectKey = await uploadFile({
         selectedFile: e.target.files[0],
@@ -35,8 +38,6 @@ const S3UploadInput = ({ callback, uploadedFileName = "" }) => {
   };
 
   const id = uuidv4();
-  console.log(id);
-  console.log(uploadedFileName);
   return (
     <div>
       <input
@@ -46,18 +47,17 @@ const S3UploadInput = ({ callback, uploadedFileName = "" }) => {
         type="file"
         onChange={handleFileOnChange}
       />
-      <label htmlFor={id}>
+      <label htmlFor={disabled ? "" : id}>
         <Button
           size="small"
           variant="contained"
           component="span"
           disableElevation
+          disabled={disabled}
         >
           Upload
         </Button>
       </label>
-      <br />
-      <span>{selectedFile}</span>
     </div>
   );
 };

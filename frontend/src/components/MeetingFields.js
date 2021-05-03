@@ -1,22 +1,19 @@
-import React, { useState } from "react";
-
+import React from "react";
 import {
   FormControl,
+  FormHelperText,
   InputLabel,
   makeStyles,
   MenuItem,
   Select,
   TextField,
 } from "@material-ui/core";
-import {
-  DatePicker,
-  DateTimePicker,
-  MuiPickersUtilsProvider,
-  TimePicker,
-} from "@material-ui/pickers";
+import { DateTimePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
 import MomentUtils from "@date-io/moment";
 import { toNumber } from "lodash";
 import S3UploadInput from "./S3UploadInput";
+import moment from "moment-timezone";
+import S3DownloadLink from "./S3DownloadLink";
 
 const useStyles = makeStyles((theme) => ({
   textField: {
@@ -28,18 +25,13 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const MeetingFields = ({ form, setForm, disabled }) => {
+moment.tz.setDefault("America/Phoenix");
+
+const MeetingFields = ({ form, setForm, disabled, errors }) => {
   const classes = useStyles();
 
-  // const handleDateChange = (e) => {
-  //     setForm({ ...form, ...{ date: new Date(e) } });
-  // };
-
-  // const [selectedDate, handleDateChange] = useState(new Date());
-  // console.log(selectedDate.toJSON());
-
   const handleDateChange = (e) => {
-    setForm({ ...form, ...{ date: new Date(e) } });
+    setForm({ ...form, ...{ date: new Date(e.toJSON()) } });
   };
 
   const handleOnChange = (e) => {
@@ -57,7 +49,7 @@ const MeetingFields = ({ form, setForm, disabled }) => {
     input[name] = v;
     setForm({ ...form, ...input });
   };
-  console.log("asdfghjk", form);
+
   const handleUploadFileCallback = (objectKey) => {
     setForm({
       ...form,
@@ -65,11 +57,17 @@ const MeetingFields = ({ form, setForm, disabled }) => {
     });
   };
 
+  const hasError = (name) => {
+    if (!errors) {
+      return false;
+    }
+    return name in errors;
+  };
   return (
     <>
       <h3>Date and Time</h3>
       <div>
-        <MuiPickersUtilsProvider utils={MomentUtils}>
+        <MuiPickersUtilsProvider utils={MomentUtils} moment={moment}>
           <DateTimePicker
             autoOk
             required
@@ -97,6 +95,8 @@ const MeetingFields = ({ form, setForm, disabled }) => {
             shrink: true,
           }}
           className={classes.textField}
+          error={hasError("duration")}
+          helperText={hasError("duration") ? errors["duration"] : ""}
         />
       </div>
 
@@ -114,8 +114,13 @@ const MeetingFields = ({ form, setForm, disabled }) => {
             shrink: true,
           }}
           className={classes.textField}
+          error={hasError("topic")}
+          helperText={hasError("topic") ? errors["topic"] : ""}
         />
-        <FormControl className={classes.textField}>
+        <FormControl
+          className={classes.textField}
+          error={hasError("sessionLevel")}
+        >
           <InputLabel shrink id="new-meeting-level-input-label" required>
             Session Level
           </InputLabel>
@@ -133,6 +138,11 @@ const MeetingFields = ({ form, setForm, disabled }) => {
             <MenuItem value={"junior_b"}>Junior (B)</MenuItem>
             <MenuItem value={"senior"}>Senior</MenuItem>
           </Select>
+          {hasError("sessionLevel") ? (
+            <FormHelperText>{errors["sessionLevel"]}</FormHelperText>
+          ) : (
+            ""
+          )}
         </FormControl>
       </div>
 
@@ -141,7 +151,9 @@ const MeetingFields = ({ form, setForm, disabled }) => {
         <S3UploadInput
           callback={handleUploadFileCallback}
           // uploadedFileName={}
+          disabled={disabled}
         />
+        <S3DownloadLink fileType="material" id={form["uuid"]} text="Download" />
       </div>
 
       <h3>How to Join</h3>
@@ -158,18 +170,19 @@ const MeetingFields = ({ form, setForm, disabled }) => {
             shrink: true,
           }}
           className={classes.textField}
+          error={hasError("zoomLink")}
+          helperText={hasError("zoomLink") ? errors["zoomLink"] : ""}
         />
         <TextField
-          disabled={disabled}
-          id="new-meeting-zoom-link"
+          id="new-meeting-zoom-password"
           label="Zoom Password"
           name="zoomPassword"
           value={form["zoomPassword"]}
-          required
           onChange={handleOnChange}
           InputLabelProps={{
             shrink: true,
           }}
+          disabled
           className={classes.textField}
         />
         <TextField
@@ -184,6 +197,8 @@ const MeetingFields = ({ form, setForm, disabled }) => {
             shrink: true,
           }}
           className={classes.textField}
+          error={hasError("miroLink")}
+          helperText={hasError("miroLink") ? errors["miroLink"] : ""}
         />
       </div>
       <h3>Notes</h3>
@@ -205,7 +220,6 @@ const MeetingFields = ({ form, setForm, disabled }) => {
           style={{ marginBottom: "35px" }}
         />
         <TextField
-          disabled={disabled}
           id="new-meeting-notes-coordinators"
           label="For Coordinators"
           multiline

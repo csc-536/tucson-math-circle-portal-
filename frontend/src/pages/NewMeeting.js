@@ -1,6 +1,5 @@
 import { Button, makeStyles } from "@material-ui/core";
 import SaveIcon from "@material-ui/icons/Save";
-import { toNumber } from "lodash";
 import React, { useState } from "react";
 import { useHistory } from "react-router";
 import MeetingFields from "../components/MeetingFields";
@@ -18,6 +17,7 @@ const useStyles = makeStyles((theme) => ({
 
 const NewMeeting = () => {
   const classes = useStyles();
+  const [errors, setErrors] = useState({});
 
   const [form, setForm] = useState({
     date: new Date(),
@@ -29,12 +29,12 @@ const NewMeeting = () => {
     materials_uploaded: false,
     zoomLink: "",
     miroLink: "",
-    notes: "",
+    student_note: "",
+    coordinator_note: "",
   });
   const history = useHistory();
   const handleNewMeeting = async (e) => {
     e.preventDefault();
-    console.log(form);
     const {
       zoomLink,
       sessionLevel,
@@ -44,8 +44,32 @@ const NewMeeting = () => {
       miroLink,
       date,
       duration,
+      student_notes,
+      coordinator_notes,
     } = form;
     // TODO: validate inputs
+    const err = {};
+    // TODO: Validate inputs
+    if (duration === "") {
+      err["duration"] = "Duration is required!";
+    }
+    if (topic === "") {
+      err["topic"] = "Topic is required!";
+    }
+    if (sessionLevel === "") {
+      err["sessionLevel"] = "Session level is required!";
+    }
+    if (zoomLink === "") {
+      err["zoomLink"] = "Zoom link is required!";
+    }
+    if (miroLink === "") {
+      err["miroLink"] = "Miro link is required!";
+    }
+
+    if (Object.keys(err).length !== 0) {
+      setErrors(err);
+      return;
+    }
 
     // submit form
     try {
@@ -59,8 +83,9 @@ const NewMeeting = () => {
         meeting_password: "string",
         materials_object_name,
         materials_uploaded,
+        student_notes,
+        coordinator_notes,
       });
-      console.log(res.data);
       history.push("/meetings");
     } catch (error) {
       console.log(error.reponse);
@@ -77,7 +102,7 @@ const NewMeeting = () => {
         id="new-meeting-form"
         onSubmit={handleNewMeeting}
       >
-        <MeetingFields form={form} setForm={setForm} />
+        <MeetingFields form={form} setForm={setForm} errors={errors} />
         <Button
           variant="contained"
           color="primary"
