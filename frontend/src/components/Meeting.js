@@ -79,8 +79,14 @@ const Meeting = forwardRef(
         <p>{topic}</p>
         <h3>How can I join?</h3>
         <p>
-          Join us on <a href={zoom_link}>Zoom</a> and{" "}
-          <a href={miro_link}>Miro</a>
+          Join us on{" "}
+          <a href="https://zoom.us" target="_blank" rel="noopener noreferrer">
+            Zoom
+          </a>{" "}
+          and{" "}
+          <a href="https://miro.com" target="_blank" rel="noopener noreferrer">
+            Miro
+          </a>
         </p>
         {materials_uploaded ? (
           <>

@@ -57,7 +57,7 @@ const Meetings = () => {
       <Alert severity="warning">
         <AlertTitle>
           <strong>
-            Attention!!! - Students cannot regisiter meetings till their consent
+            Attention! - Students cannot register meetings till their consent
             forms are verified.
           </strong>
         </AlertTitle>
